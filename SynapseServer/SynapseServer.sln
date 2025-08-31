@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynapseServer", "SynapseServer.csproj", "{84E6C8AB-E944-443E-88C9-255C00D54DE4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{84E6C8AB-E944-443E-88C9-255C00D54DE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84E6C8AB-E944-443E-88C9-255C00D54DE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84E6C8AB-E944-443E-88C9-255C00D54DE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84E6C8AB-E944-443E-88C9-255C00D54DE4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {24442A3F-919B-4FD1-A280-2CC4F5F456C7}
+	EndGlobalSection
+EndGlobal
