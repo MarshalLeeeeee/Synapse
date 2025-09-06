@@ -1,0 +1,10 @@
+{
+  "files.exclude": {
+    "SynapseClient/Common/": true,
+    "SynapseServer/Common/": true
+  },
+  "search.exclude": {
+    "SynapseClient/Common/": true,
+    "SynapseServer/Common/": true
+  }
+}
