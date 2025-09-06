@@ -13,7 +13,24 @@ public class IsManagerAttribute : Attribute
 
 public class Manager : Node
 {
-    public virtual void Start() { }
-    public virtual void Update(float dt) { }
-    public virtual void Destroy() { }
+    public void Start()
+    {
+        OnStart();
+    }
+
+    protected virtual void OnStart() { }
+
+    public void Update(float dt)
+    {
+        DoUpdate(dt);
+    }
+
+    protected virtual void DoUpdate(float dt) { }
+
+    public void Destroy()
+    {
+        OnDestroy();
+    }
+
+    protected virtual void OnDestroy() { }
 }

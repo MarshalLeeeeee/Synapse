@@ -6,5 +6,11 @@ using System.Threading.Tasks;
 
 public class Game : GameCommon
 {
+    public static Game Instance { get; private set; } = null!;
 
+    public Game()
+    {
+        Instance = this;
+        InitManagers();
+    }
 }
