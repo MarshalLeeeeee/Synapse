@@ -6,7 +6,7 @@ public static class Launcher
     /* Launch game process */
     public static void LaunchGame()
     {
-        Console.Title = Const.Title;
+        Console.Title = ArgParser.GetConsoleTitle();
         Debug.StartGmConsole();
         Reflection.Init();
         using (Game game = new Game())
@@ -21,7 +21,7 @@ public static class Launcher
      */
     public static void LaunchGm()
     {
-        Console.Title = Const.Title + " - Gm";
+        Console.Title = ArgParser.GetConsoleTitle() + "-Gm";
         while (true)
         {
             Console.Write("Input: ");

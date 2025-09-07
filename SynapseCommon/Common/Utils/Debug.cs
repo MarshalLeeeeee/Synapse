@@ -12,12 +12,13 @@ public static class Debug
      */
     public static void StartGmConsole()
     {
+        string title = ArgParser.GetConsoleTitle();
         gmConsoleProcess = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = Process.GetCurrentProcess().MainModule?.FileName,
-                Arguments = "--launch-mode gm",
+                Arguments = $"--launch-mode gm --title {title}",
                 UseShellExecute = true,
                 CreateNoWindow = false
             }
@@ -59,6 +60,6 @@ public static class Debug
 
     public static string GetGmPipelineName()
     {
-        return Const.Title + " - GmPipeline";
+        return Const.Title + "-GmPipeline";
     }
 }
