@@ -7,13 +7,17 @@ public static class Launcher
     public static void LaunchGame()
     {
         Console.Title = ArgParser.GetConsoleTitle();
+#if DEBUG
         Debug.StartGmConsole();
+#endif
         Reflection.Init();
         using (Game game = new Game())
         {
             game.Start();
         }
+#if DEBUG
         Debug.StopGmConsole();
+#endif
     }
 
     /* Launch console program for user gm

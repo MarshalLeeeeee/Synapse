@@ -16,6 +16,8 @@ public static class Log
 
     public static void Debug(string msg)
     {
+#if DEBUG
         Console.WriteLine($"[DEBUG] {msg}");
+#endif
     }
 }
