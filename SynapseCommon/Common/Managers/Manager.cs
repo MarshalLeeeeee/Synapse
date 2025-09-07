@@ -6,9 +6,9 @@
 using System;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class IsManagerAttribute : Attribute
+public class RegisterManagerAttribute : Attribute
 {
-    public IsManagerAttribute() { }
+    public RegisterManagerAttribute() { }
 }
 
 public class Manager : Node

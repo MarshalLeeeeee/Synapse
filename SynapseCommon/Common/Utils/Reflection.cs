@@ -24,22 +24,22 @@ public class Reflection
             string typeName = t.Name;
 
             // register Manager
-            IsManagerAttribute? isManagerAttr = t.GetCustomAttribute<IsManagerAttribute>();
-            if (isManagerAttr != null && t.IsSubclassOf(typeof(Manager)))
+            RegisterManagerAttribute? RegisterManagerAttr = t.GetCustomAttribute<RegisterManagerAttribute>();
+            if (RegisterManagerAttr != null && t.IsSubclassOf(typeof(Manager)))
             {
                 managerTypes[typeName] = t;
             }
 
             //// register Entity
-            //IsEntityAttribute? isEntityAttr = t.GetCustomAttribute<IsEntityAttribute>();
-            //if (isEntityAttr != null && t.IsSubclassOf(typeof(Entity)))
+            //RegisterEntityAttribute? RegisterEntityAttr = t.GetCustomAttribute<RegisterEntityAttribute>();
+            //if (RegisterEntityAttr != null && t.IsSubclassOf(typeof(Entity)))
             //{
             //    entityTypes[typeName] = t;
             //}
 
             //// register Component
-            //IsComponentAttribute? isComponentAttr = t.GetCustomAttribute<IsComponentAttribute>();
-            //if (isComponentAttr != null && t.IsSubclassOf(typeof(Component)))
+            //RegisterComponentAttribute? RegisterComponentAttr = t.GetCustomAttribute<RegisterComponentAttribute>();
+            //if (RegisterComponentAttr != null && t.IsSubclassOf(typeof(Component)))
             //{
             //    componentTypes[typeName] = t;
             //}

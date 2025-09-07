@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SynapseServer": {
+      "commandName": "Project",
+      "commandLineArgs": "--launch-mode game"
+    }
+  }
+}

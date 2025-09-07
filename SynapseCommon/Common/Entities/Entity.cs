@@ -7,9 +7,9 @@
 using System;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class IsEntity : Attribute
+public class RegisterEntity : Attribute
 {
-    public IsEntity() { }
+    public RegisterEntity() { }
 }
 
 public class Entity : Node

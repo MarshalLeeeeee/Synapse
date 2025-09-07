@@ -7,9 +7,9 @@
 using System;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class IsComponent : Attribute
+public class RegisterComponent : Attribute
 {
-    public IsComponent() { }
+    public RegisterComponent() { }
 }
 
 public class Component : Node

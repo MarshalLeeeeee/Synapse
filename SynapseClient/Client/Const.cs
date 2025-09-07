@@ -6,4 +6,5 @@ public class Const : ConstCommon
     public const int MsgSendCntPerUpdate = 1000; // cnt of handled mag in one update
     public const int HeartBeatInterval = 3000; // million second of the heartbeat ping interval
     public const int RpcType = RpcConst.Server; // valid type of received rpc
+    public const string Title = "SynapseClient"; // title of console window
 }

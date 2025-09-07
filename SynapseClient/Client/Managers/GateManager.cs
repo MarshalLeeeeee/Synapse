@@ -20,7 +20,7 @@ public class Proxy : ProxyCommon
 /*
  * GateManager is responsible for communication between server and client
  */
-[IsManager]
+[RegisterManager]
 public class GateManager : GateManagerCommon
 {
     private Proxy? proxy;

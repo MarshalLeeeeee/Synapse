@@ -8,4 +8,5 @@ public class Const : ConstCommon
     public const int CheckProxyCntPerUpdate = 5; // cnt of proxy checked in one update
     public const int HeartBeatThreshold = 10000; // million second of the longest inactive heartbeat interval
     public const int RpcType = RpcConst.Client; // valid type of received rpc
+    public const string Title = "SynapseServer"; // title of console window
 }
