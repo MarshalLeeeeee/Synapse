@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Xml.Linq;
 
 /*
  * Proxy represents a tcp connection between server and client
@@ -381,6 +382,7 @@ public class GateManager : GateManagerCommon
     [Rpc(RpcConst.AnyClient)]
     public void PingHeartbeatRemote(Proxy proxy)
     {
+        Log.Debug($"Rpc: PingHeartbeatRemote");
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         proxy.lastHeartbeatTime = now;
     }
@@ -393,42 +395,43 @@ public class GateManager : GateManagerCommon
     {
         // get rpc method
         string methodName = msg.methodName;
-        MethodInfo? rpcMethod = Reflection.GetRpcMethod(methodName);
-        if (rpcMethod == null) return;
+        RpcMethodInfo? rpcMethodInfo = Reflection.GetRpcMethod(methodName);
+        if (rpcMethodInfo == null) return;
 
-        // get method instance
-        // TODO
-        object? instance = null;
+        // get method owner
+        Node? owner = GetRpcOwner(msg.ownerId);
+        if (owner == null) return;
+
+        Node? instance = GetRpcInstance(owner, msg.instanceId);
         if (instance == null) return;
 
         // check rpc type
-        var rpcAttr = rpcMethod.GetCustomAttribute<RpcAttribute>();
-        if (rpcAttr == null) return;
+        if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;
 
         // check arg len
-        ListNode args = msg.arg;
-        int[] rpcArgs = rpcAttr.argTypes;
-        int argsCount = args.Count;
-        int rpcArgsCount = rpcArgs.Length;
-        if (argsCount != rpcArgsCount) return;
-
-        // check arg type
-        int i = 0;
-        while (i < rpcArgsCount)
-        {
-            Node arg = args[i];
-            if (rpcArgs[i] != NodeConst.TypeUndefined && arg.nodeType != rpcArgs[i]) return;
-            i += 1;
-        }
+        if (!rpcMethodInfo.CheckArgTypes(msg.arg)) return;
 
         // pack and invoke method
         List<object> methodArgs = new List<object>();
-        foreach (Node arg in args)
+        methodArgs.Add(proxy);
+        foreach (Node arg in msg.arg)
         {
             methodArgs.Add(arg);
         }
-        methodArgs.Add(proxy);
-        rpcMethod.Invoke(instance, methodArgs.ToArray());
+        rpcMethodInfo.Invoke(instance, methodArgs.ToArray());
+    }
+
+    private Node? GetRpcOwner(string ownerId)
+    {
+        Node? mgr = Game.Instance.GetManager(ownerId);
+        if (mgr != null) return mgr;
+        return null;
+    }
+
+    private Node? GetRpcInstance(Node owner, string instanceId)
+    {
+        if (String.IsNullOrEmpty(instanceId)) return owner;
+        return null;
     }
 
     #endregion

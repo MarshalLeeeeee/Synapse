@@ -27,7 +27,7 @@ public class Node
     /* Every node has a unique id at runtime，
      * which serves as the identifier of the node in both server and client. 
      */
-    private string id = "";
+    public string id = "";
 
     /* static data type */
     public static int staticNodeType = NodeConst.TypeUndefined;
@@ -44,6 +44,31 @@ public class Node
     public virtual void Serialize(BinaryWriter writer)
     {
         return;
+    }
+}
+
+public class ListTailNode : Node
+{
+    /* static data type */
+    public new static int staticNodeType = NodeConst.TypeListTail;
+    /* dynamic data type */
+    public override int nodeType => staticNodeType;
+
+    public override void Serialize(BinaryWriter writer)
+    {
+        return;
+    }
+
+    public static ListTailNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            return new ListTailNode();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize ListTailNode.", ex);
+        }
     }
 }
 
@@ -137,6 +162,35 @@ public class ListNode : Node, IEnumerable<Node>
 
     #endregion
 
+    /* Serialize the node into a binary stream */
+    public override void Serialize(BinaryWriter writer)
+    {
+        writer.Write(NodeConst.TypeList);
+        foreach (Node child in children)
+        {
+            child.Serialize(writer);
+        }
+        writer.Write(NodeConst.TypeListTail);
+    }
+
+    public static ListNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            ListNode listNode = new ListNode();
+            while (true)
+            {
+                Node node = NodeStreamer.Deserialize(reader);
+                if (node is ListTailNode) break;
+                else listNode.Add(node);
+            }
+            return listNode;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize ListNode.", ex);
+        }
+    }
 }
 
 public static class NodeStreamer
@@ -158,7 +212,12 @@ public static class NodeStreamer
             MethodInfo? deserializeMethod = Reflection.GetDeserializeMethod(type);
             if (deserializeMethod != null)
             {
-                return (Node)deserializeMethod.Invoke(null, new object[] { reader });
+                object? v = deserializeMethod.Invoke(null, new object[] { reader });
+                if (v != null && v is Node node) return node;
+                else
+                {
+                    throw new InvalidDataException($"Deserialization does not return Type Node: {type}");
+                }
             }
             else
             {

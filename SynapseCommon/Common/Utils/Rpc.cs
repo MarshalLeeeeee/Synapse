@@ -1,3 +1,4 @@
+using System.Reflection;
 
 public class RpcConst
 {
@@ -18,6 +19,42 @@ public class RpcAttribute : Attribute
     {
         rpcType = rpcType_;
         argTypes = argTypes_;
+    }
+}
+
+public class RpcMethodInfo
+{
+    public MethodInfo mehodInfo;
+    public int rpcType;
+    public int[] argTypes;
+
+    public RpcMethodInfo(MethodInfo methodInfo_, int rpcType_, int[] argTypes_)
+    {
+        mehodInfo = methodInfo_;
+        rpcType = rpcType_;
+        argTypes = argTypes_;
+    }
+
+    public bool CheckArgTypes(ListNode args)
+    {
+        int argTypesCount = argTypes.Length;
+        int argsCount = args.Count;
+        if (argTypesCount != argsCount) return false;
+
+        int i = 0;
+        while (i < argTypesCount)
+        {
+            int argType = argTypes[i];
+            Node arg = args[i];
+            if (argType != NodeConst.TypeUndefined && arg.nodeType != argTypes[i]) return false;
+            i++;
+        }
+        return true;
+    }
+
+    public void Invoke(object instance, object[] methodArgs)
+    {
+        mehodInfo.Invoke(instance, methodArgs);
     }
 }
 

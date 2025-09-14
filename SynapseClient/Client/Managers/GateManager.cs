@@ -28,10 +28,13 @@ public class GateManager : GateManagerCommon
     /* flag to indicate if client is connecting async */
     private volatile bool isConnecting = false;
 
+    /* ping heartbeat time stamp */
+    long lastHeartbeatTime = 0;
+
     private ConcurrentQueue<Msg> msgInbox = new ConcurrentQueue<Msg>();
     private ConcurrentQueue<Msg> msgOutbox = new ConcurrentQueue<Msg>();
 
-        /*
+    /*
      * Start to accept incoming connections
      */
     protected override void OnStart()
@@ -47,6 +50,7 @@ public class GateManager : GateManagerCommon
     {
         ConsumeMsgInbox();
         ConsumeMsgOutbox();
+        PingHeartbeat();
     }
 
     /*
@@ -162,18 +166,80 @@ public class GateManager : GateManagerCommon
      */
     private void SendMsg(Msg msg)
     {
-        if (!proxy.IsConnected()) return;
+        if (proxy == null || !proxy.IsConnected()) return;
         MsgStreamer.WriteMsgToStream(proxy.stream, msg);
+    }
+
+    #endregion
+
+    #region REGION_HEARTBEAT
+
+    /* ping heartbeat to server */
+    private void PingHeartbeat()
+    {
+        if (proxy == null || !proxy.IsConnected()) return;
+
+        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        if (now - lastHeartbeatTime < Const.HeartBeatInterval) return;
+        lastHeartbeatTime = now;
+
+        Msg msg = new Msg("PingHeartbeatRemote", "GateManager", "");
+        SendMsg(msg);
     }
 
     #endregion
 
     #region REGION_RPC
 
+    /* invoke remote call from server */
     private void InvokeRpc(Msg msg)
     {
+        // get rpc method
+        string methodName = msg.methodName;
+        RpcMethodInfo? rpcMethodInfo = Reflection.GetRpcMethod(methodName);
+        if (rpcMethodInfo == null) return;
 
+        // get method owner
+        Node? owner = GetRpcOwner(msg.ownerId);
+        if (owner == null) return;
+
+        Node? instance = GetRpcInstance(owner, msg.instanceId);
+        if (instance == null) return;
+
+        // check arg len
+        if (!rpcMethodInfo.CheckArgTypes(msg.arg)) return;
+
+        // pack and invoke method
+        rpcMethodInfo.Invoke(instance, msg.arg.ToArray());
+    }
+
+    private Node? GetRpcOwner(string ownerId)
+    {
+        Node? mgr = Game.Instance.GetManager(ownerId);
+        if (mgr != null) return mgr;
+        return null;
+    }
+
+    private Node? GetRpcInstance(Node owner, string instanceId)
+    {
+        if (String.IsNullOrEmpty(instanceId)) return owner;
+        return null;
     }
 
     #endregion
 }
+
+#if DEBUG
+#region REGION_GM
+
+[RegisterGm]
+public static class GmStartConnection
+{
+    public static void Execute()
+    {
+        Game.Instance.GetManager<GateManager>()?.StartConnection();
+    }
+}
+
+#endregion
+#endif

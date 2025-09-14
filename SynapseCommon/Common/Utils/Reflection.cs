@@ -3,85 +3,130 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
+public interface IReflection
+{
+    public bool GetRpcMethodInfo(MethodInfo method, int rpcType, out RpcMethodInfo? rpcMethodInfo);
+}
+
 public class Reflection
 {
-    /* manager types */
-    private static Dictionary<string, Type> managerTypes = new Dictionary<string, Type>();
-    ///* entity types */
-    //private static Dictionary<string, Type> entityTypes = new Dictionary<string, Type>();
-    ///* component types */
-    //private static Dictionary<string, Type> componentTypes = new Dictionary<string, Type>();
+    private static IReflection reflectionImpl;
+
     /* node types */
     private static Dictionary<int, Type> nodeTypes = new Dictionary<int, Type>();
+    /* manager types */
+    private static Dictionary<string, Type> managerTypes = new Dictionary<string, Type>();
     /* rpc methods */
-    private static Dictionary<string, MethodInfo> rpcMethods = new Dictionary<string, MethodInfo>();
+    private static Dictionary<string, RpcMethodInfo> rpcMethods = new Dictionary<string, RpcMethodInfo>();
+    /* gm methods */
+    private static Dictionary<string, GmMethodInfo> gmMethods = new Dictionary<string, GmMethodInfo>();
 
-    public static void Init()
+    #region REGION_INIT
+
+    public static void Init(IReflection reflectionImpl_)
     {
+        reflectionImpl = reflectionImpl_;
         Type[] types = Assembly.GetExecutingAssembly().GetTypes();
         foreach (Type t in types)
         {
             string typeName = t.Name;
 
-            // register Manager
-            RegisterManagerAttribute? RegisterManagerAttr = t.GetCustomAttribute<RegisterManagerAttribute>();
-            if (RegisterManagerAttr != null && t.IsSubclassOf(typeof(Manager)))
+            RegisterNode(t);
+            RegisterManager(t);
+            RegisterRpcMethod(t);
+#if DEBUG
+            RegisterGm(t);
+#endif
+        }
+    }
+
+    private static void RegisterNode(Type t)
+    {
+        if (t.IsSubclassOf(typeof(Node)))
+        {
+            object? value = t.GetField(
+                "staticNodeType",
+                BindingFlags.Static | BindingFlags.Public
+            )?.GetValue(null);
+            if (value != null && value is int nodeType && nodeType != NodeConst.TypeUndefined)
             {
-                managerTypes[typeName] = t;
+                nodeTypes[nodeType] = t;
             }
+        }
+    }
 
-            //// register Entity
-            //RegisterEntityAttribute? RegisterEntityAttr = t.GetCustomAttribute<RegisterEntityAttribute>();
-            //if (RegisterEntityAttr != null && t.IsSubclassOf(typeof(Entity)))
-            //{
-            //    entityTypes[typeName] = t;
-            //}
+    private static void RegisterManager(Type t)
+    {
+        RegisterManagerAttribute? RegisterManagerAttr = t.GetCustomAttribute<RegisterManagerAttribute>();
+        if (RegisterManagerAttr != null && t.IsSubclassOf(typeof(Manager)))
+        {
+            managerTypes[t.Name] = t;
+        }
+    }
 
-            //// register Component
-            //RegisterComponentAttribute? RegisterComponentAttr = t.GetCustomAttribute<RegisterComponentAttribute>();
-            //if (RegisterComponentAttr != null && t.IsSubclassOf(typeof(Component)))
-            //{
-            //    componentTypes[typeName] = t;
-            //}
-
-            if (t.IsSubclassOf(typeof(Node)))
-            {
-                // register node type
-                FieldInfo[] staticFields = t.GetFields(
-                    BindingFlags.Static |
-                    BindingFlags.Public
-                );
-                foreach (FieldInfo staticField in staticFields)
-                {
-                    if (staticField.Name == "staticNodeType")
-                    {
-                        object? obj = staticField.GetValue(null);
-                        if (obj != null && obj is int nodeType && nodeType != NodeConst.TypeUndefined)
-                        {
-                            nodeTypes[nodeType] = t;
-                        }
-                    }
-                }
-            }
-
-            // register rpc method
+    /* Register Rpc Methods
+     * - save rpcType
+     * - save argTypes from method parameters
+     */
+    private static void RegisterRpcMethod(Type t)
+    {
+        if (t.IsSubclassOf(typeof(Node)))
+        {
             int rpcType = Const.RpcType;
             MethodInfo[] methods = t.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             foreach (MethodInfo method in methods)
             {
-                var rpcAttr = method.GetCustomAttribute<RpcAttribute>();
-                if (rpcAttr == null)
+                if (reflectionImpl.GetRpcMethodInfo(method, rpcType, out RpcMethodInfo? rpcMethodInfo))
                 {
-                    continue;
+                    if (rpcMethodInfo != null)
+                    {
+                        rpcMethods[method.Name] = rpcMethodInfo;
+                    }
                 }
-                if ((rpcAttr.rpcType & rpcType) == 0)
-                {
-                    continue;
-                }
-                rpcMethods[method.Name] = method;
             }
         }
     }
+
+    /* Register Gm Methods
+     * - save argTypes
+     */
+    private static void RegisterGm(Type t)
+    {
+        RegisterGmAttribute? registerGmAttribute = t.GetCustomAttribute<RegisterGmAttribute>();
+        if (registerGmAttribute != null)
+        {
+            MethodInfo? method = t.GetMethod(
+                "Execute",
+                BindingFlags.Static | BindingFlags.Public
+            );
+            if (method != null)
+            {
+                ParameterInfo[] paramaters = method.GetParameters();
+                List<int> gmArgTypes = new List<int>();
+                bool validGm = true;
+                foreach (ParameterInfo param in paramaters)
+                {
+                    int gmArgType = Debug.GetGmArgType(param.ParameterType);
+                    if (gmArgType == GmConst.TypeUndefined)
+                    {
+                        validGm = false;
+                        Log.Error($"Gm method {method.Name} has invalid parameter type {param.ParameterType.Name}");
+                        break;
+                    }
+                    else
+                    {
+                        gmArgTypes.Add(gmArgType);
+                    }
+                }
+                if (validGm)
+                {
+                    gmMethods[t.Name] = new GmMethodInfo(method, gmArgTypes.ToArray());
+                }
+            }
+        }
+    }
+
+    #endregion
 
     /* Create manager by name */
     public static Manager? CreateManager(string mgrName)
@@ -103,29 +148,6 @@ public class Reflection
         return [.. managerTypes.Keys];
     }
 
-    /* Create default component by name */
-    //public static Component? CreateComponent(string compName)
-    //{
-    //    if (componentTypes.TryGetValue(compName, out Type compType))
-    //    {
-    //        object? obj = Activator.CreateInstance(compType);
-    //        if (obj != null && obj is Component comp)
-    //        {
-    //            return comp;
-    //        }
-    //    }
-    //    return null;
-    //}
-
-    //public static Type? GetComponentType(string compName)
-    //{
-    //    if (componentTypes.TryGetValue(compName, out Type compType))
-    //    {
-    //        return compType;
-    //    }
-    //    return null;
-    //}
-
     /* Get Deserialize method given node type */
     public static MethodInfo? GetDeserializeMethod(int nodeType)
     {
@@ -140,9 +162,19 @@ public class Reflection
         return null;
     }
 
-    public static MethodInfo? GetRpcMethod(string methodName)
+    /* Get RpcMethodInfo */
+    public static RpcMethodInfo? GetRpcMethod(string methodName)
     {
-        if (rpcMethods.TryGetValue(methodName, out MethodInfo? method))
+        if (rpcMethods.TryGetValue(methodName, out RpcMethodInfo? method))
+        {
+            return method;
+        }
+        return null;
+    }
+
+    public static GmMethodInfo? GetGmMethod(string methodName)
+    {
+        if (gmMethods.TryGetValue(methodName, out GmMethodInfo? method))
         {
             return method;
         }

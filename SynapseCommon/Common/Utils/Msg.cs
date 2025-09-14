@@ -22,7 +22,6 @@ public class Msg
     }
 }
 
-
 public static class MsgStreamer
 {
     public static byte[] Serialize(Msg msg)
@@ -49,9 +48,8 @@ public static class MsgStreamer
             if (arg != null && arg is ListNode listNode)
             {
                 msg.arg = listNode;
-                return msg;
             }
-            return null;
+            return msg;
         }
         catch
         {
@@ -168,7 +166,7 @@ public static class MsgStreamer
             }
             return (true, msg);
         }
-        catch (Exception ex) when (ex is OperationCanceledException || ex is IOException)
+        catch (Exception ex)
         {
             Log.Error($"Read exception happens: {ex}");
             return (false, null);

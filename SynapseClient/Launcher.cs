@@ -13,7 +13,7 @@ public static class Launcher
 #if DEBUG
         Debug.StartGmConsole();
 #endif
-        Reflection.Init();
+        Reflection.Init(new IClientReflection());
         using (Game game = new Game())
         {
             game.Start();

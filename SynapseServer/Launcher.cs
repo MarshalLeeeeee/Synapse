@@ -10,7 +10,7 @@ public static class Launcher
 #if DEBUG
         Debug.StartGmConsole();
 #endif
-        Reflection.Init();
+        Reflection.Init(new IServerReflection());
         using (Game game = new Game())
         {
             game.Start();

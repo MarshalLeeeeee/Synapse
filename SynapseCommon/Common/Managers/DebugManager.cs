@@ -124,7 +124,7 @@ public class DebugManagerCommon : Manager
     /* execute gm */
     private void ExecuteGm(string gm)
     {
-        Log.Info($"Executing gm: {gm}");
+        Debug.ExecuteGm(gm);
     }
 
     #endregion
