@@ -1,0 +1,51 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  pipeline:
+    # config os matrix
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        include:
+          - os: windows-latest
+            dotnet: '9.0.x'
+          - os: ubuntu-latest
+            dotnet: '9.0.x'
+          - os: macos-latest
+            dotnet: '9.0.x'
+
+    # platforms
+    runs-on: ${{ matrix.os }}
+
+    # steps of the pipeline
+    steps:
+    # checkout
+    - name: Checkout code
+      uses: actions/checkout@v4
+    # setup .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+    # Cache NuGet packages
+    - name: Cache NuGet packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    # Build server
+    - name: Build Server
+      run: |
+        dotnet restore SynapseServer/SynapseServer.sln
+        dotnet build SynapseServer/SynapseServer.sln --configuration Debug --no-restore
+    # Build client
+    - name: Build Client
+      run: |
+        dotnet restore SynapseClient/SynapseClient.sln
+        dotnet build SynapseClient/SynapseClient.sln --configuration Debug --no-restore
