@@ -56,8 +56,8 @@ public static class Debug
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = Process.GetCurrentProcess().MainModule?.FileName,
-                Arguments = $"--launch-mode gm --title {title}",
+                FileName = "dotnet",
+                Arguments = $"{Assembly.GetEntryAssembly()?.Location} --launch-mode gm --title {title}",
                 UseShellExecute = true,
                 CreateNoWindow = false
             }
