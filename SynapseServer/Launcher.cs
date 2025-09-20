@@ -37,4 +37,45 @@ public static class Launcher
             }
         }
     }
+
+    /* Launch test mode    
+     */
+    public static void LaunchTest()
+    {
+        int totalCnt = 0;
+        int succCnt = 0;
+        Reflection.Init(new IServerReflection(), true);
+        foreach (var kvp in Reflection.IterTestMethods())
+        {
+            string methodName = kvp.Key;
+            MethodInfo method = kvp.Value;
+            totalCnt += 1;
+            Console.WriteLine("-----------------------------------------");
+            try
+            {
+                method.Invoke(null, []);
+                succCnt += 1;
+                Console.WriteLine($"Server Test case {methodName} passed...");
+            }
+            catch (ApplicationException ex)
+            {
+                Console.WriteLine($"Server Test case {methodName} failed... due to {ex}");
+            }
+            catch
+            {
+                Console.WriteLine($"Server Test case {methodName} failed... due to unknown exceptions");
+            }
+        }
+        Console.WriteLine("-----------------------------------------");
+        Console.WriteLine($"Server Tests results: {succCnt}/{totalCnt}");
+        if (totalCnt == succCnt)
+        {
+            Console.WriteLine("Server Tests passed...");
+        }
+        else
+        {
+            Console.WriteLine("Server Tests failed...");
+            throw new ApplicationException("Server Tests failed...");
+        }
+    }
 }
