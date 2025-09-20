@@ -241,5 +241,14 @@ public static class GmStartConnection
     }
 }
 
+[RegisterGm]
+public static class GmResetConnection
+{
+    public static void Execute()
+    {
+        Game.Instance.GetManager<GateManager>()?.ResetConnection();
+    }
+}
+
 #endregion
 #endif

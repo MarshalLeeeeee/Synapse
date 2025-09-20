@@ -117,15 +117,27 @@ public static class MsgStreamer
             int lengthBytesRead = 0;
             while (lengthBytesRead < 4)
             {
-                int read = await stream.ReadAsync(
-                    lengthBuffer,
-                    lengthBytesRead,
-                    4 - lengthBytesRead,
-                    cancellationToken
-                ).ConfigureAwait(false);
-
-                if (read == 0) break;
-                lengthBytesRead += read;
+                try
+                {
+                    int read = await stream.ReadAsync(
+                        lengthBuffer,
+                        lengthBytesRead,
+                        4 - lengthBytesRead,
+                        cancellationToken
+                    ).ConfigureAwait(false);
+                    if (read == 0) break;
+                    lengthBytesRead += read;
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    Log.Info("Read operation was canceled as requested");
+                    return (false, null);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Read exception happens: {ex}");
+                    return (false, null);
+                }                
             }
             if (lengthBytesRead < 4)
             {
