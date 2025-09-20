@@ -1,4 +1,25 @@
 
+#if DEBUG
+
+using System.Diagnostics;
+
+public class ArgParseConfig
+{
+    public string launchMode = "";
+    public string title = "";
+    public ArgParseConfig(
+        string launchMode_,
+        string title_
+    )
+    {
+        launchMode = launchMode_;
+        title = title_;
+    }
+}
+
+#endif
+
+
 public static class ArgParser
 {
     /* launch mode */
@@ -36,4 +57,61 @@ public static class ArgParser
         }
 
     }
+
+#if DEBUG
+
+    /* dump a snapshot */
+    public static ArgParseConfig Dump()
+    {
+        return new ArgParseConfig(launchMode, title);
+    }
+
+    public static void Load(ArgParseConfig config)
+    {
+        launchMode = config.launchMode;
+        title = config.title;
+    }
+
+    /* clear static variables */
+    public static void Clear()
+    {
+        launchMode = "";
+        title = "";
+    }
+#endif
 }
+
+#if DEBUG
+
+[RegisterTest]
+public static class TestArgParser
+{
+    public static void TestParse()
+    {
+        ArgParseConfig config = ArgParser.Dump();
+
+        ArgParser.Clear();
+        ArgParser.Parse([""]);
+        Assert.Equal("", ArgParser.launchMode, "ArgParser launchMode is not [empty] with [no args]");
+        Assert.Equal("", ArgParser.title, "ArgParser title is not [empty] with [no args]");
+
+        ArgParser.Clear();
+        ArgParser.Parse(["--launch-mode", "test", "-title", "title"]);
+        Assert.Equal("test", ArgParser.launchMode, "ArgParser launchMode is not [test] with [--launch-mode test -title title]");
+        Assert.Equal("", ArgParser.title, "ArgParser title is not [empty] with [--launch-mode test -title title]");
+
+        ArgParser.Clear();
+        ArgParser.Parse(["--title", "title2", "--launch-mode", "test2"]);
+        Assert.Equal("test2", ArgParser.launchMode, "ArgParser launchMode is not [test2] with [--title title2 --launch-mode test]");
+        Assert.Equal("title2", ArgParser.title, "ArgParser title is not [title2] with [--title title2 --launch-mode test]");
+
+        ArgParser.Clear();
+        ArgParser.Parse(["--launch-mode", "test3", "--title", "title3", "--launch-mode", "test33"]);
+        Assert.Equal("test33", ArgParser.launchMode, "ArgParser launchMode is not [test2] with [--launch-mode test3 --title title3 --launch-mode test33]");
+        Assert.Equal("title3", ArgParser.title, "ArgParser title is not [title2] with [--launch-mode test3 --title title3 --launch-mode test33]");
+
+        ArgParser.Load(config);
+    }
+}
+
+#endif

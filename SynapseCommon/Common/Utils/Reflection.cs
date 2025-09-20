@@ -20,10 +20,12 @@ public class Reflection
     private static Dictionary<string, RpcMethodInfo> rpcMethods = new Dictionary<string, RpcMethodInfo>();
     /* gm methods */
     private static Dictionary<string, GmMethodInfo> gmMethods = new Dictionary<string, GmMethodInfo>();
+    /* test methods */
+    private static Dictionary<string, MethodInfo> testMethods = new Dictionary<string, MethodInfo>();
 
     #region REGION_INIT
 
-    public static void Init(IReflection reflectionImpl_)
+    public static void Init(IReflection reflectionImpl_, bool isTestMode = false)
     {
         reflectionImpl = reflectionImpl_;
         Type[] types = Assembly.GetExecutingAssembly().GetTypes();
@@ -36,6 +38,7 @@ public class Reflection
             RegisterRpcMethod(t);
 #if DEBUG
             RegisterGm(t);
+            RegisterTest(t, isTestMode);
 #endif
         }
     }
@@ -73,7 +76,7 @@ public class Reflection
         if (t.IsSubclassOf(typeof(Node)))
         {
             int rpcType = Const.RpcType;
-            MethodInfo[] methods = t.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            MethodInfo[] methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance);
             foreach (MethodInfo method in methods)
             {
                 if (reflectionImpl.GetRpcMethodInfo(method, rpcType, out RpcMethodInfo? rpcMethodInfo))
@@ -126,6 +129,24 @@ public class Reflection
         }
     }
 
+    /* Register all methods under Test class
+     * methods under Test class are only valid as public static void()
+     */
+    private static void RegisterTest(Type t, bool isTestMode)
+    {
+        if (!isTestMode) return;
+
+        RegisterTestAttribute registerTestAttribute = t.GetCustomAttribute<RegisterTestAttribute>();
+        if (registerTestAttribute != null)
+        {
+            MethodInfo[] methods = t.GetMethods(BindingFlags.Static | BindingFlags.Public);
+            foreach (MethodInfo method in methods)
+            {
+                testMethods[method.Name] = method;
+            }
+        }
+    }
+
     #endregion
 
     /* Create manager by name */
@@ -172,6 +193,7 @@ public class Reflection
         return null;
     }
 
+    /* Get GmMethodInfo */
     public static GmMethodInfo? GetGmMethod(string methodName)
     {
         if (gmMethods.TryGetValue(methodName, out GmMethodInfo? method))
@@ -179,5 +201,13 @@ public class Reflection
             return method;
         }
         return null;
+    }
+
+    public static IEnumerable<KeyValuePair<string, MethodInfo>> IterTestMethods()
+    {
+        foreach (var kvp in testMethods)
+        {
+            yield return kvp;
+        }
     }
 }

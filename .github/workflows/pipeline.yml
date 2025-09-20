@@ -44,8 +44,16 @@ jobs:
       run: |
         dotnet restore SynapseServer/SynapseServer.sln
         dotnet build SynapseServer/SynapseServer.sln --configuration Debug --no-restore
+    # Run server test
+    - name : Run Server test
+      run: |
+        dotnet SynapseServer/bin/Debug/net8.0/SynapseServer.dll --launch-mode test
     # Build client
     - name: Build Client
       run: |
         dotnet restore SynapseClient/SynapseClient.sln
         dotnet build SynapseClient/SynapseClient.sln --configuration Debug --no-restore
+    # Run client test
+    - name : Run Client test
+      run: |
+        dotnet SynapseClient/bin/Debug/net8.0/SynapseClient.dll --launch-mode test
