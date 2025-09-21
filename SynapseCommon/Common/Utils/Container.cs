@@ -56,22 +56,26 @@ public class DoubleRefDictionary<T, U>
         return false;
     }
 
-    public U? GetUByT(T t)
+    public bool GetUByT(T t, out U? u)
     {
-        if (t2u.TryGetValue(t, out U? u))
+        if (t2u.TryGetValue(t, out U? uu))
         {
-            return u;
+            u = uu;
+            return true;
         }
-        return default(U?);
+        u = default(U?);
+        return false;
     }
 
-    public T? GetTByU(U u)
+    public bool GetTByU(U u, out T? t)
     {
-        if (u2t.TryGetValue(u, out T? t))
+        if (u2t.TryGetValue(u, out T? tt))
         {
-            return t;
+            t = tt;
+            return true;
         }
-        return default(T?);
+        t = default(T?);
+        return false;
     }
 
     public override string ToString()
@@ -102,70 +106,70 @@ public static class TestDoubleRefDictionary
     public static void TestAddRemove()
     {
         DoubleRefDictionary<string, int> tu = new DoubleRefDictionary<string, int>();
-        tu.Add("a", 1);
-        int? ai = tu.GetUByT("a");
-        Assert.EqualTrue(ai == 1, "ai should be 1");
-        int? bi = tu.GetUByT("b");
-        Assert.EqualTrue(bi == null, "bi should be null");
-        string? s1 = tu.GetTByU(1);
-        Assert.EqualTrue(s1 == "a", "s1 should be a");
-        string? s2 = tu.GetTByU(2);
-        Assert.EqualTrue(s2 == null, "s2 should be null");
+        string? t;
+        int u;
+
+        Assert.EqualTrue(tu.Add("a", 1), "First add (a, 1) should be ok");
+        Assert.EqualTrue(tu.GetUByT("a", out u), "First get by a should be ok");
+        Assert.EqualTrue(u == 1, "should be 1");
+        Assert.EqualFalse(tu.GetUByT("b", out u), "First get by b should be wrong");
+        Assert.EqualTrue(tu.GetTByU(1, out t), "First get by 1 should be ok");
+        Assert.EqualTrue(t == "a", "should be a");
+        Assert.EqualFalse(tu.GetTByU(2, out t), "First get by 2 should be wrong");
 
         // should remain same after add
-        tu.Add("a", 2);
-        ai = tu.GetUByT("a");
-        Assert.EqualTrue(ai == 1, "ai should be 1");
-        bi = tu.GetUByT("b");
-        Assert.EqualTrue(bi == null, "bi should be null");
-        s1 = tu.GetTByU(1);
-        Assert.EqualTrue(s1 == "a", "s1 should be a");
-        s2 = tu.GetTByU(2);
-        Assert.EqualTrue(s2 == null, "s2 should be null");
+        Assert.EqualFalse(tu.Add("a", 2), "Second add (a, 2) should be wrong");
+        Assert.EqualTrue(tu.GetUByT("a", out u), "Second get by a should be ok");
+        Assert.EqualTrue(u == 1, "should be 1");
+        Assert.EqualFalse(tu.GetUByT("b", out u), "Second get by b should be wrong");
+        Assert.EqualTrue(tu.GetTByU(1, out t), "Second get by 1 should be ok");
+        Assert.EqualTrue(t == "a", "should be a");
+        Assert.EqualFalse(tu.GetTByU(2, out t), "Second get by 2 should be wrong");
 
         // should remain same after add
-        tu.Add("b", 1);
-        ai = tu.GetUByT("a");
-        Assert.EqualTrue(ai == 1, "ai should be 1");
-        bi = tu.GetUByT("b");
-        Assert.EqualTrue(bi == null, "bi should be null");
-        s1 = tu.GetTByU(1);
-        Assert.EqualTrue(s1 == "a", "s1 should be a");
-        s2 = tu.GetTByU(2);
-        Assert.EqualTrue(s2 == null, "s2 should be null");
+        Assert.EqualFalse(tu.Add("b", 1), "Third add (b, 1) should be wrong");
+        Assert.EqualTrue(tu.GetUByT("a", out u), "Third get by a should be ok");
+        Assert.EqualTrue(u == 1, "should be 1");
+        Assert.EqualFalse(tu.GetUByT("b", out u), "Third get by b should be wrong");
+        Assert.EqualTrue(tu.GetTByU(1, out t), "Third get by 1 should be ok");
+        Assert.EqualTrue(t == "a", "should be a");
+        Assert.EqualFalse(tu.GetTByU(2, out t), "Third get by 2 should be wrong");
 
         // should add new pair
-        tu.Add("b", 2);
-        ai = tu.GetUByT("a");
-        Assert.EqualTrue(ai == 1, "ai should be 1");
-        bi = tu.GetUByT("b");
-        Assert.EqualTrue(bi == 2, "bi should be 2");
-        s1 = tu.GetTByU(1);
-        Assert.EqualTrue(s1 == "a", "s1 should be a");
-        s2 = tu.GetTByU(2);
-        Assert.EqualTrue(s2 == "b", "s2 should be b");
+        Assert.EqualTrue(tu.Add("b", 2), "Fourth add (b, 2) should be ok");
+        Assert.EqualTrue(tu.GetUByT("a", out u), "Fourth get by a should be ok");
+        Assert.EqualTrue(u == 1, "should be 1");
+        Assert.EqualTrue(tu.GetUByT("b", out u), "Fourth get by b should be ok");
+        Assert.EqualTrue(u == 2, "should be 2");
+        Assert.EqualTrue(tu.GetTByU(1, out t), "Fourth get by 1 should be ok");
+        Assert.EqualTrue(t == "a", "should be a");
+        Assert.EqualTrue(tu.GetTByU(2, out t), "Fourth get by 2 should be ok");
+        Assert.EqualTrue(t == "b", "should be b");
 
         // should remove succ
-        tu.RemoveT("a");
-        ai = tu.GetUByT("a");
-        Assert.EqualTrue(ai == null, "ai should be null");
-        bi = tu.GetUByT("b");
-        Assert.EqualTrue(bi == 2, "bi should be 2");
-        s1 = tu.GetTByU(1);
-        Assert.EqualTrue(s1 == null, "s1 should be null");
-        s2 = tu.GetTByU(2);
-        Assert.EqualTrue(s2 == "b", "s2 should be b");
+        Assert.EqualTrue(tu.RemoveT("a"), "Fifth remove by t:a should be ok");
+        Assert.EqualFalse(tu.GetUByT("a", out u), "Fifth get by a should be wrong");
+        Assert.EqualTrue(tu.GetUByT("b", out u), "Fifth get by b should be ok");
+        Assert.EqualTrue(u == 2, "should be 2");
+        Assert.EqualFalse(tu.GetTByU(1, out t), "Fifth get by 1 should be wrong");
+        Assert.EqualTrue(tu.GetTByU(2, out t), "Fifth get by 2 should be ok");
+        Assert.EqualTrue(t == "b", "should be b");
+
+        // should remove fail
+        Assert.EqualFalse(tu.RemoveT("a"), "Sixth remove by t:a should be wrong");
+        Assert.EqualFalse(tu.GetUByT("a", out u), "Sixth get by a should be wrong");
+        Assert.EqualTrue(tu.GetUByT("b", out u), "Sixth get by b should be ok");
+        Assert.EqualTrue(u == 2, "should be 2");
+        Assert.EqualFalse(tu.GetTByU(1, out t), "Sixth get by 1 should be wrong");
+        Assert.EqualTrue(tu.GetTByU(2, out t), "Sixth get by 2 should be ok");
+        Assert.EqualTrue(t == "b", "should be b");
 
         // should remove succ
-        tu.RemoveU(2);
-        ai = tu.GetUByT("a");
-        Assert.EqualTrue(ai == null, "ai should be null");
-        bi = tu.GetUByT("b");
-        Assert.EqualTrue(bi == null, "bi should be null");
-        s1 = tu.GetTByU(1);
-        Assert.EqualTrue(s1 == null, "s1 should be null");
-        s2 = tu.GetTByU(2);
-        Assert.EqualTrue(s2 == null, "s2 should be null");
+        Assert.EqualTrue(tu.RemoveU(2), "Seventh remove by u:2 should be ok");
+        Assert.EqualFalse(tu.GetUByT("a", out u), "Seventh get by a should be wrong");
+        Assert.EqualFalse(tu.GetUByT("b", out u), "Seventh get by b should be wrong");
+        Assert.EqualFalse(tu.GetTByU(1, out t), "Seventh get by 1 should be wrong");
+        Assert.EqualFalse(tu.GetTByU(2, out t), "Seventh get by 2 should be wrong");
     }
 }
 
