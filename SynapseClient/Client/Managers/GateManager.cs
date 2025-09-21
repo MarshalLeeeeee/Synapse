@@ -184,7 +184,7 @@ public class GateManager : GateManagerCommon
         lastHeartbeatTime = now;
 
         Msg msg = new Msg("PingHeartbeatRemote", "GateManager", "");
-        SendMsg(msg);
+        AppendSendMsg(msg);
     }
 
     #endregion

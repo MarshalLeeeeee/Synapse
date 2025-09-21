@@ -47,6 +47,48 @@ public class Node
     }
 }
 
+public class StringNode : Node
+{
+    /* static data type */
+    public new static int staticNodeType = NodeConst.TypeString;
+    /* dynamic data type */
+    public override int nodeType => staticNodeType;
+    /* data */
+    private string s = "";
+
+    public StringNode(string s_ = "") { s = s_; }
+
+    public string Get()
+    {
+        return s;
+    }
+
+    public void Set(string s_)
+    {
+        if (s == s_) return;
+        s = s_;
+    }
+
+    public override void Serialize(BinaryWriter writer)
+    {
+        writer.Write(NodeConst.TypeString);
+        writer.Write(s);
+    }
+
+    public static StringNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            string s_ = reader.ReadString();
+            return new StringNode(s_);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize StringNode.", ex);
+        }
+    }
+}
+
 public class ListTailNode : Node
 {
     /* static data type */
@@ -74,12 +116,13 @@ public class ListTailNode : Node
 
 public class ListNode : Node, IEnumerable<Node>
 {
-    /* List data */
-    private List<Node> children = new List<Node>();
     /* static data type */
     public new static int staticNodeType = NodeConst.TypeList;
     /* dynamic data type */
     public override int nodeType => staticNodeType;
+
+    /* List data */
+    private List<Node> children = new List<Node>();
 
     #region REGION_LIST_API
 

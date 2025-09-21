@@ -382,7 +382,6 @@ public class GateManager : GateManagerCommon
     [Rpc(RpcConst.AnyClient)]
     public void PingHeartbeatRemote(Proxy proxy)
     {
-        Log.Debug($"Rpc: PingHeartbeatRemote");
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         proxy.lastHeartbeatTime = now;
     }
