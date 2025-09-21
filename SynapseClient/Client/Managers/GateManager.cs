@@ -142,7 +142,7 @@ public class GateManager : GateManagerCommon
     }
 
     /* Append msg ready to be sent */
-    public void AppendSendMsg(Msg msg)
+    private void AppendSendMsg(Msg msg)
     {
         msgOutbox.Enqueue(msg);
     }
@@ -182,14 +182,22 @@ public class GateManager : GateManagerCommon
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         if (now - lastHeartbeatTime < Const.HeartBeatInterval) return;
         lastHeartbeatTime = now;
-
-        Msg msg = new Msg("PingHeartbeatRemote", "GateManager", "");
-        AppendSendMsg(msg);
+        CallRpc("PingHeartbeatRemote", "GateManager", "");
     }
 
     #endregion
 
     #region REGION_RPC
+
+    public void CallRpc(string methodName, string ownerId, string instanceId, params Node[] args)
+    {
+        Msg msg = new Msg(methodName, ownerId, instanceId);
+        foreach (Node node in args)
+        {
+            msg.arg.Add(node);
+        }
+        AppendSendMsg(msg);
+    }
 
     /* invoke remote call from server */
     private void InvokeRpc(Msg msg)

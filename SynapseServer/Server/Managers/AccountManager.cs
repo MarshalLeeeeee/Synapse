@@ -5,14 +5,32 @@ using System.Collections.Concurrent;
 [RegisterManager]
 public class AccountManager : AccountManagerCommon
 {
+    /* Manager proxy with login account.
+     * When proxy remains valid, changes happen when corresponding client invoke login or logout remotely.
+     * When proxy becomes invalid, corresponding account automatically logout.
+     */
     private DoubleRefDictionary<string, string> proxyIdWithAccount = new DoubleRefDictionary<string, string>();
 
 
-    protected override void OnStart() { }
+    protected override void OnStart()
+    {
+        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
+        if (eventManager != null)
+        {
+            eventManager.RegisterGlobalEvent<string>("OnRemoveProxy", "OnRemoveProxy", OnRemoveProxy);
+        }
+    }
 
     protected override void DoUpdate(float dt) { }
 
-    protected override void OnDestroy() { }
+    protected override void OnDestroy()
+    {
+        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
+        if (eventManager != null)
+        {
+            eventManager.UnregisterGlobalEvent("OnRemoveProxy", "OnRemoveProxy");
+        }
+    }
 
     public override string ToString()
     {
@@ -21,19 +39,28 @@ public class AccountManager : AccountManagerCommon
 
     #region REGION_DATA
 
-    private void Add(string proxyId, string account)
+    /* Add proxyId account pair
+     * Return true only if write acctually performed
+     */
+    private bool Add(string proxyId, string account)
     {
-        proxyIdWithAccount.Add(proxyId, account);
+        return proxyIdWithAccount.Add(proxyId, account);
     }
 
-    private void RemoveProxyId(string proxyId)
+    /* Remove proxyId account pair by proxyId
+     * Return true only if write acctually performed
+     */
+    private bool RemoveProxyId(string proxyId)
     {
-        proxyIdWithAccount.RemoveT(proxyId);
+        return proxyIdWithAccount.RemoveT(proxyId);
     }
 
-    private void RemoveAccount(string account)
+    /* Remove proxyId account pair by account
+     * Return true only if write acctually performed
+     */
+    private bool RemoveAccount(string account)
     {
-        proxyIdWithAccount.RemoveU(account);
+        return proxyIdWithAccount.RemoveU(account);
     }
 
     #endregion
@@ -43,15 +70,27 @@ public class AccountManager : AccountManagerCommon
     [Rpc(RpcConst.AnyClient, NodeConst.TypeString, NodeConst.TypeString)]
     public void LoginRemote(Proxy proxy, StringNode account, StringNode password)
     {
-        Add(proxy.proxyId, account.Get());
-        Log.Info($"Account ({account.Get()}) with proxy ({proxy.proxyId}) successfully login...");
+        if (Add(proxy.proxyId, account.Get()))
+        {
+            Log.Info($"Account ({account.Get()}) with proxy ({proxy.proxyId}) successfully login...");
+        }
     }
 
     [Rpc(RpcConst.AnyClient)]
     public void LogoutRemote(Proxy proxy)
     {
-        RemoveProxyId(proxy.proxyId);
-        Log.Info($"Proxy ({proxy.proxyId}) successfully logout...");
+        if (RemoveProxyId(proxy.proxyId))
+        {
+            Log.Info($"Proxy ({proxy.proxyId}) successfully logout...");
+        }
+    }
+
+    private void OnRemoveProxy(string proxyId)
+    {
+        if (RemoveProxyId(proxyId))
+        {
+            Log.Info($"Proxy ({proxyId}) successfully logout on proxy removed...");
+        }
     }
 
     #endregion

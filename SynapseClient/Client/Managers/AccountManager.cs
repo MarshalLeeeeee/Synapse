@@ -2,43 +2,23 @@
 [RegisterManager]
 public class AccountManager : AccountManagerCommon
 {
-    /* current login account 
-     * if not login, account is empty string
-     */
-    private string currAccount = "";
-
     #region REGION_LOGIN_LOGOUT
-
-    public bool CheckLogin()
-    {
-        return !String.IsNullOrEmpty(currAccount);
-    }
 
     public bool Login(string account, string password)
     {
-        if (CheckLogin()) return false;
-
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr == null) return false;
 
-        Msg msg = new Msg("LoginRemote", "AccountManager", "");
-        msg.arg.Add(new StringNode(account));
-        msg.arg.Add(new StringNode(password));
-        gateMgr.AppendSendMsg(msg);
-        currAccount = account;
+        gateMgr.CallRpc("LoginRemote", "AccountManager", "", new StringNode(account), new StringNode(password));
         return true;
     }
 
     public bool Logout()
     {
-        if (!CheckLogin()) return false;
-
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr == null) return false;
 
-        Msg msg = new Msg("LogoutRemote", "AccountManager", "");
-        gateMgr.AppendSendMsg(msg);
-        currAccount = "";
+        gateMgr.CallRpc("LogoutRemote", "AccountManager", "");
         return true;
     }
 

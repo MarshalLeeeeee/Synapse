@@ -7,16 +7,23 @@ public class DoubleRefDictionary<T, U>
     private Dictionary<T, U> t2u = new Dictionary<T, U>();
     private Dictionary<U, T> u2t = new Dictionary<U, T>();
 
-    public void Add(T t, U u)
+    /* Add new tu pair, only when both t and u are not managed by the container.
+     * Return true only if write acctually performed
+     */
+    public bool Add(T t, U u)
     {
-        if (t2u.ContainsKey(t)) return;
-        if (u2t.ContainsKey(u)) return;
+        if (t2u.ContainsKey(t)) return false;
+        if (u2t.ContainsKey(u)) return false;
 
         t2u[t] = u;
         u2t[u] = t;
+        return true;
     }
 
-    public void RemoveT(T t)
+    /* Remove tu pair by t, only when t is managed by the container
+     * Return true only if write acctually performed
+     */
+    public bool RemoveT(T t)
     {
         if (t2u.TryGetValue(t, out U? u))
         {
@@ -24,11 +31,17 @@ public class DoubleRefDictionary<T, U>
             {
                 t2u.Remove(t);
                 u2t.Remove(u);
+                return true;
             }
+            return false;
         }
+        return false;
     }
 
-    public void RemoveU(U u)
+    /* Remove tu pair by u, only when u is managed by the container
+     * Return true only if write acctually performed
+     */
+    public bool RemoveU(U u)
     {
         if (u2t.TryGetValue(u, out T? t))
         {
@@ -36,8 +49,11 @@ public class DoubleRefDictionary<T, U>
             {
                 t2u.Remove(t);
                 u2t.Remove(u);
+                return true;
             }
+            return false;
         }
+        return false;
     }
 
     public U? GetUByT(T t)
