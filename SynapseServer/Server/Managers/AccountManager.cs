@@ -63,6 +63,19 @@ public class AccountManager : AccountManagerCommon
         return proxyIdWithAccount.RemoveU(account);
     }
 
+    /* Get account by proxy id
+     * If not exist, return null
+     */
+    public string? GetAccount(string proxyId)
+    {
+        string? account;
+        if (proxyIdWithAccount.GetUByT(proxyId, out account))
+        {
+            return account;
+        }
+        return null;
+    }
+
     #endregion
 
     #region REGION_LOGIN_LOGOUT
@@ -70,18 +83,82 @@ public class AccountManager : AccountManagerCommon
     [Rpc(RpcConst.AnyClient, NodeConst.TypeString, NodeConst.TypeString)]
     public void LoginRemote(Proxy proxy, StringNode account, StringNode password)
     {
-        if (Add(proxy.proxyId, account.Get()))
+        string proxyId = proxy.proxyId;
+        string accountValue = account.Get();
+        if (Add(proxyId, accountValue))
         {
-            Log.Info($"Account ({account.Get()}) with proxy ({proxy.proxyId}) successfully login...");
+            NotifyLoginSucc(proxyId, accountValue);
+            Log.Info($"Account ({accountValue}) with proxy ({proxyId}) successfully login...");
+        }
+        else
+        {
+            NotifyLoginFail(proxyId);
+            Log.Info($"Account ({accountValue}) with proxy ({proxyId}) fails to login...");
+        }
+    }
+
+    /* notify corresponding client of login succ */
+    private void NotifyLoginSucc(string proxyId, string account)
+    {
+        GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
+        if (gateMgr != null)
+        {
+            gateMgr.CallRpc(proxyId, "LoginResRemote", "AccountManager", "", new StringNode(account));
+        }
+    }
+
+    /* notify corresponding client of login fail */
+    private void NotifyLoginFail(string proxyId)
+    {
+        GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
+        if (gateMgr != null)
+        {
+            gateMgr.CallRpc(proxyId, "LoginResRemote", "AccountManager", "", new StringNode(""));
         }
     }
 
     [Rpc(RpcConst.AnyClient)]
     public void LogoutRemote(Proxy proxy)
     {
-        if (RemoveProxyId(proxy.proxyId))
+        string proxyId = proxy.proxyId;
+        string? account = GetAccount(proxyId);
+        if (account != null)
         {
-            Log.Info($"Proxy ({proxy.proxyId}) successfully logout...");
+            if (RemoveAccount(account))
+            {
+                NotifyLogoutSucc(proxyId, account);
+                Log.Info($"Proxy ({proxyId}) successfully logout...");
+            }
+            else
+            {
+                NotifyLogoutFail(proxyId);
+                Log.Info($"Proxy ({proxyId}) fails to logout...");
+            }
+        }
+        else
+        {
+            NotifyLogoutFail(proxyId);
+            Log.Info($"Proxy ({proxyId}) fails to logout because corresponding account is null...");
+        }
+    }
+
+    /* notify corresponding client of logout succ */
+    private void NotifyLogoutSucc(string proxyId, string account)
+    {
+        GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
+        if (gateMgr != null)
+        {
+            gateMgr.CallRpc(proxyId, "LogoutResRemote", "AccountManager", "", new StringNode(account));
+        }
+    }
+
+    /* notify corresponding client of logout fail */
+    private void NotifyLogoutFail(string proxyId)
+    {
+        GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
+        if (gateMgr != null)
+        {
+            gateMgr.CallRpc(proxyId, "LogoutResRemote", "AccountManager", "", new StringNode(""));
         }
     }
 

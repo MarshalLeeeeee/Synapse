@@ -294,7 +294,7 @@ public class GateManager : GateManagerCommon
      * Send msg (in any thread)
      * If connection is not valid, reset connection
      */
-    public void AppendSendMsg(Proxy proxy, Msg msg)
+    private void AppendSendMsg(Proxy proxy, Msg msg)
     {
         if (!proxy.IsConnected()) return;
         msgOutbox.Enqueue((proxy.proxyId, msg));
@@ -394,6 +394,19 @@ public class GateManager : GateManagerCommon
     #endregion
 
     #region REGION_RPC
+
+    public void CallRpc(string proxyId, string methodName, string ownerId, string instanceId, params Node[] args)
+    {
+        Proxy? proxy = GetProxy(proxyId);
+        if (proxy == null) return;
+
+        Msg msg = new Msg(methodName, ownerId, instanceId);
+        foreach (Node node in args)
+        {
+            msg.arg.Add(node);
+        }
+        AppendSendMsg(proxy, msg);
+    }
 
     private void InvokeRpc(Proxy proxy, Msg msg)
     {
