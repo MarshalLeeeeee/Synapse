@@ -1,0 +1,19 @@
+snippet:
+  - name: test
+    prefix: test
+    desc: Generate a test class
+    variables: |
+        Case
+    body: |
+        #if DEBUG
+
+        [RegisterTest]
+        public static class Test$Case$
+        {
+            public static void TestFunc()
+            {
+
+            }
+        }
+
+        #endif
