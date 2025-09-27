@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>gm</Title>
+			<Shortcut>gm</Shortcut>
+			<Description>Generate a gm class</Description>
+			<Author>Synapse</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>Command</ID>
+					<Default>Command</Default>
+				</Literal>
+			</Declarations>
+
+			<Code Language="csharp"><![CDATA[#if DEBUG
+
+[RegisterGm]
+public static class Gm$Command$
+{
+    public static void Execute()
+    {
+
+    }
+}
+
+#endif]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
