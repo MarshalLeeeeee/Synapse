@@ -1,0 +1,36 @@
+{
+    "gm": {
+        "body": [
+            "#if DEBUG",
+            "",
+            "[RegisterGm]",
+            "public static class Gm${1:Command}",
+            "{",
+            "    public static void Execute()",
+            "    {",
+            "",
+            "    }",
+            "}",
+            "",
+            "#endif"
+        ],
+        "prefix": "gm"
+    },
+    "test": {
+        "body": [
+            "#if DEBUG",
+            "",
+            "[RegisterTest]",
+            "public static class Test${1:Case}",
+            "{",
+            "    public static void TestFunc()",
+            "    {",
+            "",
+            "    }",
+            "}",
+            "",
+            "#endif"
+        ],
+        "prefix": "test"
+    }
+}

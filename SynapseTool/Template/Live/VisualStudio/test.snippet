@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>test</Title>
+			<Shortcut>test</Shortcut>
+			<Description>Generate a test class</Description>
+			<Author>Synapse</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>Case</ID>
+					<Default>Case</Default>
+				</Literal>
+			</Declarations>
+
+			<Code Language="csharp"><![CDATA[#if DEBUG
+
+[RegisterTest]
+public static class Test$Case$
+{
+    public static void TestFunc()
+    {
+
+    }
+}
+
+#endif]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

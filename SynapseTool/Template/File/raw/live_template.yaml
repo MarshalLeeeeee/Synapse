@@ -1,0 +1,27 @@
+# This is a file template
+# Only when target files are new, will the targets be generated.
+#   variable_cnt : the number of string variables used in generation. 
+#                 $sx$, (x = 0, 1, 2, ...) in name and content will be replaced by args from user command
+#   files: file to be generated. If multiple files are generated, duplicate name and content right below.
+#       name: relative path of the new file to the directory of this repo (Synapse/)
+#       content: the content of the new file
+
+variable_cnt: 1
+files:
+  - name: ./SynapseTool/Template/Live/raw/$s0$.yaml
+    content: |
+      # This is a live snippet
+      #   name is the title of name of this snippet
+      #   prefix is what you require to type in IDE
+      #   desc is the brief description
+      #   variables are list of placeholders used in snippets
+      #   body is the content of your snippet
+
+      name: $s0$
+      prefix: $s0$
+      desc: Description of snippet $s0$
+      variables: |
+          OptionalVariable
+      body: |
+          Body of your snippet.
+          This is an example with $OptionalVariable$ as default.

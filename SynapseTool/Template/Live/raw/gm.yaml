@@ -1,0 +1,25 @@
+# This is a live snippet
+#   name is the title of name of this snippet
+#   prefix is what you require to type in IDE
+#   desc is the brief description
+#   variables are list of placeholders used in snippets
+#   body is the content of your snippet
+
+name: gm
+prefix: gm
+desc: Generate a gm class
+variables: |
+    Command
+body: |
+    #if DEBUG
+
+    [RegisterGm]
+    public static class Gm$Command$
+    {
+        public static void Execute()
+        {
+
+        }
+    }
+
+    #endif
