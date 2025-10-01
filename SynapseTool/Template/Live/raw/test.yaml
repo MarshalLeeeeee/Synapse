@@ -1,0 +1,25 @@
+# This is a live snippet
+#   name is the title of name of this snippet
+#   prefix is what you require to type in IDE
+#   desc is the brief description
+#   variables are list of placeholders used in snippets
+#   body is the content of your snippet
+
+name: test
+prefix: test
+desc: Generate a test class
+variables: |
+    Case
+body: |
+    #if DEBUG
+
+    [RegisterTest]
+    public static class Test$Case$
+    {
+        public static void TestFunc()
+        {
+
+        }
+    }
+
+    #endif

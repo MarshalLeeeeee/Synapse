@@ -1,0 +1,25 @@
+# This is a file template
+# Only when target files are new, will the targets be generated.
+#   variable_cnt : the number of string variables used in generation. 
+#                 $sx$, (x = 0, 1, 2, ...) in name and content will be replaced by args from user command
+#   files: file to be generated. If multiple files are generated, duplicate name and content right below.
+#       name: relative path of the new file to the directory of this repo (Synapse/)
+#       content: the content of the new file
+
+variable_cnt: 1
+files:
+  - name: ./SynapseCommon/Common/Managers/$s0$Manager.cs
+    content: |
+      
+      public class $s0$ManagerCommon : Manager {}
+
+  - name: ./SynapseClient/Client/Managers/$s0$Manager.cs
+    content: |
+      
+      public class $s0$Manager : $s0$ManagerCommon {}
+
+  - name: ./SynapseServer/Server/Managers/$s0$Manager.cs
+    content: |
+      
+      public class $s0$Manager : $s0$ManagerCommon {}
+
