@@ -2,7 +2,6 @@ using System.Collections;
 
 public class ListNodeCommon : Node, IEnumerable<Node>
 {
-    /* List data */
     protected List<Node> children = new List<Node>();
 
     public ListNodeCommon(params Node[] nodes)
@@ -15,7 +14,6 @@ public class ListNodeCommon : Node, IEnumerable<Node>
 
     #region REGION_STREAM
 
-    /* Serialize the node into a binary stream */
     public override void Serialize(BinaryWriter writer)
     {
         writer.Write(NodeConst.TypeList);
@@ -26,6 +24,10 @@ public class ListNodeCommon : Node, IEnumerable<Node>
         NodeStreamer.Serialize(new ListTailNode(), writer);
     }
 
+    /// <summary>
+    /// Collect arguments for constructor from binary reader.
+    /// </summary>
+    /// <returns> List of arguments for constructor </returns>
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();

@@ -22,11 +22,14 @@ public class ArgParseConfig
 
 public static class ArgParser
 {
-    /* launch mode */
+    /// <summary>
+    /// launch mode of the process
+    /// </summary>
     public static string launchMode = "";
-    /* title of the console window
-     * if empty, use Const.Title
-     */
+
+    /// <summary>
+    /// title of the console window, if empty, use Const.Title
+    /// </summary>
     public static string title = "";
 
     public static void Parse(string[] args)
@@ -60,19 +63,28 @@ public static class ArgParser
 
 #if DEBUG
 
-    /* dump a snapshot */
+    /// <summary>
+    /// dump a snapshot
+    /// </summary>
+    /// <returns> current snapshot of config </returns>
     public static ArgParseConfig Dump()
     {
         return new ArgParseConfig(launchMode, title);
     }
 
+    /// <summary>
+    /// Recover config from a snapshot
+    /// </summary>
+    /// <param name="config"> snapshot of config </param>
     public static void Load(ArgParseConfig config)
     {
         launchMode = config.launchMode;
         title = config.title;
     }
 
-    /* clear static variables */
+    /// <summary>
+    /// clear static config
+    /// </summary>
     public static void Clear()
     {
         launchMode = "";

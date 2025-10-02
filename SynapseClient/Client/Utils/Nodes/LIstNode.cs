@@ -2,7 +2,6 @@
 [SyncNode(NodeConst.TypeList)]
 public class ListNode : ListNodeCommon
 {
-    /* dynamic data type */
     public override int nodeType => NodeConst.TypeList;
 
     public ListNode(params Node[] nodes) : base(nodes) { }

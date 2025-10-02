@@ -11,6 +11,10 @@ public class ListTailNodeCommon : Node
         writer.Write(NodeConst.TypeListTail);
     }
 
+    /// <summary>
+    /// Collect arguments for constructor from binary reader.
+    /// </summary>
+    /// <returns> List of arguments for constructor </returns>
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         return [];

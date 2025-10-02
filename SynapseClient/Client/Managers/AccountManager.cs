@@ -2,13 +2,20 @@
 [RegisterManager]
 public class AccountManager : AccountManagerCommon
 {
-    /* Current login account
-     * If not login, loginAccount is an empty string.
-     */
+    /// <summary>
+    /// Current login account
+    /// <para> If not login, loginAccount is an empty string. </para>
+    /// </summary>
     private string loginAccount = "";
-    /* True only if after calling LoginRemote and before receiving result */
+
+    /// <summary>
+    /// True only if after calling LoginRemote and before receiving result
+    /// </summary>
     private bool waitLoginRes = false;
-    /* True only if after calling LogoutRemote and before receiving result */
+
+    /// <summary>
+    /// True only if after calling LogoutRemote and before receiving result
+    /// </summary>
     private bool waitLogoutRes = false;
 
     #region REGION_LOGIN_LOGOUT

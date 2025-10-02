@@ -9,15 +9,29 @@ public class Reflection
 {
     private static IReflection reflectionImpl;
 
-    /* node types */
+    /// <summary>
+    /// mapping from node type to static deserialize method info (only when [SyncNode])
+    /// </summary>
     private static Dictionary<int, MethodInfo> nodeDeserializeMethod = new Dictionary<int, MethodInfo>();
-    /* manager types */
+
+    /// <summary>
+    /// mapping from manager class name to manager class type (only when [RegisterManager])
+    /// </summary>
     private static Dictionary<string, Type> managerTypes = new Dictionary<string, Type>();
-    /* rpc methods */
+
+    /// <summary>
+    /// mapping from rpc method name to rpc method info (only when [Rpc])
+    /// </summary>
     private static Dictionary<string, RpcMethodInfo> rpcMethods = new Dictionary<string, RpcMethodInfo>();
-    /* gm methods */
+
+    /// <summary>
+    /// mapping from gm class name to gm method info (only when [RegisterGm])
+    /// </summary>
     private static Dictionary<string, GmMethodInfo> gmMethods = new Dictionary<string, GmMethodInfo>();
-    /* test methods */
+
+    /// <summary>
+    /// mapping from test case method name to method info (only when [RegisterTest])
+    /// </summary>
     private static Dictionary<string, MethodInfo> testMethods = new Dictionary<string, MethodInfo>();
 
     #region REGION_INIT
@@ -65,10 +79,12 @@ public class Reflection
         }
     }
 
-    /* Register Rpc Methods
-     * - save rpcType
-     * - save argTypes from method parameters
-     */
+    /// <summary>
+    /// Register Rpc Methods
+    /// <para> - save rpcType </para>
+    /// <para> - save argTypes from method parameters </para>
+    /// </summary>
+    /// <param name="t"> type of the class </param>
     private static void RegisterRpcMethod(Type t)
     {
         if (t.IsSubclassOf(typeof(Node)))
@@ -88,9 +104,11 @@ public class Reflection
         }
     }
 
-    /* Register Gm Methods
-     * - save argTypes
-     */
+    /// <summary>
+    /// Register Gm Methods
+    /// <para> - save argTypes </para>
+    /// </summary>
+    /// <param name="t"> type of the class </param>
     private static void RegisterGm(Type t)
     {
         RegisterGmAttribute? registerGmAttribute = t.GetCustomAttribute<RegisterGmAttribute>();
@@ -127,9 +145,12 @@ public class Reflection
         }
     }
 
-    /* Register all methods under Test class
-     * methods under Test class are only valid as public static void()
-     */
+    /// <summary>
+    /// Register all methods under Test class
+    /// <para> methods under Test class are only valid as public static void() </para>
+    /// </summary>
+    /// <param name="t"> type of the class </param>
+    /// <param name="isTestMode"> if current launch mode is test mode </param>
     private static void RegisterTest(Type t, bool isTestMode)
     {
         if (!isTestMode) return;
@@ -147,7 +168,11 @@ public class Reflection
 
     #endregion
 
-    /* Create manager by name */
+    /// <summary>
+    /// Create manager by name
+    /// </summary>
+    /// <param name="mgrName"> target manager class name </param>
+    /// <returns> Manager instance or null </returns>
     public static Manager? CreateManager(string mgrName)
     {
         if (managerTypes.TryGetValue(mgrName, out Type? mgrType))
@@ -165,20 +190,31 @@ public class Reflection
         return null;
     }
 
-    /* Get all registered manager names */
+    /// <summary>
+    /// Get all registered manager names
+    /// </summary>
+    /// <returns> list of name of all registered managers </returns>
     public static List<string> GetAllManagerNames()
     {
         return [.. managerTypes.Keys];
     }
 
-    /* Check if the node type is syncable */
+    /// <summary>
+    /// Check if the node type is syncable
+    /// </summary>
+    /// <param name="nodeType"> node type </param>
+    /// <returns> If the node type is registered as syncable </returns>
     public static bool IsSyncNode(int nodeType)
     {
         MethodInfo? method = GetDeserializeMethod(nodeType);
         return method != null;
     }
 
-    /* Get Deserialize method given node type */
+    /// <summary>
+    /// Get Deserialize method given node type
+    /// </summary>
+    /// <param name="nodeType"></param>
+    /// <returns> deserialize method or null </returns>
     public static MethodInfo? GetDeserializeMethod(int nodeType)
     {
         if (nodeDeserializeMethod.TryGetValue(nodeType, out MethodInfo? method))
@@ -191,7 +227,11 @@ public class Reflection
         return null;
     }
 
-    /* Get RpcMethodInfo */
+    /// <summary>
+    /// Get RpcMethodInfo
+    /// </summary>
+    /// <param name="methodName"> name of the rpc method </param>
+    /// <returns> corresponding rpc method info or null </returns>
     public static RpcMethodInfo? GetRpcMethod(string methodName)
     {
         if (rpcMethods.TryGetValue(methodName, out RpcMethodInfo? method))
@@ -201,7 +241,11 @@ public class Reflection
         return null;
     }
 
-    /* Get GmMethodInfo */
+    /// <summary>
+    /// Get GmMethodInfo
+    /// </summary>
+    /// <param name="methodName"> name of the gm method </param>
+    /// <returns> corresponding gm method info or null </returns>
     public static GmMethodInfo? GetGmMethod(string methodName)
     {
         if (gmMethods.TryGetValue(methodName, out GmMethodInfo? method))
@@ -211,6 +255,10 @@ public class Reflection
         return null;
     }
 
+    /// <summary>
+    /// Get all registered test case methods
+    /// </summary>
+    /// <returns> Iterator of test case name with test case method info </returns>
     public static IEnumerable<KeyValuePair<string, MethodInfo>> IterTestMethods()
     {
         foreach (var kvp in testMethods)

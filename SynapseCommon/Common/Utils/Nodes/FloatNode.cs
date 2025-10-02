@@ -2,7 +2,6 @@ using System;
 
 public class FloatNodeCommon : Node
 {
-    /* data */
     float f = 0.0f;
 
     public FloatNodeCommon(float f_ = 0.0f) { f = f_; }
@@ -17,6 +16,10 @@ public class FloatNodeCommon : Node
         writer.Write(f);
     }
 
+    /// <summary>
+    /// Collect arguments for constructor from binary reader.
+    /// </summary>
+    /// <returns> List of arguments for constructor </returns>
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();

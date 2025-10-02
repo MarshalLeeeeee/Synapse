@@ -1,7 +1,8 @@
-/*
- * Manager is owned by Game.
- * Manager is the root of a synchronizable tree.
- */
+/// <summary>
+/// Manager
+/// <para> Manager is owned by Game. </para>
+/// <para> Manager is the root of a synchronizable tree. </para>
+/// </summary>
 
 using System;
 

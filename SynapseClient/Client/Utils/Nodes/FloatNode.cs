@@ -2,7 +2,6 @@
 [SyncNode(NodeConst.TypeFloat)]
 public class FloatNode : FloatNodeCommon
 {
-    /* dynamic data type */
     public override int nodeType => NodeConst.TypeFloat;
 
     public FloatNode(float f_ = 0.0f) : base(f_) { }

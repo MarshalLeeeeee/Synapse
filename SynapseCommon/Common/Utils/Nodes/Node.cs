@@ -1,8 +1,8 @@
-/*
- * Basic node of the game tree
- * Node can be serialized and synchronized from server to client
- * Depending on different client, node can be synchronized differently and partially
- */
+/// <summary>
+/// <para> Basic node of the game tree </para>>
+/// <para> Node can be serialized and synchronized from server to client </para>
+/// <para> Depending on different client, node can be synchronized differently and partially </para>
+/// </summary>
 
 using System.Reflection;
 
@@ -18,7 +18,9 @@ public class NodeConst
     public const int TypeListTail = 11;
 }
 
-/* Use it when a node needs to be synced from server to client */
+/// <summary>
+/// Use it when a node needs to be synced from server to client
+/// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 public class SyncNodeAttribute : Attribute
 {
@@ -32,20 +34,26 @@ public class SyncNodeAttribute : Attribute
 
 public class Node
 {
-    /* Every node has a unique id at runtime，
-     * which serves as the identifier of the node in both server and client. 
-     */
+    /// <summary>
+    /// Every node has a unique id at runtime which serves as the identifier of the node in both server and client. 
+    /// </summary>
     public string id = "";
-    /* dynamic data type */
+    /// <summary>
+    /// exclusive value for node
+    /// </summary>
     public virtual int nodeType => NodeConst.TypeUndefined;
 
-    /* Init Node with given data or use default data */
-    public void Init()
+    /// <summary>
+    /// Return the string that represents the current node.
+    /// </summary>
+    public override string ToString()
     {
-
+        return "[Node()]";
     }
 
-    /* Serialize the node into a binary stream */
+    /// <summary>
+    /// Serialize the node into a binary stream.
+    /// </summary>
     public virtual void Serialize(BinaryWriter writer)
     {
         return;
@@ -54,13 +62,18 @@ public class Node
 
 public static class NodeStreamer
 {
-    /* Serialize node into byte stream */
+    /// <summary>
+    /// Serialize node into byte stream
+    /// </summary>
     public static void Serialize(Node node, BinaryWriter writer)
     {
         node.Serialize(writer);
     }
 
-    /* Deserialize bytes from reader into specific node */
+    /// <summary>
+    /// Deserialize bytes from reader into specific node
+    /// </summary>
+    /// <exception cref="InvalidDataException"></exception>
     public static Node Deserialize(BinaryReader reader)
     {
         try

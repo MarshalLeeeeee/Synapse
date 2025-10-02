@@ -5,47 +5,55 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 
-/*
- * Proxy represents a tcp connection between server and client
- * It handles msg receiving asynchronously
- */
+/// <summary>
+/// Proxy represents a tcp connection between server and client
+/// <para> It handles msg receiving asynchronously </para>
+/// </summary>
 public class Proxy : ProxyCommon
 {
-    /* lastest time stamp of sending heartbeat */
+    /// <summary>
+    /// lastest time stamp of sending heartbeat
+    /// </summary>
     public long lastHeartbeatTime = 0;
 
     public Proxy(TcpClient client_) : base(client_) { }
 }
 
-/*
- * GateManager is responsible for communication between server and client
- */
+/// <summary>
+/// GateManager is responsible for communication between server and client
+/// </summary>
 [RegisterManager]
 public class GateManager : GateManagerCommon
 {
     private Proxy? proxy;
 
-    /* flag to indicate if client is connecting async */
+    /// <summary>
+    /// flag to indicate if client is connecting async
+    /// <para> Cross thread </para>
+    /// </summary>
     private volatile bool isConnecting = false;
 
-    /* ping heartbeat time stamp */
+    /// <summary>
+    /// ping heartbeat time stamp
+    /// </summary>
     long lastHeartbeatTime = 0;
 
     private ConcurrentQueue<Msg> msgInbox = new ConcurrentQueue<Msg>();
     private ConcurrentQueue<Msg> msgOutbox = new ConcurrentQueue<Msg>();
 
-    /*
-     * Start to accept incoming connections
-     */
+    /// <summary>
+    /// Start to accept incoming connections
+    /// </summary>
     protected override void OnStart()
     {
         Log.Info("GateManager starts...");
     }
 
-    /*
-     * Update function called in main thread
-     ** Hangle queue msg (inbox and outbox)
-     */
+    /// <summary>
+    /// Update function called in main thread
+    /// <para> Hangle queue msg (inbox and outbox) </para>
+    /// </summary>
+    /// <param name="dt"> delta time of the frame </param>
     protected override void DoUpdate(float dt)
     {
         ConsumeMsgInbox();
@@ -53,10 +61,10 @@ public class GateManager : GateManagerCommon
         PingHeartbeat();
     }
 
-    /*
-     * Remove all proxies
-     * Stop to accept incoming connections
-     */
+    /// <summary>
+    /// Remove all proxies
+    /// <para> Stop to accept incoming connections </para>
+    /// </summary>
     protected override void OnDestroy()
     {
         ResetConnection();
@@ -65,7 +73,9 @@ public class GateManager : GateManagerCommon
 
     #region REGION_CONNECTION
 
-    /* Reset the current proxy */
+    /// <summary>
+    /// Reset the current proxy
+    /// </summary>
     public void ResetConnection(string _ = "")
     {
         proxy?.Destroy();
@@ -120,16 +130,20 @@ public class GateManager : GateManagerCommon
 
     #region REGION_MSG
 
-    /* On proxy receiving invalid msg */
+    /// <summary>
+    /// On proxy receiving invalid msg
+    /// </summary>
+    /// <param name="proxyId"> proxy id </param>
+    /// <param name="msg"> message </param>
     private void OnReceiveMsg(string proxyId, Msg? msg)
     {
         if (msg == null) return;
         msgInbox.Enqueue(msg);
     }
 
-    /*
-     * Consume and handle received msg (in main thread)
-     */
+    /// <summary>
+    /// Consume and handle received msg (in main thread)
+    /// </summary>
     private void ConsumeMsgInbox()
     {
         int cnt = 0;
@@ -141,15 +155,18 @@ public class GateManager : GateManagerCommon
         }
     }
 
-    /* Append msg ready to be sent */
+    /// <summary>
+    /// Append msg ready to be sent
+    /// </summary>
+    /// <param name="msg"> message </param>
     private void AppendSendMsg(Msg msg)
     {
         msgOutbox.Enqueue(msg);
     }
 
-    /*
-     * Consume and handle msg pending for sending (in main thread)
-     */
+    /// <summary>
+    /// Consume and handle msg pending for sending (in main thread)
+    /// </summary>
     private void ConsumeMsgOutbox()
     {
         int cnt = 0;
@@ -161,9 +178,10 @@ public class GateManager : GateManagerCommon
         }
     }
 
-    /*
-     * Send msg to server (in main thread)
-     */
+    /// <summary>
+    /// Send msg to server (in main thread)
+    /// </summary>
+    /// <param name="msg"> message </param>
     private void SendMsg(Msg msg)
     {
         if (proxy == null || !proxy.IsConnected()) return;
@@ -174,7 +192,9 @@ public class GateManager : GateManagerCommon
 
     #region REGION_HEARTBEAT
 
-    /* ping heartbeat to server */
+    /// <summary>
+    /// ping heartbeat to server
+    /// </summary>
     private void PingHeartbeat()
     {
         if (proxy == null || !proxy.IsConnected()) return;
@@ -199,7 +219,10 @@ public class GateManager : GateManagerCommon
         AppendSendMsg(msg);
     }
 
-    /* invoke remote call from server */
+    /// <summary>
+    /// invoke remote call from server
+    /// </summary>
+    /// <param name="msg"> message </param>
     private void InvokeRpc(Msg msg)
     {
         // get rpc method

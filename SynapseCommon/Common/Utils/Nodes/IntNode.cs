@@ -1,7 +1,6 @@
 
 public class IntNodeCommon : Node
 {
-    /* data */
     int v = 0;
 
     public IntNodeCommon(int v_ = 0) { v = v_; }
@@ -14,6 +13,10 @@ public class IntNodeCommon : Node
         writer.Write(v);
     }
 
+    /// <summary>
+    /// Collect arguments for constructor from binary reader.
+    /// </summary>
+    /// <returns> List of arguments for constructor </returns>
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();

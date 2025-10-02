@@ -2,7 +2,6 @@
 [SyncNode(NodeConst.TypeString)]
 public class StringNode : StringNodeCommon
 {
-    /* dynamic data type */
     public override int nodeType => NodeConst.TypeString;
 
     public StringNode(string s_ = "") : base(s_) { }

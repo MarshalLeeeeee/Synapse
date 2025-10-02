@@ -5,10 +5,11 @@ using System.Collections.Concurrent;
 [RegisterManager]
 public class AccountManager : AccountManagerCommon
 {
-    /* Manager proxy with login account.
-     * When proxy remains valid, changes happen when corresponding client invoke login or logout remotely.
-     * When proxy becomes invalid, corresponding account automatically logout.
-     */
+    /// <summary>
+    /// Manager proxy with login account.
+    /// <para> When proxy remains valid, changes happen when corresponding client invoke login or logout remotely. </para>
+    /// <para> When proxy becomes invalid, corresponding account automatically logout. </para>
+    /// </summary>
     private DoubleRefDictionary<string, string> proxyIdWithAccount = new DoubleRefDictionary<string, string>();
 
 
@@ -39,33 +40,42 @@ public class AccountManager : AccountManagerCommon
 
     #region REGION_DATA
 
-    /* Add proxyId account pair
-     * Return true only if write acctually performed
-     */
+    /// <summary>
+    /// Add proxyId account pair
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
+    /// <param name="account"> account name </param>
+    /// <returns> Return true only if modification acctually performed </returns>
     private bool Add(string proxyId, string account)
     {
         return proxyIdWithAccount.Add(proxyId, account);
     }
 
-    /* Remove proxyId account pair by proxyId
-     * Return true only if write acctually performed
-     */
+    /// <summary>
+    /// Remove proxyId account pair by proxyId
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
+    /// <returns> Return true only if modification acctually performed </returns>
     private bool RemoveProxyId(string proxyId)
     {
         return proxyIdWithAccount.RemoveT(proxyId);
     }
 
-    /* Remove proxyId account pair by account
-     * Return true only if write acctually performed
-     */
+    /// <summary>
+    /// Remove proxyId account pair by account
+    /// </summary>
+    /// <param name="account"> account name </param>
+    /// <returns> Return true only if modification acctually performed </returns>
     private bool RemoveAccount(string account)
     {
         return proxyIdWithAccount.RemoveU(account);
     }
 
-    /* Get account by proxy id
-     * If not exist, return null
-     */
+    /// <summary>
+    /// Get account by proxy id
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
+    /// <returns> Account or null </returns>
     public string? GetAccount(string proxyId)
     {
         string? account;
@@ -97,7 +107,11 @@ public class AccountManager : AccountManagerCommon
         }
     }
 
-    /* notify corresponding client of login succ */
+    /// <summary>
+    /// notify corresponding client of login succ */
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
+    /// <param name="account"> account name </param>
     private void NotifyLoginSucc(string proxyId, string account)
     {
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
@@ -107,7 +121,10 @@ public class AccountManager : AccountManagerCommon
         }
     }
 
-    /* notify corresponding client of login fail */
+    /// <summary>
+    /// notify corresponding client of login fail
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
     private void NotifyLoginFail(string proxyId)
     {
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
@@ -142,7 +159,11 @@ public class AccountManager : AccountManagerCommon
         }
     }
 
-    /* notify corresponding client of logout succ */
+    /// <summary>
+    /// notify corresponding client of logout succ
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
+    /// <param name="account"> account name </param>
     private void NotifyLogoutSucc(string proxyId, string account)
     {
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
@@ -152,7 +173,10 @@ public class AccountManager : AccountManagerCommon
         }
     }
 
-    /* notify corresponding client of logout fail */
+    /// <summary>
+    /// notify corresponding client of logout fail
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
     private void NotifyLogoutFail(string proxyId)
     {
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();

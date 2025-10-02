@@ -2,7 +2,6 @@
 [SyncNode(NodeConst.TypeListTail)]
 public class ListTailNode : ListTailNodeCommon
 {
-    /* dynamic data type */
     public override int nodeType => NodeConst.TypeListTail;
 
     public ListTailNode() : base() { }

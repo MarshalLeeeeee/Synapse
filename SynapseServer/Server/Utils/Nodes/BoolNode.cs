@@ -2,7 +2,6 @@
 [SyncNode(NodeConst.TypeBool)]
 public class BoolNode : BoolNodeCommon
 {
-    /* dynamic data type */
     public override int nodeType => NodeConst.TypeBool;
 
     public BoolNode(bool v_ = false) : base(v_) { }

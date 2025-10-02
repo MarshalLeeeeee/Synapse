@@ -1,7 +1,6 @@
 
 public class StringNodeCommon : Node
 {
-    /* data */
     protected string s = "";
 
     public StringNodeCommon(string s_ = "") { s = s_; }
@@ -14,6 +13,10 @@ public class StringNodeCommon : Node
         writer.Write(s);
     }
 
+    /// <summary>
+    /// Collect arguments for constructor from binary reader.
+    /// </summary>
+    /// <returns> List of arguments for constructor </returns>
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();

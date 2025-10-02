@@ -1,7 +1,6 @@
 
 public class BoolNodeCommon : Node
 {
-    /* data */
     bool v = false;
 
     public BoolNodeCommon(bool v_ = false) { v = v_; }
@@ -14,10 +13,14 @@ public class BoolNodeCommon : Node
         writer.Write(v);
     }
 
+    /// <summary>
+    /// Collect arguments for constructor from binary reader.
+    /// </summary>
+    /// <returns> List of arguments for constructor </returns>
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadBoolean);
+        argsList.Add(reader.ReadBoolean());
         return argsList.ToArray();
     }
 

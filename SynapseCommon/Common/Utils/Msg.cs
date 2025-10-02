@@ -6,13 +6,24 @@ using System.Threading.Tasks;
 
 public class Msg
 {
-    /* name of the rpc method */
+    /// <summary>
+    /// name of the rpc method
+    /// </summary>
     public string methodName { get; }
-    /* id of the owner of the instance, Manager or Entity */
+
+    /// <summary>
+    /// id of the owner of the instance, Manager or Entity
+    /// </summary>
     public string ownerId { get; }
-    /* id of the instance of the method */
+
+    /// <summary>
+    /// id of the instance of the method
+    /// </summary>
     public string instanceId { get; }
-    /* method args (in serializable Node) */
+
+    /// <summary>
+    /// method args (in serializable Node)
+    /// </summary>
     public ListNode arg = new ListNode();
     public Msg(string methodName_, string ownerId_, string instanceId_)
     {

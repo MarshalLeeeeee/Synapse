@@ -7,9 +7,12 @@ public class DoubleRefDictionary<T, U>
     private Dictionary<T, U> t2u = new Dictionary<T, U>();
     private Dictionary<U, T> u2t = new Dictionary<U, T>();
 
-    /* Add new tu pair, only when both t and u are not managed by the container.
-     * Return true only if write acctually performed
-     */
+    /// <summary>
+    /// Add new tu pair, only when both t and u are not managed by the container.
+    /// </summary>
+    /// <param name="t"> t object </param>
+    /// <param name="u"> u object </param>
+    /// <returns> Return true only if modification acctually performed </returns>
     public bool Add(T t, U u)
     {
         if (t2u.ContainsKey(t)) return false;
@@ -20,9 +23,11 @@ public class DoubleRefDictionary<T, U>
         return true;
     }
 
-    /* Remove tu pair by t, only when t is managed by the container
-     * Return true only if write acctually performed
-     */
+    /// <summary>
+    /// Remove tu pair by t, only when t is managed by the container
+    /// </summary>
+    /// <param name="t"> t object</param>
+    /// <returns> Return true only if modification acctually performed </returns>
     public bool RemoveT(T t)
     {
         if (t2u.TryGetValue(t, out U? u))
@@ -38,9 +43,11 @@ public class DoubleRefDictionary<T, U>
         return false;
     }
 
-    /* Remove tu pair by u, only when u is managed by the container
-     * Return true only if write acctually performed
-     */
+    /// <summary>
+    /// Remove tu pair by u, only when u is managed by the container
+    /// </summary>
+    /// <param name="u"> u object </param>
+    /// <returns> Return true only if modification acctually performed </returns>
     public bool RemoveU(U u)
     {
         if (u2t.TryGetValue(u, out T? t))
