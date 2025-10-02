@@ -32,7 +32,7 @@ public static class MsgStreamer
         writer.Write(msg.methodName);
         writer.Write(msg.ownerId);
         writer.Write(msg.instanceId);
-        msg.arg.Serialize(writer);
+        NodeStreamer.Serialize(msg.arg, writer);
         return stream.ToArray();
     }
 
@@ -189,7 +189,7 @@ public static class MsgStreamer
     {
         if (stream == null) return false;
 
-        byte[] buffer = MsgStreamer.Serialize(msg);
+        byte[] buffer = Serialize(msg);
         if (buffer.Length <= 0) return false;
 
         byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);
@@ -205,7 +205,7 @@ public static class MsgStreamer
 
         try
         {
-            byte[] buffer = MsgStreamer.Serialize(msg);
+            byte[] buffer = Serialize(msg);
             if (buffer.Length <= 0) return false;
 
             byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);

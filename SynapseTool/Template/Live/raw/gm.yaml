@@ -9,17 +9,17 @@ name: gm
 prefix: gm
 desc: Generate a gm class
 variables: |
-    Command
+  Command
 body: |
-    #if DEBUG
+  #if DEBUG
 
-    [RegisterGm]
-    public static class Gm$Command$
-    {
-        public static void Execute()
-        {
+  [RegisterGm]
+  public static class Gm$Command$
+  {
+      public static void Execute()
+      {
 
-        }
-    }
+      }
+  }
 
-    #endif
+  #endif

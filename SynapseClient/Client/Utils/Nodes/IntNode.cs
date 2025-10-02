@@ -1,0 +1,22 @@
+
+[SyncNode(NodeConst.TypeInt)]
+public class IntNode : IntNodeCommon
+{
+    /* dynamic data type */
+    public override int nodeType => NodeConst.TypeInt;
+
+    public IntNode(int v_ = 0) : base(v_) { }
+
+    public static IntNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            object[] args = DeserializeIntoArgs(reader);
+            return (IntNode)Activator.CreateInstance(typeof(IntNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize IntNode.", ex);
+        }
+    }
+}

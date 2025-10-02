@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 
 public interface IReflection
@@ -13,7 +10,7 @@ public class Reflection
     private static IReflection reflectionImpl;
 
     /* node types */
-    private static Dictionary<int, Type> nodeTypes = new Dictionary<int, Type>();
+    private static Dictionary<int, MethodInfo> nodeDeserializeMethod = new Dictionary<int, MethodInfo>();
     /* manager types */
     private static Dictionary<string, Type> managerTypes = new Dictionary<string, Type>();
     /* rpc methods */
@@ -33,7 +30,7 @@ public class Reflection
         {
             string typeName = t.Name;
 
-            RegisterNode(t);
+            RegisterNodeDeserializeMethod(t);
             RegisterManager(t);
             RegisterRpcMethod(t);
 #if DEBUG
@@ -43,25 +40,26 @@ public class Reflection
         }
     }
 
-    private static void RegisterNode(Type t)
+    private static void RegisterNodeDeserializeMethod(Type t)
     {
-        if (t.IsSubclassOf(typeof(Node)))
+        SyncNodeAttribute? syncNodeAttr = t.GetCustomAttribute<SyncNodeAttribute>();
+        if (syncNodeAttr != null)
         {
-            object? value = t.GetField(
-                "staticNodeType",
+            MethodInfo? method = t?.GetMethod(
+                "Deserialize",
                 BindingFlags.Static | BindingFlags.Public
-            )?.GetValue(null);
-            if (value != null && value is int nodeType && nodeType != NodeConst.TypeUndefined)
+            );
+            if (method != null)
             {
-                nodeTypes[nodeType] = t;
+                nodeDeserializeMethod[syncNodeAttr.nodeType] = method;
             }
         }
     }
 
     private static void RegisterManager(Type t)
     {
-        RegisterManagerAttribute? RegisterManagerAttr = t.GetCustomAttribute<RegisterManagerAttribute>();
-        if (RegisterManagerAttr != null && t.IsSubclassOf(typeof(Manager)))
+        RegisterManagerAttribute? registerManagerAttr = t.GetCustomAttribute<RegisterManagerAttribute>();
+        if (registerManagerAttr != null && t.IsSubclassOf(typeof(Manager)))
         {
             managerTypes[t.Name] = t;
         }
@@ -152,13 +150,17 @@ public class Reflection
     /* Create manager by name */
     public static Manager? CreateManager(string mgrName)
     {
-        if (managerTypes.TryGetValue(mgrName, out Type mgrType))
+        if (managerTypes.TryGetValue(mgrName, out Type? mgrType))
         {
-            object? obj = Activator.CreateInstance(mgrType);
-            if (obj != null && obj is Manager manager)
+            if (mgrType != null)
             {
-                return manager;
+                object? obj = Activator.CreateInstance(mgrType);
+                if (obj != null && obj is Manager manager)
+                {
+                    return manager;
+                }
             }
+            return null;
         }
         return null;
     }
@@ -169,16 +171,22 @@ public class Reflection
         return [.. managerTypes.Keys];
     }
 
+    /* Check if the node type is syncable */
+    public static bool IsSyncNode(int nodeType)
+    {
+        MethodInfo? method = GetDeserializeMethod(nodeType);
+        return method != null;
+    }
+
     /* Get Deserialize method given node type */
     public static MethodInfo? GetDeserializeMethod(int nodeType)
     {
-        if (nodeTypes.TryGetValue(nodeType, out Type? type))
+        if (nodeDeserializeMethod.TryGetValue(nodeType, out MethodInfo? method))
         {
-            MethodInfo? method = type?.GetMethod(
-                "Deserialize",
-                BindingFlags.Static | BindingFlags.Public
-            );
-            return method;
+            if (method != null)
+            {
+                return method;
+            }
         }
         return null;
     }

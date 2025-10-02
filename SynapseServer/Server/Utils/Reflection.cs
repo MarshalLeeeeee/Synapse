@@ -37,13 +37,10 @@ public class IServerReflection : IReflection
                     rpcMethodInfo = null;
                     return false;
                 }
-                object? value = paramType.GetField(
-                    "staticNodeType",
-                    BindingFlags.Static | BindingFlags.Public
-                )?.GetValue(null);
-                if (value != null && value is int paramNodeType)
+                SyncNodeAttribute? syncNodeAttr = paramType.GetCustomAttribute<SyncNodeAttribute>();
+                if (syncNodeAttr != null)
                 {
-                    rpcArgTypes.Add(paramNodeType);
+                    rpcArgTypes.Add(syncNodeAttr.nodeType);
                 }
                 else
                 {
