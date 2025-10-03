@@ -12,7 +12,6 @@ public class AccountManager : AccountManagerCommon
     /// </summary>
     private DoubleRefDictionary<string, string> proxyIdWithAccount = new DoubleRefDictionary<string, string>();
 
-
     protected override void OnStart()
     {
         EventManager? eventManager = Game.Instance.GetManager<EventManager>();
@@ -97,6 +96,7 @@ public class AccountManager : AccountManagerCommon
         string accountValue = account.Get();
         if (Add(proxyId, accountValue))
         {
+            EnsurePlayerEntity(accountValue);
             NotifyLoginSucc(proxyId, accountValue);
             Log.Info($"Account ({accountValue}) with proxy ({proxyId}) successfully login...");
         }
@@ -108,7 +108,21 @@ public class AccountManager : AccountManagerCommon
     }
 
     /// <summary>
+    /// ensure player entity with the given accont
+    /// </summary>
+    /// <param name="account"> account </param>
+    private void EnsurePlayerEntity(string account)
+    {
+        EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
+        if (entityManager != null)
+        {
+            entityManager.EnsurePlayerEntity(account);
+        }
+    }
+
+    /// <summary>
     /// notify corresponding client of login succ
+    /// <para> sync Nodes to client </para>
     /// </summary>
     /// <param name="proxyId"> id of the proxy </param>
     /// <param name="account"> account name </param>
@@ -117,6 +131,7 @@ public class AccountManager : AccountManagerCommon
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr != null)
         {
+            // TODO: here should be a full sync of Node from server to client
             gateMgr.CallRpc(proxyId, "LoginResRemote", "AccountManager", "", new StringNode(account));
         }
     }

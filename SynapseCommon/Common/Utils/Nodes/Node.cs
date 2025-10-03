@@ -16,6 +16,10 @@ public class NodeConst
 
     public const int TypeList = 10;
     public const int TypeListTail = 11;
+    public const int TypeIntKeyDictionary = 12;
+    public const int TypeIntKeyDictionaryTail = 13;
+    public const int TypeStringKeyDictionary = 14;
+    public const int TypeStringKeyDictionaryTail = 15;
 }
 
 /// <summary>
