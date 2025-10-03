@@ -32,7 +32,7 @@ public class SyncNodeAttribute : Attribute
     }
 }
 
-public class Node
+public class NodeCommon
 {
     /// <summary>
     /// Every node has a unique id at runtime which serves as the identifier of the node in both server and client. 
