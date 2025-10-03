@@ -112,7 +112,7 @@ public class AccountManager : AccountManagerCommon
     /// </summary>
     /// <param name="proxyId"> id of the proxy </param>
     /// <param name="account"> account name </param>
-    private void NotifyLoginSucc(string proxyId, string account)
+    private static void NotifyLoginSucc(string proxyId, string account)
     {
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr != null)
@@ -125,7 +125,7 @@ public class AccountManager : AccountManagerCommon
     /// notify corresponding client of login fail
     /// </summary>
     /// <param name="proxyId"> id of the proxy </param>
-    private void NotifyLoginFail(string proxyId)
+    private static void NotifyLoginFail(string proxyId)
     {
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr != null)
@@ -164,7 +164,7 @@ public class AccountManager : AccountManagerCommon
     /// </summary>
     /// <param name="proxyId"> id of the proxy </param>
     /// <param name="account"> account name </param>
-    private void NotifyLogoutSucc(string proxyId, string account)
+    private static void NotifyLogoutSucc(string proxyId, string account)
     {
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr != null)
@@ -177,7 +177,7 @@ public class AccountManager : AccountManagerCommon
     /// notify corresponding client of logout fail
     /// </summary>
     /// <param name="proxyId"> id of the proxy </param>
-    private void NotifyLogoutFail(string proxyId)
+    private static void NotifyLogoutFail(string proxyId)
     {
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr != null)
