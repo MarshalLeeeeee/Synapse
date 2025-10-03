@@ -108,7 +108,7 @@ public class AccountManager : AccountManagerCommon
     }
 
     /// <summary>
-    /// notify corresponding client of login succ */
+    /// notify corresponding client of login succ
     /// </summary>
     /// <param name="proxyId"> id of the proxy </param>
     /// <param name="account"> account name </param>
