@@ -16,6 +16,11 @@ files:
 
           public $s0$NodeCommon() {}
 
+          public override string ToString()
+          {
+              return "$s0$Node()";
+          }
+
           #region REGION_STREAM
 
           public override void Serialize(BinaryWriter writer)
@@ -46,7 +51,6 @@ files:
       [SyncNode(NodeConst.Type$s0$)]
       public class $s0$Node : $s0$NodeCommon
       {
-          /* dynamic data type */
           public override int nodeType => NodeConst.Type$s0$;
 
           public $s0$Node() : base() { }
@@ -64,6 +68,20 @@ files:
               }
           }
       }
+
+      #if DEBUG
+
+      [RegisterTest]
+      public static class Test$s0$Node
+      {
+          public static void TestStream()
+          {
+              $s0$Node node = new $s0$Node();
+              Assert.EqualTrue(NodeStreamer.TestStream(node), "$s0$Node changed after serialization and deserialization");
+          }
+      }
+
+      #endif
 
   - name: ./SynapseServer/Server/Utils/Nodes/$s0$Node.cs
     content: |
@@ -71,7 +89,6 @@ files:
       [SyncNode(NodeConst.Type$s0$)]
       public class $s0$Node : $s0$NodeCommon
       {
-          /* dynamic data type */
           public override int nodeType => NodeConst.Type$s0$;
 
           public $s0$Node() : base() { }
@@ -89,3 +106,17 @@ files:
               }
           }
       }
+
+      #if DEBUG
+
+      [RegisterTest]
+      public static class Test$s0$Node
+      {
+          public static void TestStream()
+          {
+              $s0$Node node = new $s0$Node();
+              Assert.EqualTrue(NodeStreamer.TestStream(node), "$s0$Node changed after serialization and deserialization");
+          }
+      }
+
+      #endif

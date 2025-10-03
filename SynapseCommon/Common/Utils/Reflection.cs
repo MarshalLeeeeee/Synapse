@@ -155,13 +155,13 @@ public class Reflection
     {
         if (!isTestMode) return;
 
-        RegisterTestAttribute registerTestAttribute = t.GetCustomAttribute<RegisterTestAttribute>();
+        RegisterTestAttribute? registerTestAttribute = t.GetCustomAttribute<RegisterTestAttribute>();
         if (registerTestAttribute != null)
         {
             MethodInfo[] methods = t.GetMethods(BindingFlags.Static | BindingFlags.Public);
             foreach (MethodInfo method in methods)
             {
-                testMethods[method.Name] = method;
+                testMethods[$"{t.Name}.{method.Name}"] = method;
             }
         }
     }

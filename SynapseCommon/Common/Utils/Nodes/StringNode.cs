@@ -5,6 +5,11 @@ public class StringNodeCommon : Node
 
     public StringNodeCommon(string s_ = "") { s = s_; }
 
+    public override string ToString()
+    {
+        return $"StringNode({s})";
+    }
+
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
@@ -41,3 +46,17 @@ public class StringNodeCommon : Node
 
     #endregion
 }
+
+#if DEBUG
+
+[RegisterTest]
+public static class TestStringNode
+{
+    public static void TestStream()
+    {
+        StringNode node = new StringNode("Test");
+        Assert.EqualTrue(NodeStreamer.TestStream(node), "StringNode changed after serialization and deserialization");
+    }
+}
+
+#endif

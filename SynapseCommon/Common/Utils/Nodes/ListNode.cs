@@ -12,6 +12,16 @@ public class ListNodeCommon : Node, IEnumerable<Node>
         }
     }
 
+    public override string ToString()
+    {
+        string s = "";
+        foreach (Node node in children)
+        {
+            s += $"{node}, ";
+        }
+        return $"ListNode([{s}])";
+    }
+
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
@@ -123,3 +133,18 @@ public class ListNodeCommon : Node, IEnumerable<Node>
 
     #endregion
 }
+
+#if DEBUG
+
+[RegisterTest]
+public static class TestListNode
+{
+    public static void TestStream()
+    {
+        ListNode node = new ListNode(new IntNode(1), new FloatNode(10.0f), new BoolNode(true), new StringNode("lmc"), 
+            new ListNode(new IntNode(1), new FloatNode(10.0f), new BoolNode(true), new StringNode("lmc")));
+        Assert.EqualTrue(NodeStreamer.TestStream(node), "ListNode changed after serialization and deserialization");
+    }
+}
+
+#endif

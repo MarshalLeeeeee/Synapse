@@ -6,7 +6,10 @@ public class FloatNodeCommon : Node
 
     public FloatNodeCommon(float f_ = 0.0f) { f = f_; }
 
-    public FloatNodeCommon() { }
+    public override string ToString()
+    {
+        return $"FloatNode({f})";
+    }
 
     #region REGION_STREAM
 
@@ -44,3 +47,17 @@ public class FloatNodeCommon : Node
 
     #endregion
 }
+
+#if DEBUG
+
+[RegisterTest]
+public static class TestFloatNode
+{
+    public static void TestStream()
+    {
+        FloatNode node = new FloatNode(1.5f);
+        Assert.EqualTrue(NodeStreamer.TestStream(node), "FloatNode changed after serialization and deserialization");
+    }
+}
+
+#endif

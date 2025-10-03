@@ -48,7 +48,7 @@ public class Node
     /// </summary>
     public override string ToString()
     {
-        return "[Node()]";
+        return "Node()";
     }
 
     /// <summary>
@@ -56,6 +56,7 @@ public class Node
     /// </summary>
     public virtual void Serialize(BinaryWriter writer)
     {
+        writer.Write(NodeConst.TypeUndefined);
         return;
     }
 }
@@ -73,7 +74,7 @@ public static class NodeStreamer
     /// <summary>
     /// Deserialize bytes from reader into specific node
     /// </summary>
-    /// <exception cref="InvalidDataException"></exception>
+    /// <exception cref="InvalidDataException"> throw when deserialization fails </exception>
     public static Node Deserialize(BinaryReader reader)
     {
         try
@@ -99,4 +100,25 @@ public static class NodeStreamer
             throw new InvalidDataException("Failed to deserialize Node.");
         }
     }
+
+#if DEBUG
+
+    /// <summary>
+    /// Check if serialize and deserialize return the identical node
+    /// </summary>
+    /// <param name="node"> the node object </param>
+    public static bool TestStream(Node node)
+    {
+        using var w_stream = new MemoryStream();
+        using var writer = new BinaryWriter(w_stream);
+        Serialize(node, writer);
+        byte[] bd = w_stream.ToArray();
+
+        using var r_stream = new MemoryStream(bd);
+        using var reader = new BinaryReader(r_stream);
+        Node n = Deserialize(reader);
+        return $"{node}" == $"{n}";
+    }
+
+#endif
 }

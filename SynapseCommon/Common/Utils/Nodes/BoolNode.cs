@@ -5,6 +5,11 @@ public class BoolNodeCommon : Node
 
     public BoolNodeCommon(bool v_ = false) { v = v_; }
 
+    public override string ToString()
+    {
+        return $"BoolNode({v})";
+    }
+
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
@@ -41,3 +46,18 @@ public class BoolNodeCommon : Node
 
     #endregion
 }
+
+#if DEBUG
+
+[RegisterTest]
+public static class TestBoolNode
+{
+    public static void TestStream()
+    {
+        BoolNode node = new BoolNode(true);
+        Assert.EqualTrue(NodeStreamer.TestStream(node), "BoolNode changed after serialization and deserialization");
+    }
+}
+
+#endif
+
