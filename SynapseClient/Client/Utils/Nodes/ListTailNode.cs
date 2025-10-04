@@ -1,8 +1,8 @@
 
-[SyncNode(NodeConst.TypeListTail)]
+[SyncNode(NodeTypeConst.TypeListTail)]
 public class ListTailNode : ListTailNodeCommon
 {
-    public override int nodeType => NodeConst.TypeListTail;
+    public override int nodeType => NodeTypeConst.TypeListTail;
 
     public ListTailNode() : base() { }
 

@@ -28,7 +28,7 @@ public class StringKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<stri
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeStringKeyDictionary);
+        writer.Write(NodeTypeConst.TypeStringKeyDictionary);
         foreach (KeyValuePair<string, Node> kvp in children)
         {
             NodeStreamer.Serialize(new StringNode(kvp.Key), writer);

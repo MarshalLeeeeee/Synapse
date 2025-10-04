@@ -1,8 +1,8 @@
 
-[SyncNode(NodeConst.TypeIntKeyDictionary)]
+[SyncNode(NodeTypeConst.TypeIntKeyDictionary)]
 public class IntKeyDictionaryNode : IntKeyDictionaryNodeCommon
 {
-    public override int nodeType => NodeConst.TypeIntKeyDictionary;
+    public override int nodeType => NodeTypeConst.TypeIntKeyDictionary;
 
     public IntKeyDictionaryNode(params KeyValuePair<int, Node>[] kvps) : base(kvps) { }
 

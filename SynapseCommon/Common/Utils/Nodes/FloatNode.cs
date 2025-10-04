@@ -15,7 +15,7 @@ public class FloatNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeFloat);
+        writer.Write(NodeTypeConst.TypeFloat);
         writer.Write(f);
     }
 

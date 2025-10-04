@@ -26,7 +26,7 @@ public class ListNodeCommon : Node, IEnumerable<Node>
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeList);
+        writer.Write(NodeTypeConst.TypeList);
         foreach (Node child in children)
         {
             NodeStreamer.Serialize(child, writer);

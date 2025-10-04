@@ -1,8 +1,8 @@
 
-[SyncNode(NodeConst.TypeBool)]
+[SyncNode(NodeTypeConst.TypeBool)]
 public class BoolNode : BoolNodeCommon
 {
-    public override int nodeType => NodeConst.TypeBool;
+    public override int nodeType => NodeTypeConst.TypeBool;
 
     public BoolNode(bool v_ = false) : base(v_) { }
 

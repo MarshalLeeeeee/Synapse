@@ -87,18 +87,15 @@ public class Reflection
     /// <param name="t"> type of the class </param>
     private static void RegisterRpcMethod(Type t)
     {
-        if (t.IsSubclassOf(typeof(Node)))
+        int rpcType = Const.RpcType;
+        MethodInfo[] methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+        foreach (MethodInfo method in methods)
         {
-            int rpcType = Const.RpcType;
-            MethodInfo[] methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-            foreach (MethodInfo method in methods)
+            if (reflectionImpl.GetRpcMethodInfo(method, rpcType, out RpcMethodInfo? rpcMethodInfo))
             {
-                if (reflectionImpl.GetRpcMethodInfo(method, rpcType, out RpcMethodInfo? rpcMethodInfo))
+                if (rpcMethodInfo != null)
                 {
-                    if (rpcMethodInfo != null)
-                    {
-                        rpcMethods[method.Name] = rpcMethodInfo;
-                    }
+                    rpcMethods[$"{t.Name}.{method.Name}"] = rpcMethodInfo;
                 }
             }
         }

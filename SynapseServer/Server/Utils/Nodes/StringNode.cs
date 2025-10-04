@@ -1,8 +1,8 @@
 
-[SyncNode(NodeConst.TypeString)]
+[SyncNode(NodeTypeConst.TypeString)]
 public class StringNode : StringNodeCommon
 {
-    public override int nodeType => NodeConst.TypeString;
+    public override int nodeType => NodeTypeConst.TypeString;
 
     public StringNode(string s_ = "") : base(s_) { }
 

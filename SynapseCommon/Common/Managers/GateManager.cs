@@ -203,5 +203,20 @@ public class ProxyCommon
 /// </summary>
 public class GateManagerCommon : Manager
 {
+    #region REGION_RPC
 
+    protected static object? GetRpcOwner(string ownerId)
+    {
+        Manager? mgr = Game.Instance.GetManager(ownerId);
+        if (mgr != null) return mgr;
+        return null;
+    }
+
+    protected static object? GetRpcInstance(object owner, string instanceId)
+    {
+        if (String.IsNullOrEmpty(instanceId)) return owner;
+        return null;
+    }
+
+    #endregion
 }

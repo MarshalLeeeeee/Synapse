@@ -1,8 +1,8 @@
 
-[SyncNode(NodeConst.TypeIntKeyDictionaryTail)]
+[SyncNode(NodeTypeConst.TypeIntKeyDictionaryTail)]
 public class IntKeyDictionaryTailNode : IntKeyDictionaryTailNodeCommon
 {
-    public override int nodeType => NodeConst.TypeIntKeyDictionaryTail;
+    public override int nodeType => NodeTypeConst.TypeIntKeyDictionaryTail;
 
     public IntKeyDictionaryTailNode() : base() { }
 

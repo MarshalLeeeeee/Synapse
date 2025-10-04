@@ -45,7 +45,7 @@ public class AccountManager : AccountManagerCommon
     /// <param name="proxyId"> id of the proxy </param>
     /// <param name="account"> account name </param>
     /// <returns> Return true only if modification acctually performed </returns>
-    private bool Add(string proxyId, string account)
+    private bool AddAccount(string proxyId, string account)
     {
         return proxyIdWithAccount.Add(proxyId, account);
     }
@@ -89,12 +89,12 @@ public class AccountManager : AccountManagerCommon
 
     #region REGION_LOGIN_LOGOUT
 
-    [Rpc(RpcConst.AnyClient, NodeConst.TypeString, NodeConst.TypeString)]
+    [Rpc(RpcConst.AnyClient, NodeTypeConst.TypeString, NodeTypeConst.TypeString)]
     public void LoginRemote(Proxy proxy, StringNode account, StringNode password)
     {
         string proxyId = proxy.proxyId;
         string accountValue = account.Get();
-        if (Add(proxyId, accountValue))
+        if (AddAccount(proxyId, accountValue))
         {
             EnsurePlayerEntity(accountValue);
             NotifyLoginSucc(proxyId, accountValue);
@@ -132,7 +132,7 @@ public class AccountManager : AccountManagerCommon
         if (gateMgr != null)
         {
             // TODO: here should be a full sync of Node from server to client
-            gateMgr.CallRpc(proxyId, "LoginResRemote", "AccountManager", "", new StringNode(account));
+            gateMgr.CallRpc(proxyId, "AccountManager.LoginResRemote", "AccountManager", "", new StringNode(account));
         }
     }
 
@@ -145,7 +145,7 @@ public class AccountManager : AccountManagerCommon
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr != null)
         {
-            gateMgr.CallRpc(proxyId, "LoginResRemote", "AccountManager", "", new StringNode(""));
+            gateMgr.CallRpc(proxyId, "AccountManager.LoginResRemote", "AccountManager", "", new StringNode(""));
         }
     }
 
@@ -184,7 +184,7 @@ public class AccountManager : AccountManagerCommon
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr != null)
         {
-            gateMgr.CallRpc(proxyId, "LogoutResRemote", "AccountManager", "", new StringNode(account));
+            gateMgr.CallRpc(proxyId, "AccountManager.LogoutResRemote", "AccountManager", "", new StringNode(account));
         }
     }
 
@@ -197,7 +197,7 @@ public class AccountManager : AccountManagerCommon
         GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
         if (gateMgr != null)
         {
-            gateMgr.CallRpc(proxyId, "LogoutResRemote", "AccountManager", "", new StringNode(""));
+            gateMgr.CallRpc(proxyId, "AccountManager.LogoutResRemote", "AccountManager", "", new StringNode(""));
         }
     }
 

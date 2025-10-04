@@ -1,8 +1,8 @@
 
-[SyncNode(NodeConst.TypeList)]
+[SyncNode(NodeTypeConst.TypeList)]
 public class ListNode : ListNodeCommon
 {
-    public override int nodeType => NodeConst.TypeList;
+    public override int nodeType => NodeTypeConst.TypeList;
 
     public ListNode(params Node[] nodes) : base(nodes) { }
 

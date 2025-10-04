@@ -1,8 +1,8 @@
 
-[SyncNode(NodeConst.TypeInt)]
+[SyncNode(NodeTypeConst.TypeInt)]
 public class IntNode : IntNodeCommon
 {
-    public override int nodeType => NodeConst.TypeInt;
+    public override int nodeType => NodeTypeConst.TypeInt;
 
     public IntNode(int v_ = 0) : base(v_) { }
 

@@ -452,14 +452,14 @@ public class GateManager : GateManagerCommon
         if (rpcMethodInfo == null) return;
 
         // get method owner
-        Node? owner = GetRpcOwner(msg.ownerId);
+        object? owner = GetRpcOwner(msg.ownerId);
         if (owner == null) return;
 
-        Node? instance = GetRpcInstance(owner, msg.instanceId);
+        object? instance = GetRpcInstance(owner, msg.instanceId);
         if (instance == null) return;
 
         // check rpc type
-        if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;
+        //if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;
 
         // check arg len
         if (!rpcMethodInfo.CheckArgTypes(msg.arg)) return;
@@ -472,19 +472,6 @@ public class GateManager : GateManagerCommon
             methodArgs.Add(arg);
         }
         rpcMethodInfo.Invoke(instance, methodArgs.ToArray());
-    }
-
-    private Node? GetRpcOwner(string ownerId)
-    {
-        Node? mgr = Game.Instance.GetManager(ownerId);
-        if (mgr != null) return mgr;
-        return null;
-    }
-
-    private Node? GetRpcInstance(Node owner, string instanceId)
-    {
-        if (String.IsNullOrEmpty(instanceId)) return owner;
-        return null;
     }
 
     #endregion

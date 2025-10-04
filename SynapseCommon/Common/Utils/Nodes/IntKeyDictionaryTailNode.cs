@@ -13,7 +13,7 @@ public class IntKeyDictionaryTailNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeIntKeyDictionaryTail);
+        writer.Write(NodeTypeConst.TypeIntKeyDictionaryTail);
     }
 
     protected static object[] DeserializeIntoArgs(BinaryReader reader)

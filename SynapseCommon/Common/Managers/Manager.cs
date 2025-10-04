@@ -1,7 +1,6 @@
 /// <summary>
 /// Manager
 /// <para> Manager is owned by Game. </para>
-/// <para> Manager is the root of a synchronizable tree. </para>
 /// </summary>
 
 using System;
@@ -12,7 +11,7 @@ public class RegisterManagerAttribute : Attribute
     public RegisterManagerAttribute() { }
 }
 
-public class Manager : Node
+public class Manager
 {
     public void Start()
     {

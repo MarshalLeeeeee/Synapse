@@ -14,7 +14,7 @@ public class StringNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeString);
+        writer.Write(NodeTypeConst.TypeString);
         writer.Write(s);
     }
 

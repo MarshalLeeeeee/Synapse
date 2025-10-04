@@ -29,7 +29,7 @@ public class IntKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<int, No
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeIntKeyDictionary);
+        writer.Write(NodeTypeConst.TypeIntKeyDictionary);
         foreach (KeyValuePair<int, Node> kvp in children)
         {
             NodeStreamer.Serialize(new IntNode(kvp.Key), writer);

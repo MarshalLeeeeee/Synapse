@@ -1,8 +1,8 @@
 
-[SyncNode(NodeConst.TypeFloat)]
+[SyncNode(NodeTypeConst.TypeFloat)]
 public class FloatNode : FloatNodeCommon
 {
-    public override int nodeType => NodeConst.TypeFloat;
+    public override int nodeType => NodeTypeConst.TypeFloat;
 
     public FloatNode(float f_ = 0.0f) : base(f_) { }
 

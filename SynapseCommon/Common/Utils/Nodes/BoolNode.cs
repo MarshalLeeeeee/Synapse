@@ -14,7 +14,7 @@ public class BoolNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeBool);
+        writer.Write(NodeTypeConst.TypeBool);
         writer.Write(v);
     }
 

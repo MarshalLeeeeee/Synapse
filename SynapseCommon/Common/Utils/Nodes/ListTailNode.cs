@@ -13,7 +13,7 @@ public class ListTailNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeListTail);
+        writer.Write(NodeTypeConst.TypeListTail);
     }
 
     /// <summary>

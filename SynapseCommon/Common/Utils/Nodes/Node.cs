@@ -6,7 +6,7 @@
 
 using System.Reflection;
 
-public class NodeConst
+public class NodeTypeConst
 {
     public const int TypeUndefined = 0;
     public const int TypeInt = 1;
@@ -20,6 +20,13 @@ public class NodeConst
     public const int TypeIntKeyDictionaryTail = 13;
     public const int TypeStringKeyDictionary = 14;
     public const int TypeStringKeyDictionaryTail = 15;
+}
+
+public class NodeSynConst
+{
+    public const int SyncNone = 0;
+    public const int SyncAll = 1;
+    public const int SyncOwn = 2;
 }
 
 /// <summary>
@@ -42,10 +49,16 @@ public class NodeCommon
     /// Every node has a unique id at runtime which serves as the identifier of the node in both server and client. 
     /// </summary>
     public string id = "";
+
+    /// <summary>
+    /// the sync type of the node
+    /// </summary>
+    public int syncType = NodeSynConst.SyncNone;
+
     /// <summary>
     /// exclusive value for node
     /// </summary>
-    public virtual int nodeType => NodeConst.TypeUndefined;
+    public virtual int nodeType => NodeTypeConst.TypeUndefined;
 
     /// <summary>
     /// Return the string that represents the current node.
@@ -58,11 +71,7 @@ public class NodeCommon
     /// <summary>
     /// Serialize the node into a binary stream.
     /// </summary>
-    public virtual void Serialize(BinaryWriter writer)
-    {
-        writer.Write(NodeConst.TypeUndefined);
-        return;
-    }
+    public virtual void Serialize(BinaryWriter writer) { }
 }
 
 public static class NodeStreamer

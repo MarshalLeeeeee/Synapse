@@ -14,7 +14,7 @@ public class IntNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeConst.TypeInt);
+        writer.Write(NodeTypeConst.TypeInt);
         writer.Write(v);
     }
 
