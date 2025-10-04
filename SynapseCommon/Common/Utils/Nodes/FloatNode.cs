@@ -4,7 +4,7 @@ public class FloatNodeCommon : Node
 {
     float f = 0.0f;
 
-    public FloatNodeCommon(float f_ = 0.0f) { f = f_; }
+    protected FloatNodeCommon(float f_ = 0.0f) { f = f_; }
 
     public override string ToString()
     {
@@ -15,7 +15,7 @@ public class FloatNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeTypeConst.TypeFloat);
+        writer.Write(nodeType);
         writer.Write(f);
     }
 

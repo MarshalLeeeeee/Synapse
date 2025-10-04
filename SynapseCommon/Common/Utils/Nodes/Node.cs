@@ -8,18 +8,36 @@ using System.Reflection;
 
 public class NodeTypeConst
 {
+    #region REGION_BASE
+
     public const int TypeUndefined = 0;
     public const int TypeInt = 1;
     public const int TypeFloat = 2;
     public const int TypeString = 3;
     public const int TypeBool = 4;
 
-    public const int TypeList = 10;
-    public const int TypeListTail = 11;
-    public const int TypeIntKeyDictionary = 12;
-    public const int TypeIntKeyDictionaryTail = 13;
-    public const int TypeStringKeyDictionary = 14;
-    public const int TypeStringKeyDictionaryTail = 15;
+    public const int TypeList = 11;
+    public const int TypeListTail = 12;
+    public const int TypeIntKeyDictionary = 13;
+    public const int TypeIntKeyDictionaryTail = 14;
+    public const int TypeStringKeyDictionary = 15;
+    public const int TypeStringKeyDictionaryTail = 16;
+
+    #endregion
+
+    #region REGION_ENTITY
+
+    public const int EntityOffset = 1000000;
+    public const int TypePlayerEntity = EntityOffset + 1;
+
+    #endregion
+
+    #region REGION_COMPONENT
+
+    public const int ComponentOffset = 2000000;
+    public const int TypeComponents = ComponentOffset;
+
+    #endregion
 }
 
 public class NodeSynConst

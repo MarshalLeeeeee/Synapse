@@ -74,12 +74,26 @@ public class GateManager : GateManagerCommon
     #region REGION_CONNECTION
 
     /// <summary>
+    /// check if client proxy connects with the server
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckConnected()
+    {
+        return (proxy != null && proxy.IsConnected());
+    }
+
+    /// <summary>
     /// Reset the current proxy
     /// </summary>
     public void ResetConnection(string _ = "")
     {
         proxy?.Destroy();
         proxy = null;
+        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
+        if (eventManager != null)
+        {
+            eventManager.TriggerGlobalEvent("OnResetConnection");
+        }
     }
 
     public void StartConnection()
@@ -184,7 +198,7 @@ public class GateManager : GateManagerCommon
     /// <param name="msg"> message </param>
     private void SendMsg(Msg msg)
     {
-        if (proxy == null || !proxy.IsConnected()) return;
+        if (!CheckConnected()) return;
         MsgStreamer.WriteMsgToStream(proxy.stream, msg);
     }
 
@@ -197,7 +211,7 @@ public class GateManager : GateManagerCommon
     /// </summary>
     private void PingHeartbeat()
     {
-        if (proxy == null || !proxy.IsConnected()) return;
+        if (!CheckConnected()) return;
 
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         if (now - lastHeartbeatTime < Const.HeartBeatInterval) return;

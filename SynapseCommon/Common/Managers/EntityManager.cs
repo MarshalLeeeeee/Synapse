@@ -4,5 +4,5 @@
 /// </summary>
 public class EntityManagerCommon : Manager
 {
-    protected StringKeyDictionaryNode playerEntities = new StringKeyDictionaryNode();
+    protected Dictionary<string, PlayerEntity> playerEntities = new Dictionary<string, PlayerEntity>();
 }

@@ -2,34 +2,34 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class StringKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<string, Node>>
+public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValuePair<string, T>> where T : Node
 {
-    protected Dictionary<string, Node> children = new Dictionary<string, Node>();
+    protected Dictionary<string, T> children = new Dictionary<string, T>();
 
-    public StringKeyDictionaryNodeCommon(params KeyValuePair<string, Node>[] kvps)
+    protected StringKeyDictionaryTemplateNodeCommon(params KeyValuePair<string, T>[] kvps)
     {
-        foreach (KeyValuePair<string, Node> kvp in kvps)
+        foreach (KeyValuePair<string, T> kvp in kvps)
         {
             Add(kvp.Key, kvp.Value);
         }
     }
 
-    public override string ToString()
+    protected string ChildrenToString()
     {
         string s = "";
-        foreach (KeyValuePair<string, Node> kvp in children)
+        foreach (KeyValuePair<string, T> kvp in children)
         {
             s += $"{kvp.Key}:{kvp.Value}, ";
         }
-        return $"StringKeyDictionaryNode({{{s}}})";
+        return s;
     }
 
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeTypeConst.TypeStringKeyDictionary);
-        foreach (KeyValuePair<string, Node> kvp in children)
+        writer.Write(nodeType);
+        foreach (KeyValuePair<string, T> kvp in children)
         {
             NodeStreamer.Serialize(new StringNode(kvp.Key), writer);
             NodeStreamer.Serialize(kvp.Value, writer);
@@ -48,7 +48,14 @@ public class StringKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<stri
             if (keyNode is StringNode stringKeyNode)
             {
                 if (valueNode is StringKeyDictionaryTailNode) break;
-                argsList.Add(new KeyValuePair<string, Node>(stringKeyNode.Get(), valueNode));
+                if (valueNode is T tNode)
+                {
+                    argsList.Add(new KeyValuePair<string, T>(stringKeyNode.Get(), tNode));
+                }
+                else
+                {
+                    throw new InvalidDataException("Failed to deserialize key node of StringKeyDictionaryNode.");
+                }
             }
             else
             {
@@ -62,7 +69,7 @@ public class StringKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<stri
 
     #region REGION_API
 
-    public Node this[string key]
+    public T this[string key]
     {
         get
         {
@@ -86,12 +93,12 @@ public class StringKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<stri
         return children.ContainsKey(key);
     }
 
-    public bool TryGetValue(string key, out Node? value)
+    public bool TryGetValue(string key, out T? value)
     {
         return children.TryGetValue(key, out value);
     }
 
-    public IEnumerator<KeyValuePair<string, Node>> GetEnumerator()
+    public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
     {
         return children.GetEnumerator();
     }
@@ -101,14 +108,14 @@ public class StringKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<stri
         return GetEnumerator();
     }
 
-    public void Add(string key, Node value)
+    public void Add(string key, T value)
     {
         children.Add(key, value);
     }
 
     public void Remove(string key)
     {
-        if (children.TryGetValue(key, out Node? value) && value != null)
+        if (children.TryGetValue(key, out T? value) && value != null)
         {
             children.Remove(key);
         }
@@ -120,4 +127,14 @@ public class StringKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<stri
     }
 
     #endregion
+}
+
+public class StringKeyDictionaryNodeCommon : StringKeyDictionaryTemplateNodeCommon<Node>
+{
+    protected StringKeyDictionaryNodeCommon(params KeyValuePair<string, Node>[] kvps) : base(kvps) { }
+
+    public override string ToString()
+    {
+        return $"StringKeyDictionaryNode({{{ChildrenToString()}}})";
+    }
 }

@@ -2,7 +2,7 @@
 public class ListTailNodeCommon : Node
 {
 
-    public ListTailNodeCommon() { }
+    protected ListTailNodeCommon() { }
 
     public override string ToString()
     {
@@ -13,7 +13,7 @@ public class ListTailNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeTypeConst.TypeListTail);
+        writer.Write(nodeType);
     }
 
     /// <summary>

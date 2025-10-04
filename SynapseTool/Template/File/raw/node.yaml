@@ -25,7 +25,7 @@ files:
 
           public override void Serialize(BinaryWriter writer)
           {
-              writer.Write(NodeConst.Type$s0$);
+              writer.Write(nodeType);
               // TODO
           }
 

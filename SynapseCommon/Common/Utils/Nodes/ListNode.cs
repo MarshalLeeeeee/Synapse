@@ -1,33 +1,33 @@
 using System.Collections;
 
-public class ListNodeCommon : Node, IEnumerable<Node>
+public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
 {
-    protected List<Node> children = new List<Node>();
+    protected List<T> children = new List<T>();
 
-    public ListNodeCommon(params Node[] nodes)
+    protected ListTemplateNodeCommon(params T[] nodes)
     {
-        foreach (Node node in nodes)
+        foreach (T node in nodes)
         {
             Add(node);
         }
     }
 
-    public override string ToString()
+    protected string ChildrenToString()
     {
         string s = "";
-        foreach (Node node in children)
+        foreach (T node in children)
         {
             s += $"{node}, ";
         }
-        return $"ListNode([{s}])";
+        return s;
     }
 
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeTypeConst.TypeList);
-        foreach (Node child in children)
+        writer.Write(nodeType);
+        foreach (T child in children)
         {
             NodeStreamer.Serialize(child, writer);
         }
@@ -45,7 +45,14 @@ public class ListNodeCommon : Node, IEnumerable<Node>
         {
             Node node = NodeStreamer.Deserialize(reader);
             if (node is ListTailNode) break;
-            else argsList.Add(node);
+            if (node is T tNode)
+            {
+                argsList.Add(node);
+            }
+            else
+            {
+                throw new InvalidDataException($"Failed to deserialize key node of ListTemplateNodeCommon<{typeof(T).Name}>.");
+            }
         }
         return argsList.ToArray();
     }
@@ -54,7 +61,7 @@ public class ListNodeCommon : Node, IEnumerable<Node>
 
     #region REGION_API
 
-    public Node this[int index]
+    public T this[int index]
     {
         get
         {
@@ -76,22 +83,22 @@ public class ListNodeCommon : Node, IEnumerable<Node>
         get { return children.Count; }
     }
 
-    public bool Contains(Node child)
+    public bool Contains(T child)
     {
         return children.Contains(child);
     }
 
-    public int IndexOf(Node child)
+    public int IndexOf(T child)
     {
         return children.IndexOf(child);
     }
 
-    public Node[] ToArray()
+    public T[] ToArray()
     {
         return children.ToArray();
     }
 
-    public IEnumerator<Node> GetEnumerator()
+    public IEnumerator<T> GetEnumerator()
     {
         return children.GetEnumerator();
     }
@@ -101,19 +108,19 @@ public class ListNodeCommon : Node, IEnumerable<Node>
         return GetEnumerator();
     }
 
-    public void Add(Node child)
+    public void Add(T child)
     {
         children.Add(child);
     }
 
-    public void Insert(int index, Node child)
+    public void Insert(int index, T child)
     {
         if (index < 0 || index > children.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
         children.Insert(index, child);
     }
 
-    public void Remove(Node child)
+    public void Remove(T child)
     {
         children.Remove(child);
     }
@@ -132,6 +139,16 @@ public class ListNodeCommon : Node, IEnumerable<Node>
     }
 
     #endregion
+}
+
+public class ListNodeCommon : ListTemplateNodeCommon<Node>
+{
+    protected ListNodeCommon(params Node[] nodes) : base(nodes) { }
+
+    public override string ToString()
+    {
+        return $"ListNode([{ChildrenToString()}])";
+    }
 }
 
 #if DEBUG

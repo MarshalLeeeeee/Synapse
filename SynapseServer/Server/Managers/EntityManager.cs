@@ -18,6 +18,7 @@ public class EntityManager : EntityManagerCommon
         {
             if (playerId != null)
             {
+                // TODO
                 // do nothing with creation, maybe cancel auto recycle timer
             }
             else
@@ -37,7 +38,9 @@ public class EntityManager : EntityManagerCommon
     /// <param name="account"> account </param>
     private void CreatePlayerEntity(string account)
     {
-        string playerId = "debug";
+        PlayerEntity player = new PlayerEntity();
+        string playerId = player.entityId;
+        playerEntities.Add(playerId, player);
         accountWithPlayerId.Add(account, playerId);
     }
 }

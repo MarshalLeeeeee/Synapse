@@ -8,12 +8,27 @@
 using System;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class RegisterEntity : Attribute
+public class RegisterEntityAttribute : Attribute
 {
-    public RegisterEntity() { }
+    public RegisterEntityAttribute() { }
 }
 
-public class Entity : Node
+public class EntityCommon : Node
 {
+    /// <summary>
+    /// exclusive id for entity
+    /// </summary>
+    public string entityId { get; protected set; } = "";
 
+    protected EntityCommon(string eid = "")
+    {
+        if (String.IsNullOrEmpty(eid))
+        {
+            entityId = Guid.NewGuid().ToString();
+        }
+        else
+        {
+            entityId = eid;
+        }
+    }
 }

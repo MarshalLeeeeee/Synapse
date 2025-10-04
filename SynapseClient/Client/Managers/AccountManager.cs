@@ -18,6 +18,26 @@ public class AccountManager : AccountManagerCommon
     /// </summary>
     private bool waitLogoutRes = false;
 
+    protected override void OnStart()
+    {
+        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
+        if (eventManager != null)
+        {
+            eventManager.RegisterGlobalEvent("OnResetConnection", "AccountManager.Reset", Reset);
+        }
+    }
+
+    protected override void DoUpdate(float dt) { }
+
+    protected override void OnDestroy()
+    {
+        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
+        if (eventManager != null)
+        {
+            eventManager.UnregisterGlobalEvent("OnResetConnection", "AccountManager.Reset");
+        }
+    }
+
     #region REGION_LOGIN_LOGOUT
 
     public bool CheckLogin()
@@ -46,6 +66,11 @@ public class AccountManager : AccountManagerCommon
         if (gateMgr == null)
         {
             Log.Error("GateManager is not found");
+            return false;
+        }
+        if (!gateMgr.CheckConnected())
+        {
+            Log.Info("Client is not connecting with server");
             return false;
         }
 
@@ -162,6 +187,17 @@ public class AccountManager : AccountManagerCommon
         }
         waitLogoutRes = false;
         Log.Info("[LogoutFail] Logout fail");
+    }
+
+    /// <summary>
+    /// reset all login or pending state
+    /// </summary>
+    private void Reset()
+    {
+        loginAccount = "";
+        waitLoginRes = false;
+        waitLogoutRes = false;
+        Log.Info("[AccountManager][Reset] reset over...");
     }
 
     #endregion

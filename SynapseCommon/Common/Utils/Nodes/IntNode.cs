@@ -3,7 +3,7 @@ public class IntNodeCommon : Node
 {
     int v = 0;
 
-    public IntNodeCommon(int v_ = 0) { v = v_; }
+    protected IntNodeCommon(int v_ = 0) { v = v_; }
 
     public override string ToString()
     {
@@ -14,7 +14,7 @@ public class IntNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeTypeConst.TypeInt);
+        writer.Write(nodeType);
         writer.Write(v);
     }
 

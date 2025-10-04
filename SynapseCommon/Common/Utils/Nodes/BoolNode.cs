@@ -3,7 +3,7 @@ public class BoolNodeCommon : Node
 {
     bool v = false;
 
-    public BoolNodeCommon(bool v_ = false) { v = v_; }
+    protected BoolNodeCommon(bool v_ = false) { v = v_; }
 
     public override string ToString()
     {
@@ -14,7 +14,7 @@ public class BoolNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeTypeConst.TypeBool);
+        writer.Write(nodeType);
         writer.Write(v);
     }
 

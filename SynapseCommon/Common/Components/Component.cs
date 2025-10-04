@@ -13,7 +13,17 @@ public class RegisterComponent : Attribute
     public RegisterComponent() { }
 }
 
-public class Component : Node
+public class ComponentCommon : Node
 {
 
+}
+
+public class ComponentsCommon : StringKeyDictionaryTemplateNodeCommon<Component>
+{
+    protected ComponentsCommon(params KeyValuePair<string, Component>[] kvps) : base(kvps) { }
+
+    public override string ToString()
+    {
+        return $"Components({{{ChildrenToString()}}})";
+    }
 }

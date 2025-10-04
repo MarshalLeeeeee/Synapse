@@ -2,35 +2,34 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class IntKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<int, Node>>
+public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValuePair<int, T>> where T : Node
 {
+    protected Dictionary<int, T> children = new Dictionary<int, T>();
 
-    protected Dictionary<int, Node> children = new Dictionary<int, Node>();
-
-    public IntKeyDictionaryNodeCommon(params KeyValuePair<int, Node>[] kvps)
+    protected IntKeyDictionaryTemplateNodeCommon(params KeyValuePair<int, T>[] kvps)
     {
-        foreach (KeyValuePair<int, Node> kvp in kvps)
+        foreach (KeyValuePair<int, T> kvp in kvps)
         {
             Add(kvp.Key, kvp.Value);
         }
     }
 
-    public override string ToString()
+    protected string ChildrenToString()
     {
         string s = "";
-        foreach (KeyValuePair<int, Node> kvp in children)
+        foreach (KeyValuePair<int, T> kvp in children)
         {
             s += $"{kvp.Key}:{kvp.Value}, ";
         }
-        return $"IntKeyDictionaryNode({{{s}}})";
+        return s;
     }
-
+    
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeTypeConst.TypeIntKeyDictionary);
-        foreach (KeyValuePair<int, Node> kvp in children)
+        writer.Write(nodeType);
+        foreach (KeyValuePair<int, T> kvp in children)
         {
             NodeStreamer.Serialize(new IntNode(kvp.Key), writer);
             NodeStreamer.Serialize(kvp.Value, writer);
@@ -49,11 +48,18 @@ public class IntKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<int, No
             if (keyNode is IntNode intKeyNode)
             {
                 if (valueNode is IntKeyDictionaryTailNode) break;
-                argsList.Add(new KeyValuePair<int, Node>(intKeyNode.Get(), valueNode));
+                if (valueNode is T tNode)
+                {
+                    argsList.Add(new KeyValuePair<int, T>(intKeyNode.Get(), tNode));
+                }
+                else
+                {
+                    throw new InvalidDataException($"Failed to deserialize key node of IntKeyDictionaryTemplateNodeCommon<{typeof(T).Name}>.");
+                }
             }
             else
             {
-                throw new InvalidDataException("Failed to deserialize key node of IntKeyDictionaryNode.");
+                throw new InvalidDataException($"Failed to deserialize key node of IntKeyDictionaryTemplateNodeCommon<{typeof(T).Name}>.");
             }
         }
         return argsList.ToArray();
@@ -63,7 +69,7 @@ public class IntKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<int, No
 
     #region REGION_API
 
-    public Node this[int key]
+    public T this[int key]
     {
         get
         {
@@ -87,12 +93,12 @@ public class IntKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<int, No
         return children.ContainsKey(key);
     }
 
-    public bool TryGetValue(int key, out Node? value)
+    public bool TryGetValue(int key, out T? value)
     {
         return children.TryGetValue(key, out value);
     }
 
-    public IEnumerator<KeyValuePair<int, Node>> GetEnumerator()
+    public IEnumerator<KeyValuePair<int, T>> GetEnumerator()
     {
         return children.GetEnumerator();
     }
@@ -102,14 +108,14 @@ public class IntKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<int, No
         return GetEnumerator();
     }
 
-    public void Add(int key, Node value)
+    public void Add(int key, T value)
     {
         children.Add(key, value);
     }
 
     public void Remove(int key)
     {
-        if (children.TryGetValue(key, out Node? value) && value != null)
+        if (children.TryGetValue(key, out T? value) && value != null)
         {
             children.Remove(key);
         }
@@ -121,4 +127,15 @@ public class IntKeyDictionaryNodeCommon : Node, IEnumerable<KeyValuePair<int, No
     }
 
     #endregion
+}
+
+
+public class IntKeyDictionaryNodeCommon : IntKeyDictionaryTemplateNodeCommon<Node>
+{
+    protected IntKeyDictionaryNodeCommon(params KeyValuePair<int, Node>[] kvps) : base(kvps) { }
+
+    public override string ToString()
+    {
+        return $"IntKeyDictionaryNode({{{ChildrenToString()}}})";
+    }
 }

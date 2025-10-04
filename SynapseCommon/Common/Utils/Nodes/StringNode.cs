@@ -3,7 +3,7 @@ public class StringNodeCommon : Node
 {
     protected string s = "";
 
-    public StringNodeCommon(string s_ = "") { s = s_; }
+    protected StringNodeCommon(string s_ = "") { s = s_; }
 
     public override string ToString()
     {
@@ -14,7 +14,7 @@ public class StringNodeCommon : Node
 
     public override void Serialize(BinaryWriter writer)
     {
-        writer.Write(NodeTypeConst.TypeString);
+        writer.Write(nodeType);
         writer.Write(s);
     }
 
