@@ -8,10 +8,14 @@ public class GameCommon : IDisposable
 {
     protected Dictionary<string, Manager> managers = new Dictionary<string, Manager>();
 
-    // If the game still runs in loop
+    /// <summary>
+    /// If the game still runs in loop
+    /// </summary>
     private bool isRunning;
 
-    // Delta time between frames
+    /// <summary>
+    /// Delta time between frames
+    /// </summary>
     public float dt { get; private set; }
 
     public void Start()

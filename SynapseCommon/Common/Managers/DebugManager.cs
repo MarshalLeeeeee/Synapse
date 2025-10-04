@@ -6,20 +6,29 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO.Pipes;
 
-/*
- * Use pipeline to receive and execute gm in Game thread
- */
+/// <summary>
+/// Use pipeline to receive and execute gm in Game thread
+/// </summary>
 public class DebugManagerCommon : Manager
 {
-    /* backgroud task to listen gm command */
+    /// <summary>
+    /// backgroud task to listen gm command
+    /// </summary>
     protected Task listenerTask = Task.CompletedTask;
-    /* cancellation token source for gm listener task */
+
+    /// <summary>
+    /// cancellation token source for gm listener task
+    /// </summary>
     protected CancellationTokenSource listenerCts = new CancellationTokenSource();
 
-    /* flag of activeness of gm listener, shared in threads */
+    /// <summary>
+    /// flag of activeness of gm listener, shared in threads
+    /// </summary>
     protected volatile bool isActive = false;
 
-    /* queue for gm command to be executed, shared in threads */
+    /// <summary>
+    /// queue for gm command to be executed, shared in threads
+    /// </summary>
     protected ConcurrentQueue<string> gmQueue = new ConcurrentQueue<string>();
 
     protected override void OnStart()
@@ -111,7 +120,9 @@ public class DebugManagerCommon : Manager
 
     #region REGION_GM_EXECUTION
 
-    /* execute all queued gm commands */
+    /// <summary>
+    /// execute all queued gm commands
+    /// </summary>
     private void ConsumeGmQuueue()
     {
         while (gmQueue.TryDequeue(out string? gm))
@@ -121,7 +132,10 @@ public class DebugManagerCommon : Manager
         }
     }
 
-    /* execute gm */
+    /// <summary>
+    /// execute gm
+    /// </summary>
+    /// <param name="gm"> raw string of the input gm command </param>
     private void ExecuteGm(string gm)
     {
         Debug.ExecuteGm(gm);

@@ -16,10 +16,11 @@ files:
   - name: ./SynapseClient/Client/Managers/$s0$Manager.cs
     content: |
       
+      [RegisterManager]
       public class $s0$Manager : $s0$ManagerCommon {}
 
   - name: ./SynapseServer/Server/Managers/$s0$Manager.cs
     content: |
       
+      [RegisterManager]
       public class $s0$Manager : $s0$ManagerCommon {}
-

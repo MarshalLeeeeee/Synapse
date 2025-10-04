@@ -6,13 +6,24 @@ using System.Threading.Tasks;
 
 public class Msg
 {
-    /* name of the rpc method */
+    /// <summary>
+    /// name of the rpc method
+    /// </summary>
     public string methodName { get; }
-    /* id of the owner of the instance, Manager or Entity */
+
+    /// <summary>
+    /// id of the owner of the instance, Manager or Entity
+    /// </summary>
     public string ownerId { get; }
-    /* id of the instance of the method */
+
+    /// <summary>
+    /// id of the instance of the method
+    /// </summary>
     public string instanceId { get; }
-    /* method args (in serializable Node) */
+
+    /// <summary>
+    /// method args (in serializable Node)
+    /// </summary>
     public ListNode arg = new ListNode();
     public Msg(string methodName_, string ownerId_, string instanceId_)
     {
@@ -32,7 +43,7 @@ public static class MsgStreamer
         writer.Write(msg.methodName);
         writer.Write(msg.ownerId);
         writer.Write(msg.instanceId);
-        msg.arg.Serialize(writer);
+        NodeStreamer.Serialize(msg.arg, writer);
         return stream.ToArray();
     }
 
@@ -189,7 +200,7 @@ public static class MsgStreamer
     {
         if (stream == null) return false;
 
-        byte[] buffer = MsgStreamer.Serialize(msg);
+        byte[] buffer = Serialize(msg);
         if (buffer.Length <= 0) return false;
 
         byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);
@@ -205,7 +216,7 @@ public static class MsgStreamer
 
         try
         {
-            byte[] buffer = MsgStreamer.Serialize(msg);
+            byte[] buffer = Serialize(msg);
             if (buffer.Length <= 0) return false;
 
             byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);

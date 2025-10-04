@@ -46,7 +46,7 @@ public class RpcMethodInfo
         {
             int argType = argTypes[i];
             Node arg = args[i];
-            if (argType != NodeConst.TypeUndefined && arg.nodeType != argTypes[i]) return false;
+            if (argType != NodeTypeConst.TypeUndefined && arg.nodeType != argTypes[i]) return false;
             i++;
         }
         return true;

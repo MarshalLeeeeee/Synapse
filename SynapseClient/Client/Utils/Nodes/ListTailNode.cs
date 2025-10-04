@@ -1,0 +1,21 @@
+
+[SyncNode(NodeTypeConst.TypeListTail)]
+public class ListTailNode : ListTailNodeCommon
+{
+    public override int nodeType => NodeTypeConst.TypeListTail;
+
+    public ListTailNode() : base() { }
+
+    public static ListTailNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            object[] args = DeserializeIntoArgs(reader);
+            return (ListTailNode)Activator.CreateInstance(typeof(ListTailNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize ListTailNode.", ex);
+        }
+    }
+}
