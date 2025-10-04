@@ -1,4 +1,5 @@
 
+[RegisterManager]
 public class EntityManager : EntityManagerCommon
 {
     /// <summary>

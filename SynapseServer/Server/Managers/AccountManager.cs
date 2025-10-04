@@ -77,8 +77,7 @@ public class AccountManager : AccountManagerCommon
     /// <returns> Account or null </returns>
     public string? GetAccount(string proxyId)
     {
-        string? account;
-        if (proxyIdWithAccount.GetUByT(proxyId, out account))
+        if (proxyIdWithAccount.GetUByT(proxyId, out string? account))
         {
             return account;
         }
@@ -96,7 +95,11 @@ public class AccountManager : AccountManagerCommon
         string accountValue = account.Get();
         if (AddAccount(proxyId, accountValue))
         {
-            EnsurePlayerEntity(accountValue);
+            EventManager? eventManager = Game.Instance.GetManager<EventManager>();
+            if (eventManager != null)
+            {
+                eventManager.TriggerGlobalEvent("OnLogin", proxyId, accountValue);
+            }
             NotifyLoginSucc(proxyId, accountValue);
             Log.Info($"Account ({accountValue}) with proxy ({proxyId}) successfully login...");
         }
@@ -111,12 +114,12 @@ public class AccountManager : AccountManagerCommon
     /// ensure player entity with the given accont
     /// </summary>
     /// <param name="account"> account </param>
-    private void EnsurePlayerEntity(string account)
+    private void EnsurePlayerEntity(string proxyId, string account)
     {
         EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
         if (entityManager != null)
         {
-            entityManager.EnsurePlayerEntity(account);
+            entityManager.EnsurePlayerEntity(proxyId, account);
         }
     }
 

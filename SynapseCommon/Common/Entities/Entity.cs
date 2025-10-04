@@ -20,15 +20,25 @@ public class EntityCommon : Node
     /// </summary>
     public string entityId { get; protected set; } = "";
 
-    protected EntityCommon(string eid = "")
+    /// <summary>
+    /// manage components, component name -> component instance
+    /// </summary>
+    protected Components components = new Components();
+
+    protected EntityCommon(string entityId_ = "", Components? components_ = null)
     {
-        if (String.IsNullOrEmpty(eid))
+        if (String.IsNullOrEmpty(entityId_))
         {
             entityId = Guid.NewGuid().ToString();
         }
         else
         {
-            entityId = eid;
+            entityId = entityId_;
+        }
+
+        if (components_ != null)
+        {
+            components = components_;
         }
     }
 }
