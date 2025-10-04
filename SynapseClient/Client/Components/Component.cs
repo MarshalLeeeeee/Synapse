@@ -9,7 +9,7 @@ public class Components : ComponentsCommon
 {
     public override int nodeType => NodeTypeConst.TypeComponents;
 
-    protected Components(params KeyValuePair<string, Component>[] kvps) : base(kvps) { }
+    public Components(params KeyValuePair<string, Component>[] kvps) : base(kvps) { }
 
     public static Components Deserialize(BinaryReader reader)
     {
