@@ -11,22 +11,14 @@ public class EntityManager : EntityManagerCommon
 
     protected override void OnStart()
     {
-        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-        if (eventManager != null)
-        {
-            eventManager.RegisterGlobalEvent<string, string>("OnLogin", "EntityManager.EnsurePlayerEntity", EnsurePlayerEntity);
-        }
+        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent<string, string>("OnLogin", "EntityManager.EnsurePlayerEntity", EnsurePlayerEntity);
     }
 
     protected override void DoUpdate(float dt) { }
 
     protected override void OnDestroy()
     {
-        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-        if (eventManager != null)
-        {
-            eventManager.UnregisterGlobalEvent("OnLogin", "EntityManager.EnsurePlayerEntity");
-        }
+        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("OnLogin", "EntityManager.EnsurePlayerEntity");
     }
 
     /// <summary>
@@ -171,10 +163,7 @@ public class EntityManager : EntityManagerCommon
     /// <returns> Return playerId if exists, null otherwise </returns>
     public string? GetPlayerIdByProxyId(string proxyId)
     {
-        AccountManager? accountManager = Game.Instance.GetManager<AccountManager>();
-        if (accountManager == null) return null;
-
-        string? account = accountManager.GetAccount(proxyId);
+        string? account = Game.Instance.GetManager<AccountManager>()?.GetAccount(proxyId);
         if (account == null) return null;
 
         return GetPlayerIdByAccount(account);

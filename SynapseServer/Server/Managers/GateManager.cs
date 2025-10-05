@@ -279,11 +279,7 @@ public class GateManager : GateManagerCommon
     {
         if (proxies.TryRemove(proxyId, out Proxy? proxy))
         {
-            EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-            if (eventManager != null)
-            {
-                eventManager.TriggerGlobalEvent("OnRemoveProxy", proxyId);
-            }
+            Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnRemoveProxy", proxyId);
             proxy?.Destroy();
             Log.Info($"[GateManager][RemoveProxy] Proxy [{proxyId}] is removed with connection state [{proxy.IsConnected()}]");
         }

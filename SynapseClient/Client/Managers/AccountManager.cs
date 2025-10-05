@@ -20,22 +20,14 @@ public class AccountManager : AccountManagerCommon
 
     protected override void OnStart()
     {
-        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-        if (eventManager != null)
-        {
-            eventManager.RegisterGlobalEvent("OnResetConnection", "AccountManager.Reset", Reset);
-        }
+        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent("OnResetConnection", "AccountManager.Reset", Reset);
     }
 
     protected override void DoUpdate(float dt) { }
 
     protected override void OnDestroy()
     {
-        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-        if (eventManager != null)
-        {
-            eventManager.UnregisterGlobalEvent("OnResetConnection", "AccountManager.Reset");
-        }
+        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("OnResetConnection", "AccountManager.Reset");
     }
 
     #region REGION_LOGIN_LOGOUT

@@ -40,11 +40,7 @@ public static class GmShowPlayerEntities
 {
     public static void Execute()
     {
-        EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
-        if (entityManager != null)
-        {
-            Log.Debug($"{entityManager}");
-        }
+        Log.Debug($"{Game.Instance.GetManager<EntityManager>()}");
     }
 }
 

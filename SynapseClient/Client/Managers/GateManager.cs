@@ -89,11 +89,7 @@ public class GateManager : GateManagerCommon
     {
         proxy?.Destroy();
         proxy = null;
-        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-        if (eventManager != null)
-        {
-            eventManager.TriggerGlobalEvent("OnResetConnection");
-        }
+        Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnResetConnection");
     }
 
     public void StartConnection()

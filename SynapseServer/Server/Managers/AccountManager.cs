@@ -14,22 +14,14 @@ public class AccountManager : AccountManagerCommon
 
     protected override void OnStart()
     {
-        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-        if (eventManager != null)
-        {
-            eventManager.RegisterGlobalEvent<string>("OnRemoveProxy", "OnRemoveProxy", OnRemoveProxy);
-        }
+        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent<string>("OnRemoveProxy", "OnRemoveProxy", OnRemoveProxy);
     }
 
     protected override void DoUpdate(float dt) { }
 
     protected override void OnDestroy()
     {
-        EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-        if (eventManager != null)
-        {
-            eventManager.UnregisterGlobalEvent("OnRemoveProxy", "OnRemoveProxy");
-        }
+        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("OnRemoveProxy", "OnRemoveProxy");
     }
 
     public override string ToString()
@@ -95,11 +87,7 @@ public class AccountManager : AccountManagerCommon
         string accountValue = account.Get();
         if (AddAccount(proxyId, accountValue))
         {
-            EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-            if (eventManager != null)
-            {
-                eventManager.TriggerGlobalEvent("OnLogin", proxyId, accountValue);
-            }
+            Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnLogin", proxyId, accountValue);
             NotifyLoginSucc(proxyId, accountValue);
             Log.Info($"Account ({accountValue}) with proxy ({proxyId}) successfully login...");
         }
@@ -116,11 +104,7 @@ public class AccountManager : AccountManagerCommon
     /// <param name="account"> account </param>
     private void EnsurePlayerEntity(string proxyId, string account)
     {
-        EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
-        if (entityManager != null)
-        {
-            entityManager.EnsurePlayerEntity(proxyId, account);
-        }
+        Game.Instance.GetManager<EntityManager>()?.EnsurePlayerEntity(proxyId, account);
     }
 
     /// <summary>

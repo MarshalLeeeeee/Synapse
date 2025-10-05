@@ -218,15 +218,10 @@ public class GateManagerCommon : Manager
         }
         else if (ownerId.StartsWith("Ett-"))
         {
-            EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
-            if (entityManager != null)
+            PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(ownerId);
+            if (player != null)
             {
-                PlayerEntity? player = entityManager.GetPlayerEntity(ownerId);
-                if (player != null)
-                {
-                    return (player, seg[1..]);
-                }
-                else return (null, null);
+                return (player, seg[1..]);
             }
             else return (null, null);
         }

@@ -78,14 +78,10 @@ public static class GmShowPlayer
 {
     public static void Execute(string playerId)
     {
-        EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
-        if (entityManager != null)
+        PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(playerId);
+        if (player != null)
         {
-            PlayerEntity? player = entityManager.GetPlayerEntity(playerId);
-            if (player != null)
-            {
-                Log.Debug($"{player}");
-            }
+            Log.Debug($"{player}");
         }
     }
 }
@@ -99,14 +95,10 @@ public static class GmSetPlayerName
 {
     public static void Execute(string playerId, string name)
     {
-        EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
-        if (entityManager != null)
+        PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(playerId);
+        if (player != null)
         {
-            PlayerEntity? player  = entityManager.GetPlayerEntity(playerId);
-            if (player != null)
-            {
-                player.SetName(name);
-            }
+            player.SetName(name);
         }
     }
 }
@@ -120,14 +112,10 @@ public static class GmSetPlayerMoney
 {
     public static void Execute(string playerId, int money)
     {
-        EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
-        if (entityManager != null)
+        PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(playerId);
+        if (player != null)
         {
-            PlayerEntity? player = entityManager.GetPlayerEntity(playerId);
-            if (player != null)
-            {
-                player.SetMoney(money);
-            }
+            player.SetMoney(money);
         }
     }
 }
