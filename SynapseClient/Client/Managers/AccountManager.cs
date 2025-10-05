@@ -62,21 +62,13 @@ public class AccountManager : AccountManagerCommon
             Log.Info("A logout remote invoke is in process");
             return false;
         }
-        GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
-        if (gateMgr == null)
-        {
-            Log.Error("GateManager is not found");
-            return false;
-        }
-        if (!gateMgr.CheckConnected())
-        {
-            Log.Info("Client is not connecting with server");
-            return false;
-        }
 
-        waitLoginRes = true;
-        gateMgr.CallRpc("AccountManager.LoginRemote", "Mgr-AccountManager", new StringNode(account), new StringNode(password));
-        return true;
+        if (Game.Instance.CallRpc("AccountManager.LoginRemote", "Mgr-AccountManager", new StringNode(account), new StringNode(password)))
+        {
+            waitLoginRes = true;
+            return true;
+        }
+        else return false;
     }
 
     [Rpc(RpcConst.Server, NodeTypeConst.TypeString)]
@@ -133,16 +125,13 @@ public class AccountManager : AccountManagerCommon
             Log.Info("A logout remote invoke is in process");
             return false;
         }
-        GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
-        if (gateMgr == null)
-        {
-            Log.Error("GateManager is not found");
-            return false;
-        }
 
-        waitLogoutRes = true;
-        gateMgr.CallRpc("AccountManager.LogoutRemote", "Mgr-AccountManager");
-        return true;
+        if (Game.Instance.CallRpc("AccountManager.LogoutRemote", "Mgr-AccountManager"))
+        {
+            waitLogoutRes = true;
+            return true;
+        }
+        else return false;
     }
 
     [Rpc(RpcConst.Server, NodeTypeConst.TypeString)]

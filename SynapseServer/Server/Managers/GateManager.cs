@@ -444,11 +444,12 @@ public class GateManager : GateManagerCommon
 
     #region REGION_RPC
 
-    public void CallRpc(string proxyId, string methodName, string instanceId, params Node[] args)
+    public bool CallRpc(string proxyId, string methodName, string instanceId, params Node[] args)
     {
         Proxy? proxy = GetProxy(proxyId);
-        if (proxy == null) return;
+        if (proxy == null) return false;
         AppendSendMsg(proxy, new Msg(methodName, instanceId, args));
+        return true;
     }
 
     private void InvokeRpc(Proxy proxy, Msg msg)

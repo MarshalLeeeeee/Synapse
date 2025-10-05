@@ -223,9 +223,11 @@ public class GateManager : GateManagerCommon
 
     #region REGION_RPC
 
-    public void CallRpc(string methodName, string instanceId, params Node[] args)
+    public bool CallRpc(string methodName, string instanceId, params Node[] args)
     {
+        if (!CheckConnected()) return false;
         AppendSendMsg(new Msg(methodName, instanceId, args));
+        return true;
     }
 
     /// <summary>

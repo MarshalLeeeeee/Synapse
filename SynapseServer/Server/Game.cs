@@ -13,4 +13,23 @@ public class Game : GameCommon
         Instance = this;
         InitManagers();
     }
+
+    #region REGION_API
+
+    /// <summary>
+    /// Call rpc method
+    /// </summary>
+    /// <param name="proxyId"> proxy id </param>
+    /// <param name="methodName"> name of the remote name </param>
+    /// <param name="instanceId"> instance id </param>
+    /// <param name="args"> optional arg list </param>
+    /// <returns> Return true if the call quest is appended to the queue </returns>
+    public bool CallRpc(string proxyId, string methodName, string instanceId, params Node[] args)
+    {
+        GateManager? gateManager = GetManager<GateManager>();
+        if (gateManager == null) return false;
+        return gateManager.CallRpc(proxyId, methodName, instanceId, args);
+    }
+
+    #endregion
 }

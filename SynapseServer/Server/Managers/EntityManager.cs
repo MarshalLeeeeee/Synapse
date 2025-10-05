@@ -137,11 +137,7 @@ public class EntityManager : EntityManagerCommon
     /// <param name="player"> player entity to be synced </param>
     private static void DoSyncOtherPlayerEntity(string proxyId, PlayerEntity player)
     {
-        GateManager? gateManager = Game.Instance.GetManager<GateManager>();
-        if (gateManager != null)
-        {
-            gateManager.CallRpc(proxyId, "EntityManager.SyncAddPlayerRemote", "Mgr-EntityManager", player);
-        }
+        Game.Instance.CallRpc(proxyId, "EntityManager.SyncAddPlayerRemote", "Mgr-EntityManager", player);
     }
 
     /// <summary>
@@ -151,11 +147,7 @@ public class EntityManager : EntityManagerCommon
     /// <param name="player"></param>
     private static void DoSyncMainPlayerEntity(string proxyId, PlayerEntity player)
     {
-        GateManager? gateManager = Game.Instance.GetManager<GateManager>();
-        if (gateManager != null)
-        {
-            gateManager.CallRpc(proxyId, "EntityManager.SyncAddPlayerRemote", "Mgr-EntityManager", player);
-        }
+        Game.Instance.CallRpc(proxyId, "EntityManager.SyncAddPlayerRemote", "Mgr-EntityManager", player);
     }
 
     /// <summary>
