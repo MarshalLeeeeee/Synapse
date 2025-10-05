@@ -103,7 +103,7 @@ public static class Debug
 
     public static string GetGmPipelineName()
     {
-        return Const.Title + "-GmPipeline";
+        return ArgParser.GetConsoleTitle() + "-GmPipeline";
     }
 
     /// <summary>
