@@ -196,8 +196,9 @@ public static class MsgStreamer
         }
     }
 
-    public static bool WriteMsgToStream(NetworkStream? stream, Msg msg)
+    public static bool WriteMsgToStream(Proxy proxy, Msg msg)
     {
+        NetworkStream? stream = proxy.stream;
         if (stream == null) return false;
 
         byte[] buffer = Serialize(msg);
@@ -210,8 +211,9 @@ public static class MsgStreamer
         return true;
     }
 
-    public static async Task<bool> WriteMsgToStreamAsync(NetworkStream? stream, Msg msg, CancellationToken cancellationToken = default)
+    public static async Task<bool> WriteMsgToStreamAsync(Proxy proxy, Msg msg, CancellationToken cancellationToken = default)
     {
+        NetworkStream? stream = proxy.stream;
         if (stream == null) return false;
 
         try

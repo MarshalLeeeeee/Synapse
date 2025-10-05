@@ -364,7 +364,7 @@ public class GateManager : GateManagerCommon
     private void SendMsg(Proxy proxy, Msg msg)
     {
         if (!proxy.IsConnected()) return;
-        MsgStreamer.WriteMsgToStream(proxy.stream, msg);
+        MsgStreamer.WriteMsgToStream(proxy, msg);
     }
 
     /// <summary>

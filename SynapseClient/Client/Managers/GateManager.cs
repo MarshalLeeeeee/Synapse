@@ -199,7 +199,7 @@ public class GateManager : GateManagerCommon
     private void SendMsg(Msg msg)
     {
         if (!CheckConnected()) return;
-        MsgStreamer.WriteMsgToStream(proxy.stream, msg);
+        MsgStreamer.WriteMsgToStream(proxy, msg);
     }
 
     #endregion
