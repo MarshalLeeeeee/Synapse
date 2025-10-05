@@ -205,17 +205,32 @@ public class GateManagerCommon : Manager
 {
     #region REGION_RPC
 
-    protected static object? GetRpcOwner(string ownerId)
+    protected static (object? owner, object? instance) GetRpcOwnerAndInstance(string instanceId)
     {
-        Manager? mgr = Game.Instance.GetManager(ownerId);
-        if (mgr != null) return mgr;
-        return null;
-    }
+        string[] seg = instanceId.Split('.');
+        if (seg.Length == 0) return (null, null);
 
-    protected static object? GetRpcInstance(object owner, string instanceId)
-    {
-        if (String.IsNullOrEmpty(instanceId)) return owner;
-        return null;
+        string ownerId = seg[0];
+        if (ownerId.StartsWith("Mgr-"))
+        {
+            Manager? mgr = Game.Instance.GetManager(ownerId[4..]);
+            return (mgr, mgr);
+        }
+        else if (ownerId.StartsWith("Ett-"))
+        {
+            EntityManager? entityManager = Game.Instance.GetManager<EntityManager>();
+            if (entityManager != null)
+            {
+                PlayerEntity? player = entityManager.GetPlayerEntity(ownerId);
+                if (player != null)
+                {
+                    return (player, seg[1..]);
+                }
+                else return (null, null);
+            }
+            else return (null, null);
+        }
+        else return (null, null);
     }
 
     #endregion

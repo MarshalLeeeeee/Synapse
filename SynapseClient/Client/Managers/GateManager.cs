@@ -216,21 +216,16 @@ public class GateManager : GateManagerCommon
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         if (now - lastHeartbeatTime < Const.HeartBeatInterval) return;
         lastHeartbeatTime = now;
-        CallRpc("GateManager.PingHeartbeatRemote", "GateManager", "");
+        CallRpc("GateManager.PingHeartbeatRemote", "Mgr-GateManager");
     }
 
     #endregion
 
     #region REGION_RPC
 
-    public void CallRpc(string methodName, string ownerId, string instanceId, params Node[] args)
+    public void CallRpc(string methodName, string instanceId, params Node[] args)
     {
-        Msg msg = new Msg(methodName, ownerId, instanceId);
-        foreach (Node node in args)
-        {
-            msg.arg.Add(node);
-        }
-        AppendSendMsg(msg);
+        AppendSendMsg(new Msg(methodName, instanceId, args));
     }
 
     /// <summary>
@@ -244,12 +239,9 @@ public class GateManager : GateManagerCommon
         RpcMethodInfo? rpcMethodInfo = Reflection.GetRpcMethod(methodName);
         if (rpcMethodInfo == null) return;
 
-        // get method owner
-        object? owner = GetRpcOwner(msg.ownerId);
-        if (owner == null) return;
-
-        object? instance = GetRpcInstance(owner, msg.instanceId);
-        if (instance == null) return;
+        // get method owner and instance
+        var (owner, instance) = GetRpcOwnerAndInstance(msg.instanceId);
+        if (owner == null || instance == null) return;
 
         // check arg len
         if (!rpcMethodInfo.CheckArgTypes(msg.arg)) return;

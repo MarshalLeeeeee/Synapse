@@ -5,7 +5,11 @@ public class PlayerEntity : PlayerEntityCommon
 {
     public override int nodeType => NodeTypeConst.TypePlayerEntity;
 
-    public PlayerEntity(string eid = "") : base(eid) { }
+    public PlayerEntity(
+        string eid = "",
+        StringNode? name_ = null,
+        IntNode? money_ = null
+    ) : base(eid, name_, money_) { }
 
     public static PlayerEntity Deserialize(BinaryReader reader)
     {

@@ -9,41 +9,43 @@ public class Msg
     /// <summary>
     /// name of the rpc method
     /// </summary>
-    public string methodName { get; }
-
-    /// <summary>
-    /// id of the owner of the instance, Manager or Entity
-    /// </summary>
-    public string ownerId { get; }
+    public string methodName { get; private set; }
 
     /// <summary>
     /// id of the instance of the method
     /// </summary>
-    public string instanceId { get; }
+    public string instanceId { get; private set; }
 
     /// <summary>
     /// method args (in serializable Node)
     /// </summary>
-    public ListNode arg = new ListNode();
-    public Msg(string methodName_, string ownerId_, string instanceId_)
+    public ListNode arg { get; private set; }
+    public Msg(string methodName_, string instanceId_, params Node[] args)
     {
         methodName = methodName_;
-        ownerId = ownerId_;
         instanceId = instanceId_;
+        arg = new ListNode();
+        foreach (Node a in args)
+        {
+            arg.Add(a);
+        }
+    }
+
+    public void Serialize(Proxy proxy, BinaryWriter writer)
+    {
+        writer.Write(methodName);
+        writer.Write(instanceId);
+        NodeStreamer.Serialize(arg, writer);
     }
 }
 
 public static class MsgStreamer
 {
-    public static byte[] Serialize(Msg msg)
+    public static byte[] Serialize(Proxy proxy, Msg msg)
     {
         using var stream = new MemoryStream();
         using var writer = new BinaryWriter(stream);
-
-        writer.Write(msg.methodName);
-        writer.Write(msg.ownerId);
-        writer.Write(msg.instanceId);
-        NodeStreamer.Serialize(msg.arg, writer);
+        msg.Serialize(proxy, writer);
         return stream.ToArray();
     }
 
@@ -54,13 +56,17 @@ public static class MsgStreamer
         
         try
         {
-            Msg msg = new Msg(reader.ReadString(), reader.ReadString(), reader.ReadString());
+            string methodName = reader.ReadString();
+            string instanceId = reader.ReadString();
             Node arg = NodeStreamer.Deserialize(reader);
             if (arg != null && arg is ListNode listNode)
             {
-                msg.arg = listNode;
+                return new Msg(methodName, instanceId, listNode.ToArray());
             }
-            return msg;
+            else
+            {
+                return null;
+            }
         }
         catch
         {
@@ -201,7 +207,7 @@ public static class MsgStreamer
         NetworkStream? stream = proxy.stream;
         if (stream == null) return false;
 
-        byte[] buffer = Serialize(msg);
+        byte[] buffer = Serialize(proxy, msg);
         if (buffer.Length <= 0) return false;
 
         byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);
@@ -218,7 +224,7 @@ public static class MsgStreamer
 
         try
         {
-            byte[] buffer = Serialize(msg);
+            byte[] buffer = Serialize(proxy, msg);
             if (buffer.Length <= 0) return false;
 
             byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);

@@ -75,7 +75,7 @@ public class AccountManager : AccountManagerCommon
         }
 
         waitLoginRes = true;
-        gateMgr.CallRpc("AccountManager.LoginRemote", "AccountManager", "", new StringNode(account), new StringNode(password));
+        gateMgr.CallRpc("AccountManager.LoginRemote", "Mgr-AccountManager", new StringNode(account), new StringNode(password));
         return true;
     }
 
@@ -141,7 +141,7 @@ public class AccountManager : AccountManagerCommon
         }
 
         waitLogoutRes = true;
-        gateMgr.CallRpc("AccountManager.LogoutRemote", "AccountManager", "");
+        gateMgr.CallRpc("AccountManager.LogoutRemote", "Mgr-AccountManager");
         return true;
     }
 

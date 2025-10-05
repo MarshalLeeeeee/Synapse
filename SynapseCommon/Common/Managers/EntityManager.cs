@@ -11,7 +11,7 @@ public class EntityManagerCommon : Manager
         string s = "";
         foreach (var kvp in playerEntities)
         {
-            s += $">>>> Id({kvp.Key}) Entity({kvp.Value})\n";
+            s += $">>>> Id({kvp.Key}): {kvp.Value}\n";
         }
         if (String.IsNullOrEmpty(s)) s = ">>>> Empty";
         s = $">> Player entities: \n{s}\n";

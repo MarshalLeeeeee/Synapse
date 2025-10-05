@@ -413,7 +413,11 @@ public class GateManager : GateManagerCommon
         while (cnt < Const.CheckProxyCntPerUpdate && checkProxyQueue.TryDequeue(out string? proxyId))
         {
             if (proxyId == null) break;
-            if (checkedProxyId.Contains(proxyId)) break;
+            if (checkedProxyId.Contains(proxyId))
+            {
+                checkProxyQueue.Enqueue(proxyId);
+                break;
+            }
 
             cnt += 1;
             checkedProxyId.Add(proxyId);
@@ -440,17 +444,11 @@ public class GateManager : GateManagerCommon
 
     #region REGION_RPC
 
-    public void CallRpc(string proxyId, string methodName, string ownerId, string instanceId, params Node[] args)
+    public void CallRpc(string proxyId, string methodName, string instanceId, params Node[] args)
     {
         Proxy? proxy = GetProxy(proxyId);
         if (proxy == null) return;
-
-        Msg msg = new Msg(methodName, ownerId, instanceId);
-        foreach (Node node in args)
-        {
-            msg.arg.Add(node);
-        }
-        AppendSendMsg(proxy, msg);
+        AppendSendMsg(proxy, new Msg(methodName, instanceId, args));
     }
 
     private void InvokeRpc(Proxy proxy, Msg msg)
@@ -460,12 +458,9 @@ public class GateManager : GateManagerCommon
         RpcMethodInfo? rpcMethodInfo = Reflection.GetRpcMethod(methodName);
         if (rpcMethodInfo == null) return;
 
-        // get method owner
-        object? owner = GetRpcOwner(msg.ownerId);
-        if (owner == null) return;
-
-        object? instance = GetRpcInstance(owner, msg.instanceId);
-        if (instance == null) return;
+        // get method owner and instance
+        var (owner, instance) = GetRpcOwnerAndInstance(msg.instanceId);
+        if (owner == null || instance == null) return;
 
         // check rpc type
         //if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;

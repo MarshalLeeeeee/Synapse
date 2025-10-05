@@ -29,7 +29,7 @@ public class EntityCommon : Node
     {
         if (String.IsNullOrEmpty(entityId_))
         {
-            entityId = Guid.NewGuid().ToString();
+            entityId = "Ett-" + Guid.NewGuid().ToString();
         }
         else
         {
@@ -40,5 +40,8 @@ public class EntityCommon : Node
         {
             components = components_;
         }
+        InitComponents();
     }
+
+    protected virtual void InitComponents() { }
 }
