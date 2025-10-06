@@ -360,7 +360,7 @@ public class GateManager : GateManagerCommon
     private void SendMsg(Proxy proxy, Msg msg)
     {
         if (!proxy.IsConnected()) return;
-        MsgStreamer.WriteMsgToStream(proxy, msg);
+        MsgStreamer.WriteMsgToStream(msg, proxy);
     }
 
     /// <summary>

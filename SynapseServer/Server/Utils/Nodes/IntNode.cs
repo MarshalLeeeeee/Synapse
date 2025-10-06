@@ -5,22 +5,9 @@ public class IntNode : IntNodeCommon
     public override int nodeType => NodeTypeConst.TypeInt;
 
     public IntNode(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         int v_ = 0
-    ) : base(id_, nodeSyncType_, v_) { }
-
-    public static IntNode Deserialize(BinaryReader reader)
-    {
-        try
-        {
-            object[] args = DeserializeIntoArgs(reader);
-            return (IntNode)Activator.CreateInstance(typeof(IntNode), args);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidDataException("Failed to deserialize IntNode.", ex);
-        }
-    }
+    ) : base(id_, v_) { }
 
     #region REGION_IDENTIFICATION
 
@@ -34,6 +21,23 @@ public class IntNode : IntNodeCommon
         catch (Exception ex)
         {
             throw new InvalidDataException("Failed to copy IntNode.", ex);
+        }
+    }
+
+    #endregion
+
+    #region REGION_STREAM
+
+    public static IntNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            object[] args = DeserializeIntoArgs(reader);
+            return (IntNode)Activator.CreateInstance(typeof(IntNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize IntNode.", ex);
         }
     }
 

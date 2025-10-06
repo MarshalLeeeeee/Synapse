@@ -4,9 +4,9 @@ public class StringNodeCommon : Node
     protected string s = "";
 
     protected StringNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         string s_ = ""
-    ) : base(id_, nodeSyncType_) { s = s_; }
+    ) : base(id_) { s = s_; }
 
     public override string ToString()
     {
@@ -18,8 +18,7 @@ public class StringNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         argsList.Add(s);
         return argsList.ToArray();
     }
@@ -28,12 +27,18 @@ public class StringNodeCommon : Node
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
-        writer.Write(s);
+        if (ShouldSerializeContent(proxyId))
+        {
+            writer.Write(s);
+        }
+        else
+        {
+            writer.Write("");
+        }
     }
 
     /// <summary>
@@ -44,7 +49,6 @@ public class StringNodeCommon : Node
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         argsList.Add(reader.ReadString());
         return argsList.ToArray();
     }
@@ -74,13 +78,13 @@ public static class TestStringNode
 {
     public static void TestStream()
     {
-        StringNode node = new StringNode("", NodeSynConst.SyncAll, "Test");
+        StringNode node = new StringNode("", "Test");
         Assert.EqualTrue(NodeStreamer.TestStream(node), "StringNode changed after serialization and deserialization");
     }
 
     public static void TestCopy()
     {
-        StringNode node = new StringNode("", NodeSynConst.SyncAll, "Test");
+        StringNode node = new StringNode("", "Test");
         StringNode copy = (StringNode)node.Copy();
         Assert.EqualTrue($"{node}" == $"{copy}", "StringNode id not equal after copy");
     }

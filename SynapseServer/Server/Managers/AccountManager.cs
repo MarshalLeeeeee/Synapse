@@ -115,7 +115,7 @@ public class AccountManager : AccountManagerCommon
     /// <param name="account"> account name </param>
     private static void NotifyLoginSucc(string proxyId, string account)
     {
-        Game.Instance.CallRpc(proxyId, "AccountManager.LoginResRemote", "Mgr-AccountManager", new StringNode("", NodeSynConst.SyncAll, account));
+        Game.Instance.CallRpc(proxyId, "AccountManager.LoginResRemote", "Mgr-AccountManager", new StringNode("", account));
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public class AccountManager : AccountManagerCommon
     /// <param name="proxyId"> id of the proxy </param>
     private static void NotifyLoginFail(string proxyId)
     {
-        Game.Instance.CallRpc(proxyId, "AccountManager.LoginResRemote", "Mgr-AccountManager", new StringNode("", NodeSynConst.SyncAll, ""));
+        Game.Instance.CallRpc(proxyId, "AccountManager.LoginResRemote", "Mgr-AccountManager", new StringNode("", ""));
     }
 
     [Rpc(RpcConst.AnyClient)]
@@ -159,7 +159,7 @@ public class AccountManager : AccountManagerCommon
     /// <param name="account"> account name </param>
     private static void NotifyLogoutSucc(string proxyId, string account)
     {
-        Game.Instance.CallRpc(proxyId, "AccountManager.LogoutResRemote", "Mgr-AccountManager", new StringNode("", NodeSynConst.SyncAll, account));
+        Game.Instance.CallRpc(proxyId, "AccountManager.LogoutResRemote", "Mgr-AccountManager", new StringNode("", account));
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public class AccountManager : AccountManagerCommon
     /// <param name="proxyId"> id of the proxy </param>
     private static void NotifyLogoutFail(string proxyId)
     {
-        Game.Instance.CallRpc(proxyId, "AccountManager.LogoutResRemote", "Mgr-AccountManager", new StringNode("", NodeSynConst.SyncAll, ""));
+        Game.Instance.CallRpc(proxyId, "AccountManager.LogoutResRemote", "Mgr-AccountManager", new StringNode("", ""));
     }
 
     private void OnRemoveProxy(string proxyId)

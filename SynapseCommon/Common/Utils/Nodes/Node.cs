@@ -40,7 +40,7 @@ public class NodeTypeConst
     #endregion
 }
 
-public class NodeSynConst
+public class NodeSyncConst
 {
     public const int SyncAll = 0;
     public const int SyncOwn = 1;
@@ -68,19 +68,13 @@ public class NodeCommon
     public string id { get; protected set; } = "";
 
     /// <summary>
-    /// the sync type of the node
-    /// </summary>
-    public int nodeSyncType { get; protected set; } = NodeSynConst.SyncAll;
-
-    /// <summary>
     /// exclusive value for node
     /// </summary>
     public virtual int nodeType => NodeTypeConst.TypeUndefined;
 
-    protected NodeCommon(string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll)
+    protected NodeCommon(string id_ = "")
     {
         id = id_;
-        nodeSyncType = nodeSyncType_;
     }
 
     /// <summary>
@@ -93,9 +87,22 @@ public class NodeCommon
 
     #region REGION_IDENTIFICATION
 
-    public void SetId(string id_)
+    /// <summary>
+    /// set id of the node
+    /// </summary>
+    /// <param name="id_"></param>
+    public virtual void SetId(string id_)
     {
         id = id_;
+    }
+
+    /// <summary>
+    /// get id of the root node
+    /// </summary>
+    /// <returns> id of the root node </returns>
+    public string GetRootId()
+    {
+        return id.Split('.')[0];
     }
 
     /// <summary>
@@ -109,23 +116,13 @@ public class NodeCommon
     }
 
     /// <summary>
-    /// Create a deep copy of the node.
-    /// </summary>
-    /// <returns> Deep copy of the node. </returns>
-    public virtual NodeCommon Copy()
-    {
-        throw new InvalidDataException("Failed to copy NodeCommon.");
-    }
-
-    /// <summary>
     /// Get arguments for constructor to create a copy of the node.
     /// </summary>
     /// <returns> arguments for constructor </returns>
     public virtual object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         return argsList.ToArray();
     }
 
@@ -134,9 +131,19 @@ public class NodeCommon
     #region REGION_STREAM
 
     /// <summary>
+    /// if the node should be synchronized to the client with proxyId
+    /// </summary>
+    /// <param name="proxyId"> proxy id </param>
+    /// <returns> True if the node should be synchronized to the client with proxyId </returns>
+    public virtual bool ShouldSerializeContent(string proxyId)
+    {
+        return true;
+    }
+
+    /// <summary>
     /// Serialize the node into a binary stream.
     /// </summary>
-    public virtual void Serialize(BinaryWriter writer) { }
+    public virtual void Serialize(BinaryWriter writer, string proxyId) { }
 
     #endregion
 }
@@ -146,9 +153,9 @@ public static class NodeStreamer
     /// <summary>
     /// Serialize node into byte stream
     /// </summary>
-    public static void Serialize(Node node, BinaryWriter writer)
+    public static void Serialize(Node node, BinaryWriter writer, string proxyId)
     {
-        node.Serialize(writer);
+        node.Serialize(writer, proxyId);
     }
 
     /// <summary>
@@ -191,7 +198,7 @@ public static class NodeStreamer
     {
         using var w_stream = new MemoryStream();
         using var writer = new BinaryWriter(w_stream);
-        Serialize(node, writer);
+        Serialize(node, writer, "");
         byte[] bd = w_stream.ToArray();
 
         using var r_stream = new MemoryStream(bd);

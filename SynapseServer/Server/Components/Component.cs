@@ -1,22 +1,7 @@
 
 public class Component : ComponentCommon
 {
-    public Component(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll
-    ) : base(id_, nodeSyncType_) { }
-
-    public static Component Deserialize(BinaryReader reader)
-    {
-        try
-        {
-            object[] args = DeserializeIntoArgs(reader);
-            return (Component)Activator.CreateInstance(typeof(Component), args);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidDataException("Failed to deserialize Component.", ex);
-        }
-    }
+    public Component(string id_ = "") : base(id_) { }
 
     #region REGION_IDENTIFICATION
 
@@ -34,6 +19,23 @@ public class Component : ComponentCommon
     }
 
     #endregion
+
+    #region REGION_STREAM
+
+    public static Component Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            object[] args = DeserializeIntoArgs(reader);
+            return (Component)Activator.CreateInstance(typeof(Component), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize Component.", ex);
+        }
+    }
+
+    #endregion
 }
 
 [SyncNode(NodeTypeConst.TypeComponents)]
@@ -42,22 +44,9 @@ public class Components : ComponentsCommon
     public override int nodeType => NodeTypeConst.TypeComponents;
 
     public Components(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         params KeyValuePair<string, Component>[] kvps
-    ) : base(id_, nodeSyncType_, kvps) { }
-
-    public static Components Deserialize(BinaryReader reader)
-    {
-        try
-        {
-            object[] args = DeserializeIntoArgs(reader);
-            return (Components)Activator.CreateInstance(typeof(Components), args);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidDataException("Failed to deserialize IntKeyDictionaryNode.", ex);
-        }
-    }
+    ) : base(id_, kvps) { }
 
     #region REGION_IDENTIFICATION
 
@@ -71,6 +60,23 @@ public class Components : ComponentsCommon
         catch (Exception ex)
         {
             throw new InvalidDataException("Failed to copy Components.", ex);
+        }
+    }
+
+    #endregion
+
+    #region REGION_STREAM
+
+    public static Components Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            object[] args = DeserializeIntoArgs(reader);
+            return (Components)Activator.CreateInstance(typeof(Components), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize IntKeyDictionaryNode.", ex);
         }
     }
 

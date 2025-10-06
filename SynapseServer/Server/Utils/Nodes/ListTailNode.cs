@@ -4,22 +4,7 @@ public class ListTailNode : ListTailNodeCommon
 {
     public override int nodeType => NodeTypeConst.TypeListTail;
 
-    public ListTailNode(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll
-    ) : base(id_, nodeSyncType_) { }
-
-    public static ListTailNode Deserialize(BinaryReader reader)
-    {
-        try
-        {
-            object[] args = DeserializeIntoArgs(reader);
-            return (ListTailNode)Activator.CreateInstance(typeof(ListTailNode), args);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidDataException("Failed to deserialize ListTailNode.", ex);
-        }
-    }
+    public ListTailNode(string id_ = "") : base(id_) { }
 
     #region REGION_IDENTIFICATION
 
@@ -33,6 +18,23 @@ public class ListTailNode : ListTailNodeCommon
         catch (Exception ex)
         {
             throw new InvalidDataException("Failed to copy ListTailNode.", ex);
+        }
+    }
+
+    #endregion
+
+    #region REGION_STREAM
+
+    public static ListTailNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            object[] args = DeserializeIntoArgs(reader);
+            return (ListTailNode)Activator.CreateInstance(typeof(ListTailNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize ListTailNode.", ex);
         }
     }
 

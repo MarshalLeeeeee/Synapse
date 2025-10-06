@@ -2,9 +2,7 @@
 public class IntKeyDictionaryTailNodeCommon : Node
 {
 
-    protected IntKeyDictionaryTailNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll
-    ) : base(id_, nodeSyncType_) {}
+    protected IntKeyDictionaryTailNodeCommon(string id_ = "") : base(id_) {}
 
     public override string ToString()
     {
@@ -16,8 +14,7 @@ public class IntKeyDictionaryTailNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         return argsList.ToArray();
     }
 
@@ -25,18 +22,16 @@ public class IntKeyDictionaryTailNodeCommon : Node
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
     }
 
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         return argsList.ToArray();
     }
 

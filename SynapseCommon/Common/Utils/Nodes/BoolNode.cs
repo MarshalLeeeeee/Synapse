@@ -4,9 +4,9 @@ public class BoolNodeCommon : Node
     bool v = false;
 
     protected BoolNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         bool v_ = false
-    ) : base(id_, nodeSyncType_) { v = v_; }
+    ) : base(id_) { v = v_; }
 
     public override string ToString()
     {
@@ -18,8 +18,7 @@ public class BoolNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         argsList.Add(v);
         return argsList.ToArray();
     }
@@ -28,12 +27,18 @@ public class BoolNodeCommon : Node
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
-        writer.Write(v);
+        if (ShouldSerializeContent(proxyId))
+        {
+            writer.Write(v);
+        }
+        else
+        {
+            writer.Write(false);
+        }
     }
 
     /// <summary>
@@ -44,7 +49,6 @@ public class BoolNodeCommon : Node
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         argsList.Add(reader.ReadBoolean());
         return argsList.ToArray();
     }
@@ -74,13 +78,13 @@ public static class TestBoolNode
 {
     public static void TestStream()
     {
-        BoolNode node = new BoolNode("", NodeSynConst.SyncAll, true);
+        BoolNode node = new BoolNode("", true);
         Assert.EqualTrue(NodeStreamer.TestStream(node), "BoolNode changed after serialization and deserialization");
     }
 
     public static void TestCopy()
     {
-        BoolNode node = new BoolNode("", NodeSynConst.SyncAll, true);
+        BoolNode node = new BoolNode("", true);
         BoolNode copy = (BoolNode)node.Copy();
         Assert.EqualTrue($"{node}" == $"{copy}", "BoolNode id not equal after copy");
     }

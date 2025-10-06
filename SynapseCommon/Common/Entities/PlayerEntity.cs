@@ -3,14 +3,14 @@ using System.Xml.Linq;
 
 public class PlayerEntityCommon : Entity
 {
-    protected StringNode name = new StringNode("name", NodeSynConst.SyncAll, "Name");
-    protected IntNode money = new IntNode("money", NodeSynConst.SyncOwn, 999);
+    protected StringNode name = new StringNode();
+    protected IntNode money = new IntNode();
 
     protected PlayerEntityCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         Components? components_ = null,
         StringNode? name_ = null, IntNode? money_ = null
-    ) : base(id_, nodeSyncType_, components_)
+    ) : base(id_, components_)
     {
         if (name_ != null) name = name_;
         if (money_ != null) money = money_;
@@ -23,11 +23,24 @@ public class PlayerEntityCommon : Entity
 
     #region REGION_IDENTIFICATION
 
+    public override void SetId(string id_)
+    {
+        base.SetId(id_);
+        name.SetId(id_ + ".name");
+        money.SetId(id_ + ".money");
+    }
+
+    public override Node? GetChildWithId(string id_)
+    {
+        if (id_ == "name") return name;
+        if (id_ == "money") return money;
+        return base.GetChildWithId(id_);
+    }
+
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         argsList.Add(components);
         argsList.Add(name);
         argsList.Add(money);
@@ -38,14 +51,13 @@ public class PlayerEntityCommon : Entity
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
-        NodeStreamer.Serialize(components, writer);
-        NodeStreamer.Serialize(name, writer);
-        NodeStreamer.Serialize(money, writer);
+        NodeStreamer.Serialize(components, writer, proxyId);
+        NodeStreamer.Serialize(name, writer, proxyId);
+        NodeStreamer.Serialize(money, writer, proxyId);
     }
 
     /// <summary>
@@ -56,7 +68,6 @@ public class PlayerEntityCommon : Entity
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         argsList.Add(NodeStreamer.Deserialize(reader));
         argsList.Add(NodeStreamer.Deserialize(reader));
         argsList.Add(NodeStreamer.Deserialize(reader));

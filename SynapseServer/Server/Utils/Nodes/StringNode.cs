@@ -5,22 +5,9 @@ public class StringNode : StringNodeCommon
     public override int nodeType => NodeTypeConst.TypeString;
 
     public StringNode(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         string s_ = ""
-    ) : base(id_, nodeSyncType_, s_) { }
-
-    public static StringNode Deserialize(BinaryReader reader)
-    {
-        try
-        {
-            object[] args = DeserializeIntoArgs(reader);
-            return (StringNode)Activator.CreateInstance(typeof(StringNode), args);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidDataException("Failed to deserialize StringNode.", ex);
-        }
-    }
+    ) : base(id_, s_) { }
 
     #region REGION_IDENTIFICATION
 
@@ -34,6 +21,23 @@ public class StringNode : StringNodeCommon
         catch (Exception ex)
         {
             throw new InvalidDataException("Failed to copy StringNode.", ex);
+        }
+    }
+
+    #endregion
+
+    #region REGION_STREAM
+
+    public static StringNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            object[] args = DeserializeIntoArgs(reader);
+            return (StringNode)Activator.CreateInstance(typeof(StringNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize StringNode.", ex);
         }
     }
 

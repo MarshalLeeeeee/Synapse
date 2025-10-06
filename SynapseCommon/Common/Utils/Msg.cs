@@ -28,29 +28,29 @@ public class Msg
         arg = new List<Node>();
         foreach (Node a in args)
         {
-            arg.Add(a);
+            arg.Add(a.Copy());
         }
     }
 
-    public void Serialize(Proxy proxy, BinaryWriter writer)
+    public void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(methodName);
         writer.Write(instanceId);
         writer.Write(arg.Count);
         foreach (Node arg in arg)
         {
-            NodeStreamer.Serialize(arg, writer);
+            NodeStreamer.Serialize(arg, writer, proxyId);
         }
     }
 }
 
 public static class MsgStreamer
 {
-    public static byte[] Serialize(Proxy proxy, Msg msg)
+    public static byte[] Serialize(Msg msg, Proxy proxy)
     {
         using var stream = new MemoryStream();
         using var writer = new BinaryWriter(stream);
-        msg.Serialize(proxy, writer);
+        msg.Serialize(writer, proxy.proxyId);
         return stream.ToArray();
     }
 
@@ -204,12 +204,12 @@ public static class MsgStreamer
         }
     }
 
-    public static bool WriteMsgToStream(Proxy proxy, Msg msg)
+    public static bool WriteMsgToStream(Msg msg, Proxy proxy)
     {
         NetworkStream? stream = proxy.stream;
         if (stream == null) return false;
 
-        byte[] buffer = Serialize(proxy, msg);
+        byte[] buffer = Serialize(msg, proxy);
         if (buffer.Length <= 0) return false;
 
         byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);
@@ -219,14 +219,14 @@ public static class MsgStreamer
         return true;
     }
 
-    public static async Task<bool> WriteMsgToStreamAsync(Proxy proxy, Msg msg, CancellationToken cancellationToken = default)
+    public static async Task<bool> WriteMsgToStreamAsync(Msg msg, Proxy proxy, CancellationToken cancellationToken = default)
     {
         NetworkStream? stream = proxy.stream;
         if (stream == null) return false;
 
         try
         {
-            byte[] buffer = Serialize(proxy, msg);
+            byte[] buffer = Serialize(msg, proxy);
             if (buffer.Length <= 0) return false;
 
             byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);

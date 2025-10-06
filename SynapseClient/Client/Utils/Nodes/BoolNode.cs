@@ -5,22 +5,9 @@ public class BoolNode : BoolNodeCommon
     public override int nodeType => NodeTypeConst.TypeBool;
 
     public BoolNode(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         bool v_ = false
-    ) : base(id_, nodeSyncType_, v_) { }
-
-    public static BoolNode Deserialize(BinaryReader reader)
-    {
-        try
-        {
-            object[] args = DeserializeIntoArgs(reader);
-            return (BoolNode)Activator.CreateInstance(typeof(BoolNode), args);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidDataException("Failed to deserialize BoolNode.", ex);
-        }
-    }
+    ) : base(id_, v_) { }
 
     #region REGION_IDENTIFICATION
 
@@ -34,6 +21,23 @@ public class BoolNode : BoolNodeCommon
         catch (Exception ex)
         {
             throw new InvalidDataException("Failed to copy BoolNode.", ex);
+        }
+    }
+
+    #endregion
+
+    #region REGION_STREAM
+
+    public static BoolNode Deserialize(BinaryReader reader)
+    {
+        try
+        {
+            object[] args = DeserializeIntoArgs(reader);
+            return (BoolNode)Activator.CreateInstance(typeof(BoolNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to deserialize BoolNode.", ex);
         }
     }
 

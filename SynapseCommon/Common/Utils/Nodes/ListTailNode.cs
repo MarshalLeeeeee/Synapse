@@ -2,9 +2,7 @@
 public class ListTailNodeCommon : Node
 {
 
-    protected ListTailNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll
-    ) : base(id_, nodeSyncType_) { }
+    protected ListTailNodeCommon(string id_ = "") : base(id_) { }
 
     public override string ToString()
     {
@@ -16,8 +14,7 @@ public class ListTailNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         return argsList.ToArray();
     }
 
@@ -25,11 +22,10 @@ public class ListTailNodeCommon : Node
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
     }
 
     /// <summary>
@@ -40,7 +36,6 @@ public class ListTailNodeCommon : Node
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         return argsList.ToArray();
     }
 

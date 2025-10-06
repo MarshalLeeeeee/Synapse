@@ -7,9 +7,9 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
     protected Dictionary<string, T> children = new Dictionary<string, T>();
 
     protected StringKeyDictionaryTemplateNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         params KeyValuePair<string, T>[] kvps
-    ) : base(id_, nodeSyncType_)
+    ) : base(id_)
     {
         foreach (KeyValuePair<string, T> kvp in kvps)
         {
@@ -25,6 +25,11 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
             s += $"{kvp.Key}:{kvp.Value}, ";
         }
         return s;
+    }
+
+    public override string ToString()
+    {
+        return $"{this.GetType().Name}({{ {ChildrenToString()} }})";
     }
 
     #region REGION_IDENTIFICATION
@@ -45,8 +50,7 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         foreach (KeyValuePair<string, T> kvp in children)
         {
             argsList.Add(kvp);
@@ -58,25 +62,26 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
         foreach (KeyValuePair<string, T> kvp in children)
         {
-            NodeStreamer.Serialize(new StringNode("", NodeSynConst.SyncAll, kvp.Key), writer);
-            NodeStreamer.Serialize(kvp.Value, writer);
+            if (kvp.Value.ShouldSerializeContent(proxyId))
+            {
+                NodeStreamer.Serialize(new StringNode("", kvp.Key), writer, proxyId);
+                NodeStreamer.Serialize(kvp.Value, writer, proxyId);
+            }
         }
-        NodeStreamer.Serialize(new StringNode("", NodeSynConst.SyncAll), writer);
-        NodeStreamer.Serialize(new StringKeyDictionaryTailNode("", NodeSynConst.SyncAll), writer);
+        NodeStreamer.Serialize(new StringNode(), writer, proxyId);
+        NodeStreamer.Serialize(new StringKeyDictionaryTailNode(), writer, proxyId);
     }
 
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         while (true)
         {
             Node keyNode = NodeStreamer.Deserialize(reader);
@@ -115,7 +120,9 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
         }
         set
         {
-            children[key] = value;
+            T valueCopy = (T)value.Copy();
+            children[key] = valueCopy;
+            valueCopy.SetId($"{id}.{key}");
         }
     }
 
@@ -146,7 +153,9 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
 
     public void Add(string key, T value)
     {
-        children.Add(key, value);
+        T valueCopy = (T)value.Copy();
+        children.Add(key, valueCopy);
+        valueCopy.SetId($"{id}.{key}");
     }
 
     public void Remove(string key)
@@ -168,14 +177,9 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
 public class StringKeyDictionaryNodeCommon : StringKeyDictionaryTemplateNodeCommon<Node>
 {
     protected StringKeyDictionaryNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll, 
+        string id_ = "",
         params KeyValuePair<string, Node>[] kvps
-    ) : base(id_, nodeSyncType_, kvps) { }
-
-    public override string ToString()
-    {
-        return $"{this.GetType().Name}({{{ChildrenToString()}}})";
-    }
+    ) : base(id_, kvps) { }
 }
 
 #if DEBUG
@@ -186,26 +190,26 @@ public static class TestStringKeyDictionaryNode
     public static void TestStream()
     {
         StringKeyDictionaryNode node = new StringKeyDictionaryNode(
-            "", NodeSynConst.SyncAll,
-            new KeyValuePair<string, Node>("0", new IntNode("", NodeSynConst.SyncAll, 3)),
-            new KeyValuePair<string, Node>("1", new FloatNode("", NodeSynConst.SyncAll, 3.3f)),
-            new KeyValuePair<string, Node>("2", new StringNode("", NodeSynConst.SyncAll, "3")),
+            "", 
+            new KeyValuePair<string, Node>("0", new IntNode("", 3)),
+            new KeyValuePair<string, Node>("1", new FloatNode("", 3.3f)),
+            new KeyValuePair<string, Node>("2", new StringNode("", "3")),
             new KeyValuePair<string, Node>("3", new ListNode(
-                "", NodeSynConst.SyncAll,
-                new IntNode("", NodeSynConst.SyncAll, 4),
-                new FloatNode("", NodeSynConst.SyncAll, 5.0f)
+                "", 
+                new IntNode("", 4),
+                new FloatNode("", 5.0f)
             )),
             new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode(
-                "", NodeSynConst.SyncAll,
-                new KeyValuePair<string, Node>("0", new IntNode("", NodeSynConst.SyncAll, 3)),
-                new KeyValuePair<string, Node>("1", new FloatNode("", NodeSynConst.SyncAll, 3.3f)),
-                new KeyValuePair<string, Node>("2", new StringNode("", NodeSynConst.SyncAll, "3")),
+                "", 
+                new KeyValuePair<string, Node>("0", new IntNode("", 3)),
+                new KeyValuePair<string, Node>("1", new FloatNode("", 3.3f)),
+                new KeyValuePair<string, Node>("2", new StringNode("", "3")),
                 new KeyValuePair<string, Node>("3", new ListNode(
-                    "", NodeSynConst.SyncAll,
-                    new IntNode("", NodeSynConst.SyncAll, 4),
-                    new FloatNode("", NodeSynConst.SyncAll, 5.0f)
+                    "", 
+                    new IntNode("", 4),
+                    new FloatNode("", 5.0f)
                 )),
-                new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode("", NodeSynConst.SyncAll))
+                new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode())
             ))
         );
         Assert.EqualTrue(NodeStreamer.TestStream(node), "StringKeyDictionaryNode changed after serialization and deserialization");
@@ -214,26 +218,26 @@ public static class TestStringKeyDictionaryNode
     public static void TestCopy()
     {
         StringKeyDictionaryNode node = new StringKeyDictionaryNode(
-            "", NodeSynConst.SyncAll,
-            new KeyValuePair<string, Node>("0", new IntNode("", NodeSynConst.SyncAll, 3)),
-            new KeyValuePair<string, Node>("1", new FloatNode("", NodeSynConst.SyncAll, 3.3f)),
-            new KeyValuePair<string, Node>("2", new StringNode("", NodeSynConst.SyncAll, "3")),
+            "", 
+            new KeyValuePair<string, Node>("0", new IntNode("", 3)),
+            new KeyValuePair<string, Node>("1", new FloatNode("", 3.3f)),
+            new KeyValuePair<string, Node>("2", new StringNode("", "3")),
             new KeyValuePair<string, Node>("3", new ListNode(
-                "", NodeSynConst.SyncAll,
-                new IntNode("", NodeSynConst.SyncAll, 4),
-                new FloatNode("", NodeSynConst.SyncAll, 5.0f)
+                "", 
+                new IntNode("", 4),
+                new FloatNode("", 5.0f)
             )),
             new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode(
-                "", NodeSynConst.SyncAll,
-                new KeyValuePair<string, Node>("0", new IntNode("", NodeSynConst.SyncAll, 3)),
-                new KeyValuePair<string, Node>("1", new FloatNode("", NodeSynConst.SyncAll, 3.3f)),
-                new KeyValuePair<string, Node>("2", new StringNode("", NodeSynConst.SyncAll, "3")),
+                "", 
+                new KeyValuePair<string, Node>("0", new IntNode("", 3)),
+                new KeyValuePair<string, Node>("1", new FloatNode("", 3.3f)),
+                new KeyValuePair<string, Node>("2", new StringNode("", "3")),
                 new KeyValuePair<string, Node>("3", new ListNode(
-                    "", NodeSynConst.SyncAll,
-                    new IntNode("", NodeSynConst.SyncAll, 4),
-                    new FloatNode("", NodeSynConst.SyncAll, 5.0f)
+                    "", 
+                    new IntNode("", 4),
+                    new FloatNode("", 5.0f)
                 )),
-                new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode("", NodeSynConst.SyncAll))
+                new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode())
             ))
         );
         StringKeyDictionaryNode copy = (StringKeyDictionaryNode)node.Copy();

@@ -5,9 +5,9 @@ public class FloatNodeCommon : Node
     float f = 0.0f;
 
     protected FloatNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         float f_ = 0.0f
-    ) : base(id_, nodeSyncType_) { f = f_; }
+    ) : base(id_) { f = f_; }
 
     public override string ToString()
     {
@@ -19,8 +19,7 @@ public class FloatNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         argsList.Add(f);
         return argsList.ToArray();
     }
@@ -29,12 +28,18 @@ public class FloatNodeCommon : Node
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
-        writer.Write(f);
+        if (ShouldSerializeContent(proxyId))
+        {
+            writer.Write(f);
+        }
+        else
+        {
+            writer.Write(0.0f);
+        }
     }
 
     /// <summary>
@@ -45,7 +50,6 @@ public class FloatNodeCommon : Node
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         argsList.Add(reader.ReadSingle());
         return argsList.ToArray();
     }
@@ -75,13 +79,13 @@ public static class TestFloatNode
 {
     public static void TestStream()
     {
-        FloatNode node = new FloatNode("", NodeSynConst.SyncAll, -1.5f);
+        FloatNode node = new FloatNode("", -1.5f);
         Assert.EqualTrue(NodeStreamer.TestStream(node), "FloatNode changed after serialization and deserialization");
     }
 
     public static void TestCopy()
     {
-        FloatNode node = new FloatNode("", NodeSynConst.SyncAll, -1.5f);
+        FloatNode node = new FloatNode("", -1.5f);
         FloatNode copy = (FloatNode)node.Copy();
         Assert.EqualTrue($"{node}" == $"{copy}", "FloatNode id not equal after copy");
     }

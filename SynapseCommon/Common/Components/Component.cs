@@ -15,17 +15,14 @@ public class RegisterComponent : Attribute
 
 public class ComponentCommon : Node
 {
-    protected ComponentCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll
-    ) : base(id_, nodeSyncType_) { }
+    protected ComponentCommon(string id_ = "") : base(id_) { }
 
     #region REGION_IDENTIFICATION
 
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         return argsList.ToArray();
     }
 
@@ -33,11 +30,10 @@ public class ComponentCommon : Node
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
     }
 
     /// <summary>
@@ -48,7 +44,6 @@ public class ComponentCommon : Node
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         return argsList.ToArray();
     }
 
@@ -58,12 +53,7 @@ public class ComponentCommon : Node
 public class ComponentsCommon : StringKeyDictionaryTemplateNodeCommon<Component>
 {
     protected ComponentsCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         params KeyValuePair<string, Component>[] kvps
-    ) : base(id_, nodeSyncType_, kvps) { }
-
-    public override string ToString()
-    {
-        return $"{this.GetType().Name}({{{ChildrenToString()}}})";
-    }
+    ) : base(id_, kvps) { }
 }

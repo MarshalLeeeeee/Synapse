@@ -14,14 +14,15 @@ public class EntityManager : EntityManagerCommon
     /// <summary>
     /// add player by server synchronization
     /// </summary>
-    /// <param name="player"> player entity instance </param>
-    [Rpc(RpcConst.Server, NodeTypeConst.TypePlayerEntity)]
-    public void SyncAddPlayerRemote(PlayerEntity player)
+    /// <param name="player"> player entity instance (whose id should be empty) </param>
+    [Rpc(RpcConst.Server, NodeTypeConst.TypeString, NodeTypeConst.TypePlayerEntity)]
+    public void SyncAddPlayerRemote(StringNode playerId, PlayerEntity player)
     {
-        string playerId = player.id;
-        if (!String.IsNullOrEmpty(playerId))
+        string playerId_ = playerId.Get();
+        if (!String.IsNullOrEmpty(playerId_))
         {
-            playerEntities[playerId] = player;
+            playerEntities[playerId_] = player;
+            player.SetId(playerId_);
         }
     }
 

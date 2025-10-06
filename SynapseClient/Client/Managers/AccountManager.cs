@@ -55,7 +55,7 @@ public class AccountManager : AccountManagerCommon
             return false;
         }
 
-        if (Game.Instance.CallRpc("AccountManager.LoginRemote", "Mgr-AccountManager", new StringNode("", NodeSynConst.SyncAll, account), new StringNode("", NodeSynConst.SyncAll, password)))
+        if (Game.Instance.CallRpc("AccountManager.LoginRemote", "Mgr-AccountManager", new StringNode("", account), new StringNode("", password)))
         {
             waitLoginRes = true;
             return true;

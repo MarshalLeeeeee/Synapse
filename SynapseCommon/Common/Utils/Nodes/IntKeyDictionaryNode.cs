@@ -7,9 +7,9 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
     protected Dictionary<int, T> children = new Dictionary<int, T>();
 
     protected IntKeyDictionaryTemplateNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         params KeyValuePair<int, T>[] kvps
-    ) : base(id_, nodeSyncType_)
+    ) : base(id_)
     {
         foreach (KeyValuePair<int, T> kvp in kvps)
         {
@@ -46,8 +46,7 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         foreach (KeyValuePair<int, T> kvp in children)
         {
             argsList.Add(kvp);
@@ -55,29 +54,35 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
         return argsList.ToArray();
     }
 
+    public override string ToString()
+    {
+        return $"{this.GetType().Name}({{ {ChildrenToString()} }})";
+    }
+
     #endregion
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
         foreach (KeyValuePair<int, T> kvp in children)
         {
-            NodeStreamer.Serialize(new IntNode("", NodeSynConst.SyncAll, kvp.Key), writer);
-            NodeStreamer.Serialize(kvp.Value, writer);
+            if (kvp.Value.ShouldSerializeContent(proxyId))
+            {
+                NodeStreamer.Serialize(new IntNode("", kvp.Key), writer, proxyId);
+                NodeStreamer.Serialize(kvp.Value, writer, proxyId);
+            }
         }
-        NodeStreamer.Serialize(new IntNode("", NodeSynConst.SyncAll), writer);
-        NodeStreamer.Serialize(new IntKeyDictionaryTailNode("", NodeSynConst.SyncAll), writer);
+        NodeStreamer.Serialize(new IntNode(), writer, proxyId);
+        NodeStreamer.Serialize(new IntKeyDictionaryTailNode(), writer, proxyId);
     }
 
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         while (true)
         {
             Node keyNode = NodeStreamer.Deserialize(reader);
@@ -118,7 +123,7 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
         {
             T valueCopy = (T)value.Copy();
             children[key] = valueCopy;
-            valueCopy.SetId($"{key}");
+            valueCopy.SetId($"{id}.{key}");
         }
     }
 
@@ -151,7 +156,7 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
     {
         T valueCopy = (T)value.Copy();
         children.Add(key, valueCopy);
-        valueCopy.SetId($"{key}");
+        valueCopy.SetId($"{id}.{key}");
     }
 
     public void Remove(int key)
@@ -174,30 +179,9 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
 public class IntKeyDictionaryNodeCommon : IntKeyDictionaryTemplateNodeCommon<Node>
 {
     protected IntKeyDictionaryNodeCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         params KeyValuePair<int, Node>[] kvps
-    ) : base(id_, nodeSyncType_, kvps) { }
-
-    public override string ToString()
-    {
-        return $"{this.GetType().Name}({{{ChildrenToString()}}})";
-    }
-
-    #region REGION_IDENTIFICATION
-
-    public virtual object[] GetCopyArgs()
-    {
-        List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
-        foreach (KeyValuePair<int, Node> kvp in children)
-        {
-            argsList.Add(kvp);
-        }
-        return argsList.ToArray();
-    }
-
-    #endregion
+    ) : base(id_, kvps) { }
 }
 
 #if DEBUG
@@ -208,26 +192,26 @@ public static class TestIntKeyDictionaryNode
     public static void TestStream()
     {
         IntKeyDictionaryNode node = new IntKeyDictionaryNode(
-            "", NodeSynConst.SyncAll,
-            new KeyValuePair<int, Node>(0, new IntNode("", NodeSynConst.SyncAll, 3)),
-            new KeyValuePair<int, Node>(1, new FloatNode("", NodeSynConst.SyncAll, 3.3f)),
-            new KeyValuePair<int, Node>(2, new StringNode("", NodeSynConst.SyncAll, "3")),
+            "", 
+            new KeyValuePair<int, Node>(0, new IntNode("", 3)),
+            new KeyValuePair<int, Node>(1, new FloatNode("", 3.3f)),
+            new KeyValuePair<int, Node>(2, new StringNode("", "3")),
             new KeyValuePair<int, Node>(3, new ListNode(
-                "", NodeSynConst.SyncAll,
-                new IntNode("", NodeSynConst.SyncAll, 4),
-                new FloatNode("", NodeSynConst.SyncAll, 5.0f)
+                "", 
+                new IntNode("", 4),
+                new FloatNode("", 5.0f)
             )),
             new KeyValuePair<int, Node>(4, new IntKeyDictionaryNode(
-                "", NodeSynConst.SyncAll,
-                new KeyValuePair<int, Node>(0, new IntNode("", NodeSynConst.SyncAll, 3)),
-                new KeyValuePair<int, Node>(1, new FloatNode("", NodeSynConst.SyncAll, 3.3f)),
-                new KeyValuePair<int, Node>(2, new StringNode("", NodeSynConst.SyncAll, "3")),
+                "", 
+                new KeyValuePair<int, Node>(0, new IntNode("", 3)),
+                new KeyValuePair<int, Node>(1, new FloatNode("", 3.3f)),
+                new KeyValuePair<int, Node>(2, new StringNode("", "3")),
                 new KeyValuePair<int, Node>(3, new ListNode(
-                    "", NodeSynConst.SyncAll,
-                    new IntNode("", NodeSynConst.SyncAll, 4),
-                    new FloatNode("", NodeSynConst.SyncAll, 5.0f)
+                    "", 
+                    new IntNode("", 4),
+                    new FloatNode("", 5.0f)
                 )),
-                new KeyValuePair<int, Node>(4, new IntKeyDictionaryNode("", NodeSynConst.SyncAll))
+                new KeyValuePair<int, Node>(4, new IntKeyDictionaryNode())
             ))
         );
         Assert.EqualTrue(NodeStreamer.TestStream(node), "IntKeyDictionaryNode changed after serialization and deserialization");
@@ -236,26 +220,26 @@ public static class TestIntKeyDictionaryNode
     public static void TestCopy()
     {
         IntKeyDictionaryNode node = new IntKeyDictionaryNode(
-            "", NodeSynConst.SyncAll,
-            new KeyValuePair<int, Node>(0, new IntNode("", NodeSynConst.SyncAll, 3)),
-            new KeyValuePair<int, Node>(1, new FloatNode("", NodeSynConst.SyncAll, 3.3f)),
-            new KeyValuePair<int, Node>(2, new StringNode("", NodeSynConst.SyncAll, "3")),
+            "", 
+            new KeyValuePair<int, Node>(0, new IntNode("", 3)),
+            new KeyValuePair<int, Node>(1, new FloatNode("", 3.3f)),
+            new KeyValuePair<int, Node>(2, new StringNode("", "3")),
             new KeyValuePair<int, Node>(3, new ListNode(
-                "", NodeSynConst.SyncAll,
-                new IntNode("", NodeSynConst.SyncAll, 4),
-                new FloatNode("", NodeSynConst.SyncAll, 5.0f)
+                "", 
+                new IntNode("", 4),
+                new FloatNode("", 5.0f)
             )),
             new KeyValuePair<int, Node>(4, new IntKeyDictionaryNode(
-                "", NodeSynConst.SyncAll,
-                new KeyValuePair<int, Node>(0, new IntNode("", NodeSynConst.SyncAll, 3)),
-                new KeyValuePair<int, Node>(1, new FloatNode("", NodeSynConst.SyncAll, 3.3f)),
-                new KeyValuePair<int, Node>(2, new StringNode("", NodeSynConst.SyncAll, "3")),
+                "", 
+                new KeyValuePair<int, Node>(0, new IntNode("", 3)),
+                new KeyValuePair<int, Node>(1, new FloatNode("", 3.3f)),
+                new KeyValuePair<int, Node>(2, new StringNode("", "3")),
                 new KeyValuePair<int, Node>(3, new ListNode(
-                    "", NodeSynConst.SyncAll,
-                    new IntNode("", NodeSynConst.SyncAll, 4),
-                    new FloatNode("", NodeSynConst.SyncAll, 5.0f)
+                    "", 
+                    new IntNode("", 4),
+                    new FloatNode("", 5.0f)
                 )),
-                new KeyValuePair<int, Node>(4, new IntKeyDictionaryNode("", NodeSynConst.SyncAll))
+                new KeyValuePair<int, Node>(4, new IntKeyDictionaryNode())
             ))
         );
         IntKeyDictionaryNode copy = (IntKeyDictionaryNode)node.Copy();

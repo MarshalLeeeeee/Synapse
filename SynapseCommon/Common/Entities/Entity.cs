@@ -18,18 +18,13 @@ public class EntityCommon : Node
     /// <summary>
     /// manage components, component name -> component instance
     /// </summary>
-    protected Components components = new Components("components", NodeSynConst.SyncAll);
+    protected Components components = new Components();
 
     protected EntityCommon(
-        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string id_ = "",
         Components? components_ = null
-    ) : base(id_, nodeSyncType_)
+    ) : base(id_)
     {
-        if (String.IsNullOrEmpty(id))
-        {
-            id = "Ett-" + Guid.NewGuid().ToString();
-        }
-
         if (components_ != null)
         {
             components = (Components)components_.Copy();
@@ -41,11 +36,22 @@ public class EntityCommon : Node
 
     #region REGION_IDENTIFICATION
 
+    public override void SetId(string id_)
+    {
+        base.SetId(id_);
+        components.SetId(id_ + ".components");
+    }
+
+    public override Node? GetChildWithId(string id_)
+    {
+        if (id_ == "components") return components;
+        return base.GetChildWithId(id_);
+    }
+
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add(id);
-        argsList.Add(nodeSyncType);
+        argsList.Add("");
         argsList.Add(components);
         return argsList.ToArray();
     }
@@ -54,12 +60,11 @@ public class EntityCommon : Node
 
     #region REGION_STREAM
 
-    public override void Serialize(BinaryWriter writer)
+    public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
         writer.Write(id);
-        writer.Write(nodeSyncType);
-        NodeStreamer.Serialize(components, writer);
+        NodeStreamer.Serialize(components, writer, proxyId);
     }
 
     /// <summary>
@@ -70,7 +75,6 @@ public class EntityCommon : Node
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
-        argsList.Add(reader.ReadInt32());
         argsList.Add(NodeStreamer.Deserialize(reader));
         return argsList.ToArray();
     }
