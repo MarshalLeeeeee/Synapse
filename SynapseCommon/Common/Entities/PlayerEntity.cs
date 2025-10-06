@@ -18,7 +18,7 @@ public class PlayerEntityCommon : Entity
 
     public override string ToString()
     {
-        return $"{this.GetType().Name}(id: {id}, name: {name}, money: {money}, )";
+        return $"{this.GetType().Name}(name: {name}, money: {money}, )";
     }
 
     #region REGION_IDENTIFICATION
