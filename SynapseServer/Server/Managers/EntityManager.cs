@@ -54,7 +54,7 @@ public class EntityManager : EntityManagerCommon
     private void CreatePlayerEntity(string proxyId, string account)
     {
         PlayerEntity player = new PlayerEntity();
-        string playerId = player.entityId;
+        string playerId = player.id;
         playerEntities.Add(playerId, player);
         accountWithPlayerId.Add(account, playerId);
         GateManager? gateManager = Game.Instance.GetManager<GateManager>();
@@ -88,7 +88,7 @@ public class EntityManager : EntityManagerCommon
         {
             string playerId = kvp.Key;
             PlayerEntity sourcePlayer = kvp.Value;
-            if (targetPlayerId == sourcePlayer.entityId)
+            if (targetPlayerId == sourcePlayer.id)
             {
                 DoSyncMainPlayerEntity(proxyId, sourcePlayer);
             }
@@ -112,7 +112,7 @@ public class EntityManager : EntityManagerCommon
         string? targetPlayerId = GetPlayerIdByProxyId(proxyId);
         if (targetPlayerId == null) return;
 
-        if (targetPlayerId == sourcePlayer.entityId)
+        if (targetPlayerId == sourcePlayer.id)
         {
             DoSyncMainPlayerEntity(proxyId, sourcePlayer);
         }

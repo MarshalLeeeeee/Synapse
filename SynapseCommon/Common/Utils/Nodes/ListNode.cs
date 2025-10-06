@@ -4,7 +4,10 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
 {
     protected List<T> children = new List<T>();
 
-    protected ListTemplateNodeCommon(params T[] nodes)
+    protected ListTemplateNodeCommon(
+        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        params T[] nodes
+    ) : base(id_, nodeSyncType_)
     {
         foreach (T node in nodes)
         {
@@ -15,23 +18,65 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
     protected string ChildrenToString()
     {
         string s = "";
-        foreach (T node in children)
+        foreach (T child in children)
         {
-            s += $"{node}, ";
+            s += $"{child}, ";
         }
         return s;
     }
+
+    #region REGION_IDENTIFICATION
+
+    public override Node? GetChildWithId(string id_)
+    {
+        try
+        {
+            int index = int.Parse(id_);
+            if (index < 0 || index >= Count) return null;
+            else return this[index];
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    protected void UpdateChildrenId()
+    {
+        int i = 0;
+        foreach (T child in children)
+        {
+            child.SetId($"{i}");
+            i += 1;
+        }
+    }
+
+    public override object[] GetCopyArgs()
+    {
+        List<object> argsList = new List<object>();
+        argsList.Add(id);
+        argsList.Add(nodeSyncType);
+        foreach (T child in children)
+        {
+            argsList.Add(child);
+        }
+        return argsList.ToArray();
+    }
+
+    #endregion
 
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
     {
         writer.Write(nodeType);
+        writer.Write(id);
+        writer.Write(nodeSyncType);
         foreach (T child in children)
         {
             NodeStreamer.Serialize(child, writer);
         }
-        NodeStreamer.Serialize(new ListTailNode(), writer);
+        NodeStreamer.Serialize(new ListTailNode("", NodeSynConst.SyncAll), writer);
     }
 
     /// <summary>
@@ -41,6 +86,8 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
+        argsList.Add(reader.ReadString());
+        argsList.Add(reader.ReadInt32());
         while (true)
         {
             Node node = NodeStreamer.Deserialize(reader);
@@ -73,8 +120,9 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
         {
             if (index < 0 || index >= children.Count)
                 throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
-            Node oldValue = children[index];
-            children[index] = value;
+            T valueCopy = (T)value.Copy();
+            children[index] = valueCopy;
+            valueCopy.SetId($"{index}");
         }
     }
 
@@ -110,27 +158,32 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
 
     public void Add(T child)
     {
-        children.Add(child);
+        T childCopy = (T)child.Copy();
+        children.Add(childCopy);
+        childCopy.SetId($"{Count - 1}");
     }
 
     public void Insert(int index, T child)
     {
         if (index < 0 || index > children.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
-        children.Insert(index, child);
+        T childCopy = (T)child.Copy();
+        children.Insert(index, childCopy);
+        UpdateChildrenId();
     }
 
     public void Remove(T child)
     {
         children.Remove(child);
+        UpdateChildrenId();
     }
 
     public void RemoveAt(int index)
     {
         if (index < 0 || index >= children.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
-        Node child = children[index];
         children.RemoveAt(index);
+        UpdateChildrenId();
     }
 
     public void Clear()
@@ -143,11 +196,14 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
 
 public class ListNodeCommon : ListTemplateNodeCommon<Node>
 {
-    protected ListNodeCommon(params Node[] nodes) : base(nodes) { }
+    protected ListNodeCommon(
+        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll, 
+        params Node[] nodes
+    ) : base(id_, nodeSyncType_, nodes) { }
 
     public override string ToString()
     {
-        return $"ListNode([{ChildrenToString()}])";
+        return $"{this.GetType().Name}([{ChildrenToString()}])";
     }
 }
 
@@ -158,9 +214,41 @@ public static class TestListNode
 {
     public static void TestStream()
     {
-        ListNode node = new ListNode(new IntNode(1), new FloatNode(10.0f), new BoolNode(true), new StringNode("lmc"), 
-            new ListNode(new IntNode(1), new FloatNode(10.0f), new BoolNode(true), new StringNode("lmc")));
+        ListNode node = new ListNode(
+            "", NodeSynConst.SyncAll,
+            new IntNode("", NodeSynConst.SyncAll, 1),
+            new FloatNode("", NodeSynConst.SyncAll, 10.0f),
+            new BoolNode("", NodeSynConst.SyncAll, true),
+            new StringNode("", NodeSynConst.SyncAll, "lmc"),
+            new ListNode(
+                "", NodeSynConst.SyncAll,
+                new IntNode("", NodeSynConst.SyncAll, 1),
+                new FloatNode("", NodeSynConst.SyncAll, 10.0f),
+                new BoolNode("", NodeSynConst.SyncAll, true),
+                new StringNode("", NodeSynConst.SyncAll, "lmc")
+            )
+        );
         Assert.EqualTrue(NodeStreamer.TestStream(node), "ListNode changed after serialization and deserialization");
+    }
+    
+    public static void TestCopy()
+    {
+        ListNode node = new ListNode(
+            "", NodeSynConst.SyncAll,
+            new IntNode("", NodeSynConst.SyncAll, 1),
+            new FloatNode("", NodeSynConst.SyncAll, 10.0f),
+            new BoolNode("", NodeSynConst.SyncAll, true),
+            new StringNode("", NodeSynConst.SyncAll, "lmc"),
+            new ListNode(
+                "", NodeSynConst.SyncAll,
+                new IntNode("", NodeSynConst.SyncAll, 1),
+                new FloatNode("", NodeSynConst.SyncAll, 10.0f),
+                new BoolNode("", NodeSynConst.SyncAll, true),
+                new StringNode("", NodeSynConst.SyncAll, "lmc")
+            )
+        );
+        ListNode copy = (ListNode)node.Copy();
+        Assert.EqualTrue($"{node}" == $"{copy}", "ListNode id not equal after copy");
     }
 }
 

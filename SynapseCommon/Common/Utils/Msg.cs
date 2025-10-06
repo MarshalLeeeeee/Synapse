@@ -17,14 +17,15 @@ public class Msg
     public string instanceId { get; private set; }
 
     /// <summary>
-    /// method args (in serializable Node)
+    /// method args
     /// </summary>
-    public ListNode arg { get; private set; }
+    public List<Node> arg { get; private set; }
+
     public Msg(string methodName_, string instanceId_, params Node[] args)
     {
         methodName = methodName_;
         instanceId = instanceId_;
-        arg = new ListNode();
+        arg = new List<Node>();
         foreach (Node a in args)
         {
             arg.Add(a);
@@ -35,7 +36,11 @@ public class Msg
     {
         writer.Write(methodName);
         writer.Write(instanceId);
-        NodeStreamer.Serialize(arg, writer);
+        writer.Write(arg.Count);
+        foreach (Node arg in arg)
+        {
+            NodeStreamer.Serialize(arg, writer);
+        }
     }
 }
 
@@ -58,21 +63,18 @@ public static class MsgStreamer
         {
             string methodName = reader.ReadString();
             string instanceId = reader.ReadString();
-            Node arg = NodeStreamer.Deserialize(reader);
-            if (arg != null && arg is ListNode listNode)
+            int argCount = reader.ReadInt32();
+            List<Node> args = new List<Node>(argCount);
+            for (int i = 0; i < argCount; i++)
             {
-                return new Msg(methodName, instanceId, listNode.ToArray());
+                args.Add(NodeStreamer.Deserialize(reader));
             }
-            else
-            {
-                return null;
-            }
+            return new Msg(methodName, instanceId, args.ToArray());
         }
         catch
         {
             return null;
         }
-
     }
 
     public static (bool succ, Msg? msg) ReadMsgFromStream(NetworkStream? stream)

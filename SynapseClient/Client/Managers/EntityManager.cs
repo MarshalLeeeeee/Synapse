@@ -18,10 +18,10 @@ public class EntityManager : EntityManagerCommon
     [Rpc(RpcConst.Server, NodeTypeConst.TypePlayerEntity)]
     public void SyncAddPlayerRemote(PlayerEntity player)
     {
-        string playerId = player.entityId;
+        string playerId = player.id;
         if (!String.IsNullOrEmpty(playerId))
         {
-            playerEntities.Add(playerId, player);
+            playerEntities[playerId] = player;
         }
     }
 

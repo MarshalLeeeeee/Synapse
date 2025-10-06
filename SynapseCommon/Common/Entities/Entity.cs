@@ -16,32 +16,64 @@ public class RegisterEntityAttribute : Attribute
 public class EntityCommon : Node
 {
     /// <summary>
-    /// exclusive id for entity
-    /// </summary>
-    public string entityId { get; protected set; } = "";
-
-    /// <summary>
     /// manage components, component name -> component instance
     /// </summary>
-    protected Components components = new Components();
+    protected Components components = new Components("components", NodeSynConst.SyncAll);
 
-    protected EntityCommon(string entityId_ = "", Components? components_ = null)
+    protected EntityCommon(
+        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        Components? components_ = null
+    ) : base(id_, nodeSyncType_)
     {
-        if (String.IsNullOrEmpty(entityId_))
+        if (String.IsNullOrEmpty(id))
         {
-            entityId = "Ett-" + Guid.NewGuid().ToString();
-        }
-        else
-        {
-            entityId = entityId_;
+            id = "Ett-" + Guid.NewGuid().ToString();
         }
 
         if (components_ != null)
         {
-            components = components_;
+            components = (Components)components_.Copy();
         }
         InitComponents();
     }
 
     protected virtual void InitComponents() { }
+
+    #region REGION_IDENTIFICATION
+
+    public override object[] GetCopyArgs()
+    {
+        List<object> argsList = new List<object>();
+        argsList.Add(id);
+        argsList.Add(nodeSyncType);
+        argsList.Add(components);
+        return argsList.ToArray();
+    }
+
+    #endregion
+
+    #region REGION_STREAM
+
+    public override void Serialize(BinaryWriter writer)
+    {
+        writer.Write(nodeType);
+        writer.Write(id);
+        writer.Write(nodeSyncType);
+        NodeStreamer.Serialize(components, writer);
+    }
+
+    /// <summary>
+    /// Collect arguments for constructor from binary reader.
+    /// </summary>
+    /// <returns> List of arguments for constructor </returns>
+    protected static object[] DeserializeIntoArgs(BinaryReader reader)
+    {
+        List<object> argsList = new List<object>();
+        argsList.Add(reader.ReadString());
+        argsList.Add(reader.ReadInt32());
+        argsList.Add(NodeStreamer.Deserialize(reader));
+        return argsList.ToArray();
+    }
+
+    #endregion
 }

@@ -3,14 +3,14 @@ using System.Xml.Linq;
 
 public class PlayerEntityCommon : Entity
 {
-    protected StringNode name = new StringNode("Name");
-    protected IntNode money = new IntNode(999);
+    protected StringNode name = new StringNode("name", NodeSynConst.SyncAll, "Name");
+    protected IntNode money = new IntNode("money", NodeSynConst.SyncOwn, 999);
 
     protected PlayerEntityCommon(
-        string eid = "",
-        StringNode? name_ = null,
-        IntNode? money_ = null
-    ) : base(eid)
+        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        Components? components_ = null,
+        StringNode? name_ = null, IntNode? money_ = null
+    ) : base(id_, nodeSyncType_, components_)
     {
         if (name_ != null) name = name_;
         if (money_ != null) money = money_;
@@ -18,15 +18,32 @@ public class PlayerEntityCommon : Entity
 
     public override string ToString()
     {
-        return $"PlayerEntity(name: {name}, money: {money}, )";
+        return $"{this.GetType().Name}(id: {id}, name: {name}, money: {money}, )";
     }
+
+    #region REGION_IDENTIFICATION
+
+    public override object[] GetCopyArgs()
+    {
+        List<object> argsList = new List<object>();
+        argsList.Add(id);
+        argsList.Add(nodeSyncType);
+        argsList.Add(components);
+        argsList.Add(name);
+        argsList.Add(money);
+        return argsList.ToArray();
+    }
+
+    #endregion
 
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
     {
         writer.Write(nodeType);
-        writer.Write(entityId);
+        writer.Write(id);
+        writer.Write(nodeSyncType);
+        NodeStreamer.Serialize(components, writer);
         NodeStreamer.Serialize(name, writer);
         NodeStreamer.Serialize(money, writer);
     }
@@ -39,6 +56,8 @@ public class PlayerEntityCommon : Entity
     {
         List<object> argsList = new List<object>();
         argsList.Add(reader.ReadString());
+        argsList.Add(reader.ReadInt32());
+        argsList.Add(NodeStreamer.Deserialize(reader));
         argsList.Add(NodeStreamer.Deserialize(reader));
         argsList.Add(NodeStreamer.Deserialize(reader));
         return argsList.ToArray();

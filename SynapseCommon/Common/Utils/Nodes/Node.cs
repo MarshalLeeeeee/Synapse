@@ -42,9 +42,8 @@ public class NodeTypeConst
 
 public class NodeSynConst
 {
-    public const int SyncNone = 0;
-    public const int SyncAll = 1;
-    public const int SyncOwn = 2;
+    public const int SyncAll = 0;
+    public const int SyncOwn = 1;
 }
 
 /// <summary>
@@ -66,30 +65,80 @@ public class NodeCommon
     /// <summary>
     /// Every node has a unique id at runtime which serves as the identifier of the node in both server and client. 
     /// </summary>
-    public string id = "";
+    public string id { get; protected set; } = "";
 
     /// <summary>
     /// the sync type of the node
     /// </summary>
-    public int syncType = NodeSynConst.SyncNone;
+    public int nodeSyncType { get; protected set; } = NodeSynConst.SyncAll;
 
     /// <summary>
     /// exclusive value for node
     /// </summary>
     public virtual int nodeType => NodeTypeConst.TypeUndefined;
 
+    protected NodeCommon(string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll)
+    {
+        id = id_;
+        nodeSyncType = nodeSyncType_;
+    }
+
     /// <summary>
     /// Return the string that represents the current node.
     /// </summary>
     public override string ToString()
     {
-        return "Node()";
+        return $"{this.GetType().Name}()";
     }
+
+    #region REGION_IDENTIFICATION
+
+    public void SetId(string id_)
+    {
+        id = id_;
+    }
+
+    /// <summary>
+    /// get child node with specific id
+    /// </summary>
+    /// <param name="id_"> string: node id </param>
+    /// <returns> Node instance if target child exists, null otherwise </returns>
+    public virtual Node? GetChildWithId(string id_)
+    {
+        return null;
+    }
+
+    /// <summary>
+    /// Create a deep copy of the node.
+    /// </summary>
+    /// <returns> Deep copy of the node. </returns>
+    public virtual NodeCommon Copy()
+    {
+        throw new InvalidDataException("Failed to copy NodeCommon.");
+    }
+
+    /// <summary>
+    /// Get arguments for constructor to create a copy of the node.
+    /// </summary>
+    /// <returns> arguments for constructor </returns>
+    public virtual object[] GetCopyArgs()
+    {
+        List<object> argsList = new List<object>();
+        argsList.Add(id);
+        argsList.Add(nodeSyncType);
+        return argsList.ToArray();
+    }
+
+    #endregion
+
+    #region REGION_STREAM
 
     /// <summary>
     /// Serialize the node into a binary stream.
     /// </summary>
     public virtual void Serialize(BinaryWriter writer) { }
+
+    #endregion
 }
 
 public static class NodeStreamer

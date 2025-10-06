@@ -4,7 +4,10 @@ public class StringKeyDictionaryNode : StringKeyDictionaryNodeCommon
 {
     public override int nodeType => NodeTypeConst.TypeStringKeyDictionary;
 
-    public StringKeyDictionaryNode(params KeyValuePair<string, Node>[] kvps) : base(kvps) { }
+    public StringKeyDictionaryNode(
+        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        params KeyValuePair<string, Node>[] kvps
+    ) : base(id_, nodeSyncType_, kvps) { }
 
     public static StringKeyDictionaryNode Deserialize(BinaryReader reader)
     {
@@ -18,18 +21,21 @@ public class StringKeyDictionaryNode : StringKeyDictionaryNodeCommon
             throw new InvalidDataException("Failed to deserialize StringKeyDictionaryNode.", ex);
         }
     }
-}
 
-#if DEBUG
+    #region REGION_IDENTIFICATION
 
-[RegisterTest]
-public static class TestStringKeyDictionaryNode
-{
-    public static void TestStream()
+    public override Node Copy()
     {
-        StringKeyDictionaryNode node = new StringKeyDictionaryNode();
-        Assert.EqualTrue(NodeStreamer.TestStream(node), "StringKeyDictionaryNode changed after serialization and deserialization");
+        try
+        {
+            object[] args = GetCopyArgs();
+            return (StringKeyDictionaryNode)Activator.CreateInstance(typeof(StringKeyDictionaryNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to copy StringKeyDictionaryNode.", ex);
+        }
     }
-}
 
-#endif
+    #endregion
+}

@@ -87,7 +87,7 @@ public class DoubleRefDictionary<T, U>
 
     public override string ToString()
     {
-        string s = "DoubleRefDictionary:\n";
+        string s = $"{this.GetType().Name}:\n";
         if (t2u.Count == 0)
         {
             s += ">>> Empty";

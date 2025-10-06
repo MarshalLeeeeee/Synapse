@@ -4,7 +4,10 @@ public class StringNode : StringNodeCommon
 {
     public override int nodeType => NodeTypeConst.TypeString;
 
-    public StringNode(string s_ = "") : base(s_) { }
+    public StringNode(
+        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        string s_ = ""
+    ) : base(id_, nodeSyncType_, s_) { }
 
     public static StringNode Deserialize(BinaryReader reader)
     {
@@ -18,4 +21,21 @@ public class StringNode : StringNodeCommon
             throw new InvalidDataException("Failed to deserialize StringNode.", ex);
         }
     }
+
+    #region REGION_IDENTIFICATION
+
+    public override Node Copy()
+    {
+        try
+        {
+            object[] args = GetCopyArgs();
+            return (StringNode)Activator.CreateInstance(typeof(StringNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to copy StringNode.", ex);
+        }
+    }
+
+    #endregion
 }

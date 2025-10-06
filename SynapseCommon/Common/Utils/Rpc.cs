@@ -35,7 +35,7 @@ public class RpcMethodInfo
         argTypes = argTypes_;
     }
 
-    public bool CheckArgTypes(ListNode args)
+    public bool CheckArgTypes(List<Node> args)
     {
         int argTypesCount = argTypes.Length;
         int argsCount = args.Count;

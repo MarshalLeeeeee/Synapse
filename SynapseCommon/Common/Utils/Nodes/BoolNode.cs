@@ -3,18 +3,36 @@ public class BoolNodeCommon : Node
 {
     bool v = false;
 
-    protected BoolNodeCommon(bool v_ = false) { v = v_; }
+    protected BoolNodeCommon(
+        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll,
+        bool v_ = false
+    ) : base(id_, nodeSyncType_) { v = v_; }
 
     public override string ToString()
     {
-        return $"BoolNode({v})";
+        return $"{this.GetType().Name}({v})";
     }
+
+    #region REGION_IDENTIFICATION
+
+    public override object[] GetCopyArgs()
+    {
+        List<object> argsList = new List<object>();
+        argsList.Add(id);
+        argsList.Add(nodeSyncType);
+        argsList.Add(v);
+        return argsList.ToArray();
+    }
+
+    #endregion
 
     #region REGION_STREAM
 
     public override void Serialize(BinaryWriter writer)
     {
         writer.Write(nodeType);
+        writer.Write(id);
+        writer.Write(nodeSyncType);
         writer.Write(v);
     }
 
@@ -25,6 +43,8 @@ public class BoolNodeCommon : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
+        argsList.Add(reader.ReadString());
+        argsList.Add(reader.ReadInt32());
         argsList.Add(reader.ReadBoolean());
         return argsList.ToArray();
     }
@@ -54,8 +74,15 @@ public static class TestBoolNode
 {
     public static void TestStream()
     {
-        BoolNode node = new BoolNode(true);
+        BoolNode node = new BoolNode("", NodeSynConst.SyncAll, true);
         Assert.EqualTrue(NodeStreamer.TestStream(node), "BoolNode changed after serialization and deserialization");
+    }
+
+    public static void TestCopy()
+    {
+        BoolNode node = new BoolNode("", NodeSynConst.SyncAll, true);
+        BoolNode copy = (BoolNode)node.Copy();
+        Assert.EqualTrue($"{node}" == $"{copy}", "BoolNode id not equal after copy");
     }
 }
 

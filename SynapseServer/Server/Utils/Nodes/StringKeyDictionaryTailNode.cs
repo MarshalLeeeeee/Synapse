@@ -4,7 +4,9 @@ public class StringKeyDictionaryTailNode : StringKeyDictionaryTailNodeCommon
 {
     public override int nodeType => NodeTypeConst.TypeStringKeyDictionaryTail;
 
-    public StringKeyDictionaryTailNode() : base() { }
+    public StringKeyDictionaryTailNode(
+        string id_ = "", int nodeSyncType_ = NodeSynConst.SyncAll
+    ) : base(id_, nodeSyncType_) { }
 
     public static StringKeyDictionaryTailNode Deserialize(BinaryReader reader)
     {
@@ -18,18 +20,21 @@ public class StringKeyDictionaryTailNode : StringKeyDictionaryTailNodeCommon
             throw new InvalidDataException("Failed to deserialize StringKeyDictionaryTailNode.", ex);
         }
     }
-}
 
-#if DEBUG
+    #region REGION_IDENTIFICATION
 
-[RegisterTest]
-public static class TestStringKeyDictionaryTailNode
-{
-    public static void TestStream()
+    public override Node Copy()
     {
-        StringKeyDictionaryTailNode node = new StringKeyDictionaryTailNode();
-        Assert.EqualTrue(NodeStreamer.TestStream(node), "StringKeyDictionaryTailNode changed after serialization and deserialization");
+        try
+        {
+            object[] args = GetCopyArgs();
+            return (StringKeyDictionaryTailNode)Activator.CreateInstance(typeof(StringKeyDictionaryTailNode), args);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidDataException("Failed to copy StringKeyDictionaryTailNode.", ex);
+        }
     }
-}
 
-#endif
+    #endregion
+}
