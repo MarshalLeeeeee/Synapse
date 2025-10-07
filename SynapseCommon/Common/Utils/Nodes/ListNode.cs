@@ -8,9 +8,13 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
         params T[] nodes
     ) : base()
     {
+        int i = 0;
         foreach (T node in nodes)
         {
-            Add(node);
+            T nodeCopy = (T)node.Copy();
+            children.Add(nodeCopy);
+            nodeCopy.SetId($"{i}", this);
+            i += 1;
         }
     }
 
@@ -126,7 +130,7 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
                 throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
             T valueCopy = (T)value.Copy();
             children[index] = valueCopy;
-            valueCopy.SetId($"{id}.{index}");
+            valueCopy.SetId($"{index}", this);
         }
     }
 
@@ -164,7 +168,7 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
     {
         T childCopy = (T)child.Copy();
         children.Add(childCopy);
-        childCopy.SetId($"{id}.{Count-1}");
+        childCopy.SetId($"{Count-1}", this);
         OnAdd(childCopy);
     }
 

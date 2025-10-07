@@ -12,7 +12,9 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
     {
         foreach (KeyValuePair<int, T> kvp in kvps)
         {
-            Add(kvp.Key, kvp.Value);
+            T valueCopy = (T)kvp.Value.Copy();
+            children[kvp.Key] = valueCopy;
+            valueCopy.SetId($"{kvp.Key}", this);
         }
     }
 
@@ -128,7 +130,7 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
         {
             T valueCopy = (T)value.Copy();
             children[key] = valueCopy;
-            valueCopy.SetId($"{id}.{key}");
+            valueCopy.SetId($"{key}", this);
             OnSet(key, valueCopy);
         }
     }
@@ -164,7 +166,7 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
     {
         T valueCopy = (T)value.Copy();
         children.Add(key, valueCopy);
-        valueCopy.SetId($"{id}.{key}");
+        valueCopy.SetId($"{key}", this);
         OnAdd(key, valueCopy);
     }
 
