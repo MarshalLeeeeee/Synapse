@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Xml.Linq;
 
 /// <summary>
 /// Proxy represents a tcp connection between server and client
@@ -26,6 +24,11 @@ public class Proxy : ProxyCommon
     public Proxy(TcpClient client_) : base(client_) { }
 
     protected override void OnStart()
+    {
+        UpdateHeartbeatTime();
+    }
+
+    public void UpdateHeartbeatTime()
     {
         lastHeartbeatTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
@@ -93,7 +96,7 @@ public class GateManager : GateManagerCommon
     /// <para> Hangle queue msg (inbox and outbox) </para>
     /// <para> Check validness of proxies </para>
     /// </summary>
-    /// <param name="dt"></param>
+    /// <param name="dt"> delta time (second) of this tick frame </param>
     protected override void DoUpdate(float dt)
     {
         if (!isActive) return;
@@ -432,8 +435,7 @@ public class GateManager : GateManagerCommon
     [Rpc(RpcConst.AnyClient)]
     public void PingHeartbeatRemote(Proxy proxy)
     {
-        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        proxy.lastHeartbeatTime = now;
+        proxy.UpdateHeartbeatTime();
     }
 
     #endregion
@@ -458,9 +460,6 @@ public class GateManager : GateManagerCommon
         // get method owner and instance
         var (owner, instance) = GetRpcOwnerAndInstance(msg.instanceId);
         if (owner == null || instance == null) return;
-
-        // check rpc type
-        //if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;
 
         // pack and invoke method
         try
