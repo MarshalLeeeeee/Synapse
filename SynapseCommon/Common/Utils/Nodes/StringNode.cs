@@ -62,7 +62,10 @@ public class StringNodeCommon : Node
     {
         if (s == s_) return;
         s = s_;
+        OnSet();
     }
+
+    protected virtual void OnSet() {}
 
     #endregion
 }

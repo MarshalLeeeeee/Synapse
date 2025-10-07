@@ -41,4 +41,14 @@ public class BoolNode : BoolNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    protected override void OnSet()
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("BoolNode.SetRemote", this);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("BoolNode.SetRemote", this);
+    }
+
+    #endregion
 }

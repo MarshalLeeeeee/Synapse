@@ -73,7 +73,7 @@ public class GameCommon : IDisposable
             Manager? mgr = Reflection.CreateManager(mgrName);
             if (mgr != null)
             {
-                managers[mgrName] = mgr;
+                managers["Mgr-"+mgrName] = mgr;
             }
         }
     }
@@ -91,7 +91,7 @@ public class GameCommon : IDisposable
     {
         Type tType = typeof(T);
         string tName = tType.Name;
-        Manager? mgr = GetManager(tName);
+        Manager? mgr = GetManager("Mgr-"+tName);
         if (mgr != null && mgr is T tMgr)
         {
             return tMgr;

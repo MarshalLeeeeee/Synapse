@@ -62,7 +62,10 @@ public class IntNodeCommon : Node
     {
         if (v == v_) return;
         v = v_;
+        OnSet();
     }
+
+    protected virtual void OnSet() {}
 
     #endregion
 }

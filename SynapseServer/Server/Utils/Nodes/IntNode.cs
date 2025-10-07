@@ -41,4 +41,14 @@ public class IntNode : IntNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    protected override void OnSet()
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("IntNode.SetRemote", this);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("IntNode.SetRemote", this);
+    }
+
+    #endregion
 }

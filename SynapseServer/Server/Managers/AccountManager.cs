@@ -76,6 +76,20 @@ public class AccountManager : AccountManagerCommon
         return null;
     }
 
+    /// <summary>
+    /// Get proxy id by account
+    /// </summary>
+    /// <param name="account"> account name </param>
+    /// <returns> Proxy id or null </returns>
+    public string? GetProxyId(string account)
+    {
+        if (proxyIdWithAccount.GetTByU(account, out string? proxyId))
+        {
+            return proxyId;
+        }
+        return null;
+    }
+
     #endregion
 
     #region REGION_LOGIN_LOGOUT

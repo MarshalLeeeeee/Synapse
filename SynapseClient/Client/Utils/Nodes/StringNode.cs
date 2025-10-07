@@ -41,4 +41,14 @@ public class StringNode : StringNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    [Rpc(RpcConst.Server, NodeTypeConst.TypeString)]
+    public void SetRemote(StringNode node)
+    {
+        Set(node.Get());
+    }
+
+    #endregion
 }

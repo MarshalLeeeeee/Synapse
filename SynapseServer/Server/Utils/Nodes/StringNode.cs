@@ -41,4 +41,14 @@ public class StringNode : StringNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    protected override void OnSet()
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("StringNode.SetRemote", this);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("StringNode.SetRemote", this);
+    }
+
+    #endregion
 }

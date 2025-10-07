@@ -213,17 +213,13 @@ public class GateManagerCommon : Manager
         string ownerId = seg[0];
         if (ownerId.StartsWith("Mgr-"))
         {
-            Manager? mgr = Game.Instance.GetManager(ownerId[4..]);
+            Manager? mgr = Game.Instance.GetManager(ownerId);
             return (mgr, mgr);
         }
         else if (ownerId.StartsWith("Ett-"))
         {
             PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(ownerId);
-            if (player != null)
-            {
-                return (player, seg[1..]);
-            }
-            else return (null, null);
+            return (player, player?.GetChildWithPath(seg[1..]));
         }
         else return (null, null);
     }

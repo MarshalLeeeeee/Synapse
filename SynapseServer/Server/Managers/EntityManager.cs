@@ -54,7 +54,7 @@ public class EntityManager : EntityManagerCommon
     private void CreatePlayerEntity(string proxyId, string account)
     {
         PlayerEntity player = new PlayerEntity();
-        string playerId = $"Ett-{Guid.NewGuid().ToString()}";
+        string playerId = "Ett-" + Guid.NewGuid().ToString();
         accountWithPlayerId.Add(account, playerId);
         playerEntities.Add(playerId, player);
         player.SetId(playerId);
@@ -153,6 +153,20 @@ public class EntityManager : EntityManagerCommon
         if (accountWithPlayerId.GetUByT(account, out string? playerId))
         {
             return playerId;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// get account of the corresponding player id
+    /// </summary>
+    /// <param name="playerId"> player id </param>
+    /// <returns> Return account if exists, null otherwise </returns>
+    public string? GetAccountByPlayerId(string playerId)
+    {
+        if (accountWithPlayerId.GetTByU(playerId, out string? account))
+        {
+            return account;
         }
         return null;
     }

@@ -41,4 +41,14 @@ public class IntNode : IntNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    [Rpc(RpcConst.Server, NodeTypeConst.TypeInt)]
+    public void SetRemote(IntNode node)
+    {
+        Set(node.Get());
+    }
+
+    #endregion
 }

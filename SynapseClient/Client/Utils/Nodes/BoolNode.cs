@@ -41,4 +41,14 @@ public class BoolNode : BoolNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    [Rpc(RpcConst.Server, NodeTypeConst.TypeBool)]
+    public void SetRemote(BoolNode node)
+    {
+        Set(node.Get());
+    }
+
+    #endregion
 }

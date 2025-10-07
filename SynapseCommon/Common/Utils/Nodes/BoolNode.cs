@@ -64,6 +64,8 @@ public class BoolNodeCommon : Node
         v = v_;
     }
 
+    protected virtual void OnSet() {}
+
     #endregion
 }
 
