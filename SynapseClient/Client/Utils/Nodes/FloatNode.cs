@@ -41,4 +41,14 @@ public class FloatNode : FloatNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    [Rpc(RpcConst.Server, NodeTypeConst.TypeFloat)]
+    public void SetRemote(FloatNode node)
+    {
+        Set(node.Get());
+    }
+
+    #endregion
 }

@@ -63,7 +63,10 @@ public class FloatNodeCommon : Node
     {
         if (Math.Abs(f - f_) < 1e-3) return;
         f = f_;
+        OnSet();
     }
+
+    protected virtual void OnSet() {}
 
     #endregion
 }

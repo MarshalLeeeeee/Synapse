@@ -41,4 +41,14 @@ public class FloatNode : FloatNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    protected override void OnSet()
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("FloatNode.SetRemote", this);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("FloatNode.SetRemote", this);
+    }
+
+    #endregion
 }
