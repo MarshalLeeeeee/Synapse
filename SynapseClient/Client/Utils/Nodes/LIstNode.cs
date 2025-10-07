@@ -41,4 +41,32 @@ public class ListNode : ListNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    [Rpc(RpcConst.Server)]
+    public void AddRemote(Node child)
+    {
+        Add(child);
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void InsertRemote(IntNode index, Node child)
+    {
+        Insert(index.Get(), child);
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void RemoveAtRemote(IntNode index)
+    {
+        RemoveAt(index.Get());
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void ClearRemote()
+    {
+        Clear();
+    }
+
+    #endregion
 }

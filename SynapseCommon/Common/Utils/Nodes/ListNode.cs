@@ -160,7 +160,10 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
         T childCopy = (T)child.Copy();
         children.Add(childCopy);
         childCopy.SetId($"{id}.{Count-1}");
+        OnAdd(childCopy);
     }
+
+    protected virtual void OnAdd(T child) {}
 
     public void Insert(int index, T child)
     {
@@ -169,13 +172,10 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
         T childCopy = (T)child.Copy();
         children.Insert(index, childCopy);
         UpdateChildrenId();
+        OnInsert(index, childCopy);
     }
 
-    public void Remove(T child)
-    {
-        children.Remove(child);
-        UpdateChildrenId();
-    }
+    protected virtual void OnInsert(int index, T child) {}
 
     public void RemoveAt(int index)
     {
@@ -183,12 +183,18 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
             throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
         children.RemoveAt(index);
         UpdateChildrenId();
+        OnRemoveAt(index);
     }
+
+    protected virtual void OnRemoveAt(int index) {}
 
     public void Clear()
     {
         children.Clear();
+        OnClear();
     }
+
+    protected virtual void OnClear() {}
 
     #endregion
 }

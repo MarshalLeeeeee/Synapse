@@ -241,11 +241,15 @@ public class GateManager : GateManagerCommon
         var (owner, instance) = GetRpcOwnerAndInstance(msg.instanceId);
         if (owner == null || instance == null) return;
 
-        // check arg len
-        if (!rpcMethodInfo.CheckArgTypes(msg.args)) return;
-
         // pack and invoke method
-        rpcMethodInfo.Invoke(instance, msg.args.ToArray());
+        try
+        {
+            rpcMethodInfo.Invoke(instance, msg.args.ToArray());
+        }
+        catch (Exception)
+        {
+            Log.Error($"Rpc method ({msg.methodName}) of instance ({instance}) failed...");
+        }
     }
 
     #endregion

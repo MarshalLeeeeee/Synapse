@@ -7,8 +7,6 @@ public interface IReflection
 
 public class Reflection
 {
-    private static IReflection reflectionImpl;
-
     /// <summary>
     /// mapping from node type to static deserialize method info (only when [SyncNode])
     /// </summary>
@@ -36,9 +34,8 @@ public class Reflection
 
     #region REGION_INIT
 
-    public static void Init(IReflection reflectionImpl_, bool isTestMode = false)
+    public static void Init(bool isTestMode = false)
     {
-        reflectionImpl = reflectionImpl_;
         Type[] types = Assembly.GetExecutingAssembly().GetTypes();
         foreach (Type t in types)
         {
@@ -91,13 +88,9 @@ public class Reflection
         MethodInfo[] methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance);
         foreach (MethodInfo method in methods)
         {
-            if (reflectionImpl.GetRpcMethodInfo(method, rpcType, out RpcMethodInfo? rpcMethodInfo))
-            {
-                if (rpcMethodInfo != null)
-                {
-                    rpcMethods[$"{t.Name}.{method.Name}"] = rpcMethodInfo;
-                }
-            }
+            RpcAttribute? rpcAttr = method.GetCustomAttribute<RpcAttribute>();
+            if (rpcAttr == null || (rpcAttr.rpcType & rpcType) == 0) continue;
+            rpcMethods[$"{t.Name}.{method.Name}"] = new RpcMethodInfo(method, rpcAttr.rpcType);
         }
     }
 

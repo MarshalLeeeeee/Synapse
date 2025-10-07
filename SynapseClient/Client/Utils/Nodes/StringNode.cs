@@ -44,7 +44,7 @@ public class StringNode : StringNodeCommon
 
     #region REGION_API
 
-    [Rpc(RpcConst.Server, NodeTypeConst.TypeString)]
+    [Rpc(RpcConst.Server)]
     public void SetRemote(StringNode node)
     {
         Set(node.Get());

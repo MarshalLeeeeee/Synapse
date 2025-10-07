@@ -41,4 +41,32 @@ public class ListNode : ListNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    protected override void OnAdd(Node child)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("ListNode.AddRemote", child);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("ListNode.AddRemote", child);
+    }
+
+    protected override void OnInsert(int index, Node child)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("ListNode.InsertRemote", new IntNode(index), child);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("ListNode.InsertRemote", new IntNode(index), child);
+    }
+
+    protected override void OnRemoveAt(int index)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("ListNode.RemoveAtRemote",  new IntNode(index));
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("ListNode.RemoveAtRemote",  new IntNode(index));
+    }
+
+    protected override void OnClear()
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("ListNode.ClearRemote");
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("ListNode.ClearRemote");
+    }
+
+    #endregion
 }

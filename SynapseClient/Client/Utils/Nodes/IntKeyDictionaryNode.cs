@@ -41,5 +41,33 @@ public class IntKeyDictionaryNode : IntKeyDictionaryNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    [Rpc(RpcConst.Server)]
+    public void SetRemote(IntNode key, Node value)
+    {
+        this[key.Get()] = value;
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void AddRemote(IntNode key, Node value)
+    {
+        Add(key.Get(), value);
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void RemoveRemote(IntNode key)
+    {
+        Remove(key.Get());
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void ClearRemote()
+    {
+        Clear();
+    }
+
+    #endregion
 }
 

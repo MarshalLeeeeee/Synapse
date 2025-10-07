@@ -41,4 +41,32 @@ public class IntKeyDictionaryNode : IntKeyDictionaryNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    protected override void OnSet(int key, Node value)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("IntKeyDictionaryNode.SetRemote", new IntNode(key), value);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("IntKeyDictionaryNode.SetRemote", new IntNode(key), value);
+    }
+
+    protected override void OnAdd(int key, Node value)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("IntKeyDictionaryNode.AddRemote", new IntNode(key), value);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("IntKeyDictionaryNode.AddRemote", new IntNode(key), value);
+    }
+
+    protected override void OnRemove(int key)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("IntKeyDictionaryNode.RemoveRemote", new IntNode(key));
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("IntKeyDictionaryNode.RemoveRemote", new IntNode(key));
+    }
+
+    protected override void OnClear()
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("IntKeyDictionaryNode.ClearRemote");
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("IntKeyDictionaryNode.ClearRemote");
+    }
+
+    #endregion
 }

@@ -41,4 +41,32 @@ public class StringKeyDictionaryNode : StringKeyDictionaryNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    protected override void OnSet(string key, Node value)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("StringKeyDictionaryNode.SetRemote", new StringNode(key), value);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("StringKeyDictionaryNode.SetRemote", new StringNode(key), value);
+    }
+
+    protected override void OnAdd(string key, Node value)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("StringKeyDictionaryNode.AddRemote", new StringNode(key), value);
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("StringKeyDictionaryNode.AddRemote", new StringNode(key), value);
+    }
+
+    protected override void OnRemove(string key)
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("StringKeyDictionaryNode.RemoveRemote", new StringNode(key));
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("StringKeyDictionaryNode.RemoveRemote", new StringNode(key));
+    }
+
+    protected override void OnClear()
+    {
+        if (nodeSyncType == NodeSyncConst.SyncAll) SyncAll("StringKeyDictionaryNode.ClearRemote");
+        else if (nodeSyncType == NodeSyncConst.SyncOwn) SyncOwn("StringKeyDictionaryNode.ClearRemote");
+    }
+
+    #endregion
 }

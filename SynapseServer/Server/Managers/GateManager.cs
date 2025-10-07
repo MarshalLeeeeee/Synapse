@@ -462,17 +462,21 @@ public class GateManager : GateManagerCommon
         // check rpc type
         //if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;
 
-        // check arg len
-        if (!rpcMethodInfo.CheckArgTypes(msg.args)) return;
-
         // pack and invoke method
-        List<object> methodArgs = new List<object>();
-        methodArgs.Add(proxy);
-        foreach (Node arg in msg.args)
+        try
         {
-            methodArgs.Add(arg);
+            List<object> methodArgs = new List<object>();
+            methodArgs.Add(proxy);
+            foreach (Node arg in msg.args)
+            {
+                methodArgs.Add(arg);
+            }
+            rpcMethodInfo.Invoke(instance, methodArgs.ToArray());
         }
-        rpcMethodInfo.Invoke(instance, methodArgs.ToArray());
+        catch (Exception)
+        {
+            Log.Error($"Rpc method ({msg.methodName}) of instance ({instance}) failed...");
+        }
     }
 
     #endregion

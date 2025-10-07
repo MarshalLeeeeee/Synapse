@@ -12,7 +12,7 @@ public static class Launcher
 #if DEBUG
         Debug.StartGmConsole();
 #endif
-        Reflection.Init(new IServerReflection());
+        Reflection.Init();
         using (Game game = new Game())
         {
             game.Start();
@@ -49,7 +49,7 @@ public static class Launcher
     {
         int totalCnt = 0;
         int succCnt = 0;
-        Reflection.Init(new IServerReflection(), true);
+        Reflection.Init(true);
         foreach (var kvp in Reflection.IterTestMethods())
         {
             string methodName = kvp.Key;

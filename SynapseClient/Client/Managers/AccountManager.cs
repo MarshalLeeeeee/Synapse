@@ -63,7 +63,7 @@ public class AccountManager : AccountManagerCommon
         else return false;
     }
 
-    [Rpc(RpcConst.Server, NodeTypeConst.TypeString)]
+    [Rpc(RpcConst.Server)]
     public void LoginResRemote(StringNode account)
     {
         string a = account.Get();
@@ -126,7 +126,7 @@ public class AccountManager : AccountManagerCommon
         else return false;
     }
 
-    [Rpc(RpcConst.Server, NodeTypeConst.TypeString)]
+    [Rpc(RpcConst.Server)]
     public void LogoutResRemote(StringNode account)
     {
         string a = account.Get();

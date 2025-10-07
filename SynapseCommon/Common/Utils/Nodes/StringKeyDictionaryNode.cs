@@ -128,8 +128,11 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
             T valueCopy = (T)value.Copy();
             children[key] = valueCopy;
             valueCopy.SetId($"{id}.{key}");
+            OnSet(key, valueCopy);
         }
     }
+
+    protected virtual void OnSet(string key, T value) { }
 
     public int Count
     {
@@ -161,20 +164,29 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
         T valueCopy = (T)value.Copy();
         children.Add(key, valueCopy);
         valueCopy.SetId($"{id}.{key}");
+        OnAdd(key, valueCopy);
     }
+
+    protected virtual void OnAdd(string key, T value) { }
 
     public void Remove(string key)
     {
         if (children.TryGetValue(key, out T? value) && value != null)
         {
             children.Remove(key);
+            OnRemove(key);
         }
     }
+
+    protected virtual void OnRemove(string key) { }
 
     public void Clear()
     {
         children.Clear();
+        OnClear();
     }
+
+    protected virtual void OnClear() { }
 
     #endregion
 }

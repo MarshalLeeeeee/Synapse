@@ -94,7 +94,7 @@ public class AccountManager : AccountManagerCommon
 
     #region REGION_LOGIN_LOGOUT
 
-    [Rpc(RpcConst.AnyClient, NodeTypeConst.TypeString, NodeTypeConst.TypeString)]
+    [Rpc(RpcConst.AnyClient)]
     public void LoginRemote(Proxy proxy, StringNode account, StringNode password)
     {
         string proxyId = proxy.proxyId;

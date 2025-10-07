@@ -41,4 +41,32 @@ public class StringKeyDictionaryNode : StringKeyDictionaryNodeCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    [Rpc(RpcConst.Server)]
+    public void SetRemote(StringNode key, Node value)
+    {
+        this[key.Get()] = value;
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void AddRemote(StringNode key, Node value)
+    {
+        Add(key.Get(), value);
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void RemoveRemote(StringNode key)
+    {
+        Remove(key.Get());
+    }
+
+    [Rpc(RpcConst.Server)]
+    public void ClearRemote()
+    {
+        Clear();
+    }
+
+    #endregion
 }

@@ -15,7 +15,7 @@ public class EntityManager : EntityManagerCommon
     /// add player by server synchronization
     /// </summary>
     /// <param name="player"> player entity instance (whose id should be empty) </param>
-    [Rpc(RpcConst.Server, NodeTypeConst.TypeString, NodeTypeConst.TypePlayerEntity)]
+    [Rpc(RpcConst.Server)]
     public void SyncAddPlayerRemote(StringNode playerId, PlayerEntity player)
     {
         string playerId_ = playerId.Get();
@@ -30,7 +30,7 @@ public class EntityManager : EntityManagerCommon
     /// remove player by server synchronization
     /// </summary>
     /// <param name="playerId"> player id wrapped by StringNode </param>
-    [Rpc(RpcConst.Server, NodeTypeConst.TypePlayerEntity)]
+    [Rpc(RpcConst.Server)]
     public void SyncRemovePlayerRemote(StringNode playerId)
     {
         string playerId_ = playerId.Get();

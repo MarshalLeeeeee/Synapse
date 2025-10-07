@@ -44,7 +44,7 @@ public class FloatNode : FloatNodeCommon
 
     #region REGION_API
 
-    [Rpc(RpcConst.Server, NodeTypeConst.TypeFloat)]
+    [Rpc(RpcConst.Server)]
     public void SetRemote(FloatNode node)
     {
         Set(node.Get());
