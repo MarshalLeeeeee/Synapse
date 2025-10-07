@@ -7,15 +7,20 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Xml.Linq;
 
-/*
- * Proxy represents a tcp connection between server and client
- * It handles msg receiving asynchronously
- */
+/// <summary>
+/// Proxy represents a tcp connection between server and client
+/// <para> It handles msg receiving asynchronously </para>
+/// </summary>
 public class Proxy : ProxyCommon
 {
-    /* exclusive id of owner of this proxy */
+    /// <summary>
+    /// exclusive id of owner of this proxy
+    /// </summary>
     public string owner_id = "";
-    /* lastest time stamp of receiving heartbeat */
+
+    /// <summary>
+    /// lastest time stamp of receiving heartbeat
+    /// </summary>
     public long lastHeartbeatTime = 0;
 
     public Proxy(TcpClient client_) : base(client_) { }
@@ -26,38 +31,56 @@ public class Proxy : ProxyCommon
     }
 }
 
-/*
- * GateManager is responsible for communication between server and client
- */
+/// <summary>
+/// GateManager is responsible for communication between server and client
+/// </summary>
 [RegisterManager]
 public class GateManager : GateManagerCommon
 {
 
-    /* new tcp connection listener */
+    /// <summary>
+    /// new tcp connection listener
+    /// </summary>
     private TcpListener? listener;
-    /* task for tcp listener to work */
+
+    /// <summary>
+    /// task for tcp listener to work
+    /// </summary>
     private Task listenerTask = Task.CompletedTask;
-    /* cancellation token source for tcp listener task */
+
+    /// <summary>
+    /// cancellation token source for tcp listener task
+    /// </summary>
     private CancellationTokenSource listenerCts = new CancellationTokenSource();
 
-    /* managed proxies, shared in threads */
+    /// <summary>
+    /// managed proxies, shared in threads
+    /// </summary>
     private ConcurrentDictionary<string, Proxy> proxies = new ConcurrentDictionary<string, Proxy>();
-    /* Check queue for managed proxies, shared in threads */
+
+    /// <summary>
+    /// Check queue for managed proxies, shared in threads
+    /// </summary>
     private ConcurrentQueue<string> checkProxyQueue = new ConcurrentQueue<string>();
-    /* flag of lifecycle of GateManager, shared in threads 
-     * when isActive is false, no more proxies can be added
-     # when isActive is false, update function will do nothing
-     */
+
+    /// <summary>
+    /// flag of lifecycle of GateManager, shared in threads
+    /// <para> when isActive is false, no more proxies can be added </para>
+    /// <para> when isActive is false, update function will do nothing </para>
+    /// </summary>
     private volatile bool isActive = false;
-    /* latest time stamp of check proxies */
+
+    /// <summary>
+    /// latest time stamp of check proxies
+    /// </summary>
     private long lastCheckTime = 0;
 
-    private ConcurrentQueue<(string proxyId, Msg msg)> msgInbox = new ConcurrentQueue<(string proxyId, Msg msg)>(); // thread shared
-    private ConcurrentQueue<(string proxyId, Msg msg)> msgOutbox = new ConcurrentQueue<(string proxyId, Msg msg)>(); // thread shared
+    private ConcurrentQueue<(string proxyId, Msg msg)> msgInbox = new ConcurrentQueue<(string proxyId, Msg msg)>();
+    private ConcurrentQueue<(string proxyId, Msg msg)> msgOutbox = new ConcurrentQueue<(string proxyId, Msg msg)>();
 
-    /*
-     * Start to accept incoming connections
-     */
+    /// <summary>
+    /// Start to accept incoming connections
+    /// </summary>
     protected override void OnStart()
     {
         StartListenerTask();
@@ -65,11 +88,12 @@ public class GateManager : GateManagerCommon
         Log.Info("GateManager starts...");
     }
 
-    /*
-     * Update function called in main thread
-     ** Hangle queue msg (inbox and outbox)
-     ** Check validness of proxies
-     */
+    /// <summary>
+    /// Update function called in main thread
+    /// <para> Hangle queue msg (inbox and outbox) </para>
+    /// <para> Check validness of proxies </para>
+    /// </summary>
+    /// <param name="dt"></param>
     protected override void DoUpdate(float dt)
     {
         if (!isActive) return;
@@ -78,10 +102,10 @@ public class GateManager : GateManagerCommon
         CheckProxies();
     }
 
-    /*
-     * Remove all proxies
-     * Stop to accept incoming connections
-     */
+    /// <summary>
+    /// Remove all proxies
+    /// <para> Stop to accept incoming connections </para>
+    /// </summary>
     protected override void OnDestroy()
     {
         if (!isActive) return;
@@ -93,9 +117,9 @@ public class GateManager : GateManagerCommon
 
     #region REGION_LISTENER
 
-    /*
-     * Start listenere task from main thread
-     */
+    /// <summary>
+    /// Start listenere task from main thread
+    /// </summary>
     private void StartListenerTask()
     {
         if (!listenerTask.IsCompleted)
@@ -106,11 +130,12 @@ public class GateManager : GateManagerCommon
         listenerTask = Task.Run(() => ListenerWorker(listenerCts.Token));
     }
 
-    /*
-     * Worker function for tcp listener task
-     * Running in an off thread
-     * Listens for and accepts incoming tcp connections asynchronously
-     */
+    /// <summary>
+    /// Worker function for tcp listener task
+    /// <para> Running in an off thread </para>
+    /// <para> Listens for and accepts incoming tcp connections asynchronously </para>
+    /// </summary>
+    /// <param name="ct"> cancellation token </param>
     private async Task ListenerWorker(CancellationToken ct)
     {
         try
@@ -162,10 +187,11 @@ public class GateManager : GateManagerCommon
         }
     }
 
-    /*
-     * Handle a new accepted tcp connection
-     * Running in an off thread
-     */
+    /// <summary>
+    /// Handle a new accepted tcp connection
+    /// <para> Running in an off thread </para>
+    /// </summary>
+    /// <param name="client"></param>
     private void HandleNewConnectionAsync(TcpClient client)
     {
         if (!isActive)
@@ -216,9 +242,10 @@ public class GateManager : GateManagerCommon
 
     #region REGION_PROXY
 
-    /*
-     * Add a new proxy to be managed and start its functionality
-     */
+    /// <summary>
+    /// Add a new proxy to be managed and start its functionality
+    /// </summary>
+    /// <param name="proxy"> Proxy </param>
     private void AddProxy(Proxy proxy)
     {
         string proxyId = proxy.proxyId;
@@ -244,18 +271,15 @@ public class GateManager : GateManagerCommon
         }
     }
 
-    /*
-     * Remove a proxy and stop its functionality
-     */
+    /// <summary>
+    /// Remove a proxy and stop its functionality
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
     private void RemoveProxy(string proxyId)
     {
         if (proxies.TryRemove(proxyId, out Proxy? proxy))
         {
-            EventManager? eventManager = Game.Instance.GetManager<EventManager>();
-            if (eventManager != null)
-            {
-                eventManager.TriggerGlobalEvent("OnRemoveProxy", proxyId);
-            }
+            Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnRemoveProxy", proxyId);
             proxy?.Destroy();
             Log.Info($"[GateManager][RemoveProxy] Proxy [{proxyId}] is removed with connection state [{proxy.IsConnected()}]");
         }
@@ -265,9 +289,9 @@ public class GateManager : GateManagerCommon
         }
     }
 
-    /*
-     * Remove all proxies, used when GateManager is being destroyed
-     */
+    /// <summary>
+    /// Remove all proxies, used when GateManager is being destroyed
+    /// </summary>
     private void RemoveAllProxies()
     {
         List<string> proxy_ids = new List<string>(proxies.Keys);
@@ -286,23 +310,34 @@ public class GateManager : GateManagerCommon
         return null;
     }
 
+    /// <summary>
+    /// Get the list of all proxy ids (thread safe)
+    /// </summary>
+    /// <returns> copy of list of proxy id </returns>
+    public List<string> GetProxyIds()
+    {
+        return proxies.Keys.ToList();
+    }
+
     #endregion
 
     #region REGION_MSG
 
-    /*
-     * Send msg (in any thread)
-     * If connection is not valid, reset connection
-     */
+    /// <summary>
+    /// Send msg (in any thread)
+    /// <para> If connection is not valid, reset connection </para>
+    /// </summary>
+    /// <param name="proxy"> proxy </param>
+    /// <param name="msg"> message </param>
     private void AppendSendMsg(Proxy proxy, Msg msg)
     {
         if (!proxy.IsConnected()) return;
         msgOutbox.Enqueue((proxy.proxyId, msg));
     }
 
-    /*
-     * Consume and handle msg pending for sending (in main thread)
-     */
+    /// <summary>
+    /// Consume and handle msg pending for sending (in main thread)
+    /// </summary>
     private void ConsumeMsgOutbox()
     {
         int cnt = 0;
@@ -316,26 +351,32 @@ public class GateManager : GateManagerCommon
         }
     }
 
-    /*
-     * Send msg to proxy (in main thread)
-     * If connection is not valid, do nothing
-     */
+    /// <summary>
+    /// Send msg to proxy (in main thread)
+    /// <para> If connection is not valid, do nothing </para>
+    /// </summary>
+    /// <param name="proxy"> proxy </param>
+    /// <param name="msg"> message </param>
     private void SendMsg(Proxy proxy, Msg msg)
     {
         if (!proxy.IsConnected()) return;
-        MsgStreamer.WriteMsgToStream(proxy.stream, msg);
+        MsgStreamer.WriteMsgToStream(msg, proxy);
     }
 
-    /* On proxy receiving invalid msg */
+    /// <summary>
+    /// On proxy receiving invalid msg
+    /// </summary>
+    /// <param name="proxyId"> id of the proxy </param>
+    /// <param name="msg"> message </param>
     private void OnReceiveMsg(string proxyId, Msg? msg)
     {
         if (msg == null) return;
         msgInbox.Enqueue((proxyId, msg));
     }
-    
-    /*
-     * Consume and hangle msg from queue (in main thread)
-     */
+
+    /// <summary>
+    /// Consume and hangle msg from queue (in main thread)
+    /// </summary>
     private void ConsumeMsgInbox()
     {
         int cnt = 0;
@@ -353,9 +394,9 @@ public class GateManager : GateManagerCommon
 
     #region REGION_HEARTBEAT
 
-    /*
-     * Check validness of proxies periodically
-     */
+    /// <summary>
+    /// Check validness of proxies periodically
+    /// </summary>
     private void CheckProxies()
     {
         // customized check interval
@@ -368,7 +409,11 @@ public class GateManager : GateManagerCommon
         while (cnt < Const.CheckProxyCntPerUpdate && checkProxyQueue.TryDequeue(out string? proxyId))
         {
             if (proxyId == null) break;
-            if (checkedProxyId.Contains(proxyId)) break;
+            if (checkedProxyId.Contains(proxyId))
+            {
+                checkProxyQueue.Enqueue(proxyId);
+                break;
+            }
 
             cnt += 1;
             checkedProxyId.Add(proxyId);
@@ -395,17 +440,12 @@ public class GateManager : GateManagerCommon
 
     #region REGION_RPC
 
-    public void CallRpc(string proxyId, string methodName, string ownerId, string instanceId, params Node[] args)
+    public bool CallRpc(string proxyId, string methodName, string instanceId, params Node[] args)
     {
         Proxy? proxy = GetProxy(proxyId);
-        if (proxy == null) return;
-
-        Msg msg = new Msg(methodName, ownerId, instanceId);
-        foreach (Node node in args)
-        {
-            msg.arg.Add(node);
-        }
-        AppendSendMsg(proxy, msg);
+        if (proxy == null) return false;
+        AppendSendMsg(proxy, new Msg(methodName, instanceId, args));
+        return true;
     }
 
     private void InvokeRpc(Proxy proxy, Msg msg)
@@ -415,40 +455,28 @@ public class GateManager : GateManagerCommon
         RpcMethodInfo? rpcMethodInfo = Reflection.GetRpcMethod(methodName);
         if (rpcMethodInfo == null) return;
 
-        // get method owner
-        Node? owner = GetRpcOwner(msg.ownerId);
-        if (owner == null) return;
-
-        Node? instance = GetRpcInstance(owner, msg.instanceId);
-        if (instance == null) return;
+        // get method owner and instance
+        var (owner, instance) = GetRpcOwnerAndInstance(msg.instanceId);
+        if (owner == null || instance == null) return;
 
         // check rpc type
-        if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;
-
-        // check arg len
-        if (!rpcMethodInfo.CheckArgTypes(msg.arg)) return;
+        //if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;
 
         // pack and invoke method
-        List<object> methodArgs = new List<object>();
-        methodArgs.Add(proxy);
-        foreach (Node arg in msg.arg)
+        try
         {
-            methodArgs.Add(arg);
+            List<object> methodArgs = new List<object>();
+            methodArgs.Add(proxy);
+            foreach (Node arg in msg.args)
+            {
+                methodArgs.Add(arg);
+            }
+            rpcMethodInfo.Invoke(instance, methodArgs.ToArray());
         }
-        rpcMethodInfo.Invoke(instance, methodArgs.ToArray());
-    }
-
-    private Node? GetRpcOwner(string ownerId)
-    {
-        Node? mgr = Game.Instance.GetManager(ownerId);
-        if (mgr != null) return mgr;
-        return null;
-    }
-
-    private Node? GetRpcInstance(Node owner, string instanceId)
-    {
-        if (String.IsNullOrEmpty(instanceId)) return owner;
-        return null;
+        catch (Exception)
+        {
+            Log.Error($"Rpc method ({msg.methodName}) of instance ({instance}) failed...");
+        }
     }
 
     #endregion

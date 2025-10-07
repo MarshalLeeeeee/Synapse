@@ -13,12 +13,10 @@ public class RpcConst
 public class RpcAttribute : Attribute
 {
     public int rpcType { get; }
-    public int[] argTypes { get; }
 
-    public RpcAttribute(int rpcType_, params int[] argTypes_)
+    public RpcAttribute(int rpcType_)
     {
         rpcType = rpcType_;
-        argTypes = argTypes_;
     }
 }
 
@@ -26,30 +24,11 @@ public class RpcMethodInfo
 {
     public MethodInfo mehodInfo;
     public int rpcType;
-    public int[] argTypes;
 
-    public RpcMethodInfo(MethodInfo methodInfo_, int rpcType_, int[] argTypes_)
+    public RpcMethodInfo(MethodInfo methodInfo_, int rpcType_)
     {
         mehodInfo = methodInfo_;
         rpcType = rpcType_;
-        argTypes = argTypes_;
-    }
-
-    public bool CheckArgTypes(ListNode args)
-    {
-        int argTypesCount = argTypes.Length;
-        int argsCount = args.Count;
-        if (argTypesCount != argsCount) return false;
-
-        int i = 0;
-        while (i < argTypesCount)
-        {
-            int argType = argTypes[i];
-            Node arg = args[i];
-            if (argType != NodeConst.TypeUndefined && arg.nodeType != argTypes[i]) return false;
-            i++;
-        }
-        return true;
     }
 
     public void Invoke(object instance, object[] methodArgs)

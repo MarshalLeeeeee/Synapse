@@ -1,0 +1,122 @@
+# This is a file template
+# Only when target files are new, will the targets be generated.
+#   variable_cnt : the number of string variables used in generation. 
+#                 $sx$, (x = 0, 1, 2, ...) in name and content will be replaced by args from user command
+#   files: file to be generated. If multiple files are generated, duplicate name and content right below.
+#       name: relative path of the new file to the directory of this repo (Synapse/)
+#       content: the content of the new file
+
+variable_cnt: 1
+files:
+  - name: ./SynapseCommon/Common/Utils/Nodes/$s0$Node.cs
+    content: |
+
+      public class $s0$NodeCommon : Node
+      {
+
+          public $s0$NodeCommon() {}
+
+          public override string ToString()
+          {
+              return "$s0$Node()";
+          }
+
+          #region REGION_STREAM
+
+          public override void Serialize(BinaryWriter writer)
+          {
+              writer.Write(nodeType);
+              // TODO
+          }
+
+          protected static object[] DeserializeIntoArgs(BinaryReader reader)
+          {
+              List<object> argsList = new List<object>();
+              // TODO
+              return argsList.ToArray();
+          }
+
+          #endregion
+
+          #region REGION_API
+
+          // TODO
+
+          #endregion
+      }
+
+  - name: ./SynapseClient/Client/Utils/Nodes/$s0$Node.cs
+    content: |
+      
+      [SyncNode(NodeConst.Type$s0$)]
+      public class $s0$Node : $s0$NodeCommon
+      {
+          public override int nodeType => NodeConst.Type$s0$;
+
+          public $s0$Node() : base() { }
+
+          public static $s0$Node Deserialize(BinaryReader reader)
+          {
+              try
+              {
+                  object[] args = DeserializeIntoArgs(reader);
+                  return ($s0$Node)Activator.CreateInstance(typeof($s0$Node), args);
+              }
+              catch (Exception ex)
+              {
+                  throw new InvalidDataException("Failed to deserialize $s0$Node.", ex);
+              }
+          }
+      }
+
+      #if DEBUG
+
+      [RegisterTest]
+      public static class Test$s0$Node
+      {
+          public static void TestStream()
+          {
+              $s0$Node node = new $s0$Node();
+              Assert.EqualTrue(NodeStreamer.TestStream(node), "$s0$Node changed after serialization and deserialization");
+          }
+      }
+
+      #endif
+
+  - name: ./SynapseServer/Server/Utils/Nodes/$s0$Node.cs
+    content: |
+      
+      [SyncNode(NodeConst.Type$s0$)]
+      public class $s0$Node : $s0$NodeCommon
+      {
+          public override int nodeType => NodeConst.Type$s0$;
+
+          public $s0$Node() : base() { }
+
+          public static $s0$Node Deserialize(BinaryReader reader)
+          {
+              try
+              {
+                  object[] args = DeserializeIntoArgs(reader);
+                  return ($s0$Node)Activator.CreateInstance(typeof($s0$Node), args);
+              }
+              catch (Exception ex)
+              {
+                  throw new InvalidDataException("Failed to deserialize $s0$Node.", ex);
+              }
+          }
+      }
+
+      #if DEBUG
+
+      [RegisterTest]
+      public static class Test$s0$Node
+      {
+          public static void TestStream()
+          {
+              $s0$Node node = new $s0$Node();
+              Assert.EqualTrue(NodeStreamer.TestStream(node), "$s0$Node changed after serialization and deserialization");
+          }
+      }
+
+      #endif

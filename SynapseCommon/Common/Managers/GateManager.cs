@@ -5,26 +5,40 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 
-/*
- * Proxy represents a tcp connection between server and client
- * It handles msg receiving asynchronously
- */
+/// <summary>
+/// Proxy represents a tcp connection between server and client
+/// <para> It handles msg receiving asynchronously </para>
+/// </summary>
 public class ProxyCommon
 {
-    /* exclusive id of proxy */
+    /// <summary>
+    /// exclusive id of proxy
+    /// </summary>
     public string proxyId = "";
 
-    /* tcp connection */
+    /// <summary>
+    /// tcp connection
+    /// </summary>
     protected TcpClient? client;
-    /* task for message listener to work */
+
+    /// <summary>
+    /// task for message listener to work
+    /// </summary>
     protected Task msgListenerTask = Task.CompletedTask;
-    /* cancellation token source for message listener task */
+
+    /// <summary>
+    /// cancellation token source for message listener task
+    /// </summary>
     protected CancellationTokenSource msgListenerCts = new CancellationTokenSource();
 
-    /* network stream in tcp connection */
+    /// <summary>
+    /// network stream in tcp connection
+    /// </summary>
     public NetworkStream? stream => client?.GetStream();
 
-    /* flag of activeness of proxy, shared in threads */
+    /// <summary>
+    /// flag of activeness of proxy, shared in threads
+    /// </summary>
     protected volatile bool isActive = false;
 
     protected ProxyCommon(TcpClient client_)
@@ -53,7 +67,9 @@ public class ProxyCommon
 
     protected virtual void OnDestroy() { }
 
-    /* Check if tcp client is connected */
+    /// <summary>
+    /// Check if tcp client is connected
+    /// </summary>
     public virtual bool IsConnected()
     {
         if (!isActive) return false;
@@ -70,9 +86,11 @@ public class ProxyCommon
 
     #region REGION_MSG_LISTENER
 
-    /*
-     * Start msg listener task
-     */
+    /// <summary>
+    /// Start msg listener task
+    /// </summary>
+    /// <param name="onReceiveMsgCallback"> callback when new message is received </param>
+    /// <param name="onDisconnectCallback"> callback when proxy is disconnected </param>
     private void StartListenerTask(Action<string, Msg?> onReceiveMsgCallback, Action<string> onDisconnectCallback)
     {
         if (!msgListenerTask.IsCompleted)
@@ -83,10 +101,13 @@ public class ProxyCommon
         msgListenerTask = Task.Run(() => MsgListenerWorker(onReceiveMsgCallback, onDisconnectCallback, msgListenerCts.Token));
     }
 
-    /*
-     * Worker function of msg listener task, dealing with incoming msgs from tcp client
-     * Running in an off thread
-     */
+    /// <summary>
+    /// Worker function of msg listener task, dealing with incoming msgs from tcp client
+    /// <para> Running in off thread </para>
+    /// </summary>
+    /// <param name="onReceiveMsgCallback"> callback when new message is received </param>
+    /// <param name="onDisconnectCallback"> callback when proxy is disconnected </param>
+    /// <param name="ct"> cancellation token </param>
     private async Task MsgListenerWorker(Action<string, Msg?> onReceiveMsgCallback, Action<string> onDisconnectCallback, CancellationToken ct)
     {
         try
@@ -139,9 +160,9 @@ public class ProxyCommon
         }
     }
 
-    /*
-     * Stop msg listener task
-     */
+    /// <summary>
+    /// Stop msg listener task
+    /// </summary>
     private void StopListenerTask()
     {
         if (msgListenerTask.IsCompleted)
@@ -177,10 +198,31 @@ public class ProxyCommon
     #endregion
 }
 
-/*
- * GateManager is responsible for communication between server and client
- */
+/// <summary>
+/// GateManager is responsible for communication between server and client
+/// </summary>
 public class GateManagerCommon : Manager
 {
+    #region REGION_RPC
 
+    protected static (object? owner, object? instance) GetRpcOwnerAndInstance(string instanceId)
+    {
+        string[] seg = instanceId.Split('.');
+        if (seg.Length == 0) return (null, null);
+
+        string ownerId = seg[0];
+        if (ownerId.StartsWith("Mgr-"))
+        {
+            Manager? mgr = Game.Instance.GetManager(ownerId);
+            return (mgr, mgr);
+        }
+        else if (ownerId.StartsWith("Ett-"))
+        {
+            PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(ownerId);
+            return (player, player?.GetChildWithPath(seg[1..]));
+        }
+        else return (null, null);
+    }
+
+    #endregion
 }

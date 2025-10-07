@@ -46,9 +46,10 @@ public static class Debug
 {
     private static Process? gmConsoleProcess = null;
 
-    /* Launch gm console process used for communicationg between user gm input and game thread
-     * Supposed to be called by game process
-     */
+    /// <summary>
+    /// Launch gm console process used for communicationg between user gm input and game thread
+    /// <para> Supposed to be called by game process </para>
+    /// </summary>
     public static void StartGmConsole()
     {
         string title = ArgParser.GetConsoleTitle();
@@ -65,9 +66,10 @@ public static class Debug
         gmConsoleProcess.Start();
     }
 
-    /* Kill gm console process
-     * Supposed to be called by game process
-     */
+    /// <summary>
+    /// Kill gm console process
+    /// <para> Supposed to be called by game process </para>
+    /// </summary>
     public static void StopGmConsole()
     {
         if (gmConsoleProcess != null && !gmConsoleProcess.HasExited)
@@ -79,9 +81,11 @@ public static class Debug
         }
     }
 
-    /* Write gm to game process from gm precoess through pipeline name
-     * Supposed to be called by gm process
-     */
+    /// <summary>
+    /// Write gm to game process from gm precoess through pipeline name
+    /// <para> Supposed to be called by gm process </para>
+    /// </summary>
+    /// <param name="gm"> raw input string of the gm command </param>
     public static void ExecuteGmPipeline(string gm)
     {
         string pipelineName = GetGmPipelineName();
@@ -99,12 +103,15 @@ public static class Debug
 
     public static string GetGmPipelineName()
     {
-        return Const.Title + "-GmPipeline";
+        return ArgParser.GetConsoleTitle() + "-GmPipeline";
     }
 
-    /* Convert supported gm parameter type to gm arg type
-     * If not supported, return TypeUndefined
-     */
+    /// <summary>
+    /// Convert supported gm parameter type to gm arg type
+    /// <para> If not supported, return TypeUndefined </para>
+    /// </summary>
+    /// <param name="t"> object type </param>
+    /// <returns> corresponding int value to the type </returns>
     public static int GetGmArgType(Type t)
     {
         if (t == typeof(int)) return GmConst.TypeInt;
@@ -114,7 +121,12 @@ public static class Debug
         return GmConst.TypeUndefined;
     }
 
-    /* Parser string input string to corresponding type */
+    /// <summary>
+    /// Parser string input string to corresponding type
+    /// </summary>
+    /// <param name="argStr"> gm string </param>
+    /// <param name="argType"> type value </param>
+    /// <returns> parsed object from raw gm string </returns>
     public static object? ParseGmArg(string argStr, int argType)
     {
         try
@@ -141,12 +153,14 @@ public static class Debug
         }
     }
 
-    /* Execute gm command in game process
-     * - Split gm command by space
-     * - Find the corresponding gm method using the first arg
-     * - Parse the rest args to corresponding type
-     * - Invoke the gm method
-     */
+    /// <summary>
+    /// Execute gm command in game process
+    /// <para> - Split gm command by space </para>
+    /// <para> - Find the corresponding gm method using the first arg </para>
+    /// <para> - Parse the rest args to corresponding type </para>
+    /// <para> - Invoke the gm method </para>
+    /// </summary>
+    /// <param name="gm"> raw string of the input gm command </param>
     public static void ExecuteGm(string gm)
     {
         string[] parts = gm.Split(' ', StringSplitOptions.RemoveEmptyEntries);

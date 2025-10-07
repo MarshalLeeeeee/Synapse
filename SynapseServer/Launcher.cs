@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Reflection;
 public static class Launcher
 {
-    /* Launch game process */
+    /// <summary>
+    /// Launch game process
+    /// </summary>
     public static void LaunchGame()
     {
         Console.Title = ArgParser.GetConsoleTitle();
 #if DEBUG
         Debug.StartGmConsole();
 #endif
-        Reflection.Init(new IServerReflection());
+        Reflection.Init();
         using (Game game = new Game())
         {
             game.Start();
@@ -20,9 +22,10 @@ public static class Launcher
 #endif
     }
 
-    /* Launch console program for user gm
-     * Using pipeline to tell and execute in Game process
-     */
+    /// <summary>
+    /// Launch console program for user gm
+    /// <para> Using pipeline to tell and execute in Game process </para>
+    /// </summary>
     public static void LaunchGm()
     {
         Console.Title = ArgParser.GetConsoleTitle() + "-Gm";
@@ -38,13 +41,15 @@ public static class Launcher
         }
     }
 
-    /* Launch test mode    
-     */
+    /// <summary>
+    /// Launch test mode
+    /// </summary>
+    /// <exception cref="ApplicationException"></exception>
     public static void LaunchTest()
     {
         int totalCnt = 0;
         int succCnt = 0;
-        Reflection.Init(new IServerReflection(), true);
+        Reflection.Init(true);
         foreach (var kvp in Reflection.IterTestMethods())
         {
             string methodName = kvp.Key;

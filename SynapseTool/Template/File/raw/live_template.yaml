@@ -21,7 +21,7 @@ files:
       prefix: $s0$
       desc: Description of snippet $s0$
       variables: |
-          OptionalVariable
+        OptionalVariable
       body: |
-          Body of your snippet.
-          This is an example with $OptionalVariable$ as default.
+        Body of your snippet.
+        This is an example with $OptionalVariable$ as default.

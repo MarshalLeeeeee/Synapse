@@ -2,14 +2,33 @@
 [RegisterManager]
 public class AccountManager : AccountManagerCommon
 {
-    /* Current login account
-     * If not login, loginAccount is an empty string.
-     */
+    /// <summary>
+    /// Current login account
+    /// <para> If not login, loginAccount is an empty string. </para>
+    /// </summary>
     private string loginAccount = "";
-    /* True only if after calling LoginRemote and before receiving result */
+
+    /// <summary>
+    /// True only if after calling LoginRemote and before receiving result
+    /// </summary>
     private bool waitLoginRes = false;
-    /* True only if after calling LogoutRemote and before receiving result */
+
+    /// <summary>
+    /// True only if after calling LogoutRemote and before receiving result
+    /// </summary>
     private bool waitLogoutRes = false;
+
+    protected override void OnStart()
+    {
+        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent("OnResetConnection", "AccountManager.Reset", Reset);
+    }
+
+    protected override void DoUpdate(float dt) { }
+
+    protected override void OnDestroy()
+    {
+        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("OnResetConnection", "AccountManager.Reset");
+    }
 
     #region REGION_LOGIN_LOGOUT
 
@@ -35,19 +54,16 @@ public class AccountManager : AccountManagerCommon
             Log.Info("A logout remote invoke is in process");
             return false;
         }
-        GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
-        if (gateMgr == null)
-        {
-            Log.Error("GateManager is not found");
-            return false;
-        }
 
-        waitLoginRes = true;
-        gateMgr.CallRpc("LoginRemote", "AccountManager", "", new StringNode(account), new StringNode(password));
-        return true;
+        if (Game.Instance.CallRpc("AccountManager.LoginRemote", "Mgr-AccountManager", new StringNode(account), new StringNode(password)))
+        {
+            waitLoginRes = true;
+            return true;
+        }
+        else return false;
     }
 
-    [Rpc(RpcConst.Server, NodeConst.TypeString)]
+    [Rpc(RpcConst.Server)]
     public void LoginResRemote(StringNode account)
     {
         string a = account.Get();
@@ -101,19 +117,16 @@ public class AccountManager : AccountManagerCommon
             Log.Info("A logout remote invoke is in process");
             return false;
         }
-        GateManager? gateMgr = Game.Instance.GetManager<GateManager>();
-        if (gateMgr == null)
-        {
-            Log.Error("GateManager is not found");
-            return false;
-        }
 
-        waitLogoutRes = true;
-        gateMgr.CallRpc("LogoutRemote", "AccountManager", "");
-        return true;
+        if (Game.Instance.CallRpc("AccountManager.LogoutRemote", "Mgr-AccountManager"))
+        {
+            waitLogoutRes = true;
+            return true;
+        }
+        else return false;
     }
 
-    [Rpc(RpcConst.Server, NodeConst.TypeString)]
+    [Rpc(RpcConst.Server)]
     public void LogoutResRemote(StringNode account)
     {
         string a = account.Get();
@@ -155,6 +168,17 @@ public class AccountManager : AccountManagerCommon
         }
         waitLogoutRes = false;
         Log.Info("[LogoutFail] Logout fail");
+    }
+
+    /// <summary>
+    /// reset all login or pending state
+    /// </summary>
+    private void Reset()
+    {
+        loginAccount = "";
+        waitLoginRes = false;
+        waitLogoutRes = false;
+        Log.Info("[AccountManager][Reset] reset over...");
     }
 
     #endregion

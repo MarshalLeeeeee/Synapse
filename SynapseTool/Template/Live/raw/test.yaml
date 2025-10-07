@@ -9,17 +9,17 @@ name: test
 prefix: test
 desc: Generate a test class
 variables: |
-    Case
+  Case
 body: |
-    #if DEBUG
+  #if DEBUG
 
-    [RegisterTest]
-    public static class Test$Case$
-    {
-        public static void TestFunc()
-        {
+  [RegisterTest]
+  public static class Test$Case$
+  {
+      public static void TestFunc()
+      {
 
-        }
-    }
+      }
+  }
 
-    #endif
+  #endif

@@ -8,10 +8,14 @@ public class GameCommon : IDisposable
 {
     protected Dictionary<string, Manager> managers = new Dictionary<string, Manager>();
 
-    // If the game still runs in loop
+    /// <summary>
+    /// If the game still runs in loop
+    /// </summary>
     private bool isRunning;
 
-    // Delta time between frames
+    /// <summary>
+    /// Delta time between frames
+    /// </summary>
     public float dt { get; private set; }
 
     public void Start()
@@ -69,7 +73,7 @@ public class GameCommon : IDisposable
             Manager? mgr = Reflection.CreateManager(mgrName);
             if (mgr != null)
             {
-                managers[mgrName] = mgr;
+                managers["Mgr-"+mgrName] = mgr;
             }
         }
     }
@@ -87,7 +91,7 @@ public class GameCommon : IDisposable
     {
         Type tType = typeof(T);
         string tName = tType.Name;
-        Manager? mgr = GetManager(tName);
+        Manager? mgr = GetManager("Mgr-"+tName);
         if (mgr != null && mgr is T tMgr)
         {
             return tMgr;

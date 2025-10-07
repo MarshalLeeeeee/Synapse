@@ -6,33 +6,51 @@ using System.Threading.Tasks;
 
 public class Msg
 {
-    /* name of the rpc method */
-    public string methodName { get; }
-    /* id of the owner of the instance, Manager or Entity */
-    public string ownerId { get; }
-    /* id of the instance of the method */
-    public string instanceId { get; }
-    /* method args (in serializable Node) */
-    public ListNode arg = new ListNode();
-    public Msg(string methodName_, string ownerId_, string instanceId_)
+    /// <summary>
+    /// name of the rpc method
+    /// </summary>
+    public string methodName { get; private set; }
+
+    /// <summary>
+    /// id of the instance of the method
+    /// </summary>
+    public string instanceId { get; private set; }
+
+    /// <summary>
+    /// method args
+    /// </summary>
+    public List<Node> args { get; private set; }
+
+    public Msg(string methodName_, string instanceId_, params Node[] args_)
     {
         methodName = methodName_;
-        ownerId = ownerId_;
         instanceId = instanceId_;
+        args = new List<Node>();
+        foreach (Node arg in args_)
+        {
+            args.Add(arg);
+        }
+    }
+
+    public void Serialize(BinaryWriter writer, string proxyId)
+    {
+        writer.Write(methodName);
+        writer.Write(instanceId);
+        writer.Write(args.Count);
+        foreach (Node arg in args)
+        {
+            NodeStreamer.Serialize(arg, writer, proxyId);
+        }
     }
 }
 
 public static class MsgStreamer
 {
-    public static byte[] Serialize(Msg msg)
+    public static byte[] Serialize(Msg msg, Proxy proxy)
     {
         using var stream = new MemoryStream();
         using var writer = new BinaryWriter(stream);
-
-        writer.Write(msg.methodName);
-        writer.Write(msg.ownerId);
-        writer.Write(msg.instanceId);
-        msg.arg.Serialize(writer);
+        msg.Serialize(writer, proxy.proxyId);
         return stream.ToArray();
     }
 
@@ -43,19 +61,20 @@ public static class MsgStreamer
         
         try
         {
-            Msg msg = new Msg(reader.ReadString(), reader.ReadString(), reader.ReadString());
-            Node arg = NodeStreamer.Deserialize(reader);
-            if (arg != null && arg is ListNode listNode)
+            string methodName = reader.ReadString();
+            string instanceId = reader.ReadString();
+            int argCount = reader.ReadInt32();
+            List<Node> args = new List<Node>(argCount);
+            for (int i = 0; i < argCount; i++)
             {
-                msg.arg = listNode;
+                args.Add(NodeStreamer.Deserialize(reader));
             }
-            return msg;
+            return new Msg(methodName, instanceId, args.ToArray());
         }
         catch
         {
             return null;
         }
-
     }
 
     public static (bool succ, Msg? msg) ReadMsgFromStream(NetworkStream? stream)
@@ -185,11 +204,12 @@ public static class MsgStreamer
         }
     }
 
-    public static bool WriteMsgToStream(NetworkStream? stream, Msg msg)
+    public static bool WriteMsgToStream(Msg msg, Proxy proxy)
     {
+        NetworkStream? stream = proxy.stream;
         if (stream == null) return false;
 
-        byte[] buffer = MsgStreamer.Serialize(msg);
+        byte[] buffer = Serialize(msg, proxy);
         if (buffer.Length <= 0) return false;
 
         byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);
@@ -199,13 +219,14 @@ public static class MsgStreamer
         return true;
     }
 
-    public static async Task<bool> WriteMsgToStreamAsync(NetworkStream? stream, Msg msg, CancellationToken cancellationToken = default)
+    public static async Task<bool> WriteMsgToStreamAsync(Msg msg, Proxy proxy, CancellationToken cancellationToken = default)
     {
+        NetworkStream? stream = proxy.stream;
         if (stream == null) return false;
 
         try
         {
-            byte[] buffer = MsgStreamer.Serialize(msg);
+            byte[] buffer = Serialize(msg, proxy);
             if (buffer.Length <= 0) return false;
 
             byte[] lengthPrefix = BitConverter.GetBytes(buffer.Length);
