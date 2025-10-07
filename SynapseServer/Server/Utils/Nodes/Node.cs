@@ -44,7 +44,7 @@ public class Node : NodeCommon
         if (nodeSyncType == NodeSyncConst.SyncAll) return true;
         else if (nodeSyncType == NodeSyncConst.SyncOwn)
         {
-            string? playerId = Game.Instance.GetManager<EntityManager>()?.GetPlayerIdByProxyId(proxyId);
+            string? playerId = Game.Instance?.GetManager<EntityManager>()?.GetPlayerIdByProxyId(proxyId);
             string rootId = GetRootId();
             return playerId == rootId;
         }
@@ -58,10 +58,10 @@ public class Node : NodeCommon
     protected void SyncOwn(string methodName, params Node[] args)
     {
         string rootId = GetRootId();
-        string? accountId = Game.Instance.GetManager<EntityManager>()?.GetAccountByPlayerId(rootId);
+        string? accountId = Game.Instance?.GetManager<EntityManager>()?.GetAccountByPlayerId(rootId);
         if (accountId == null) return;
 
-        string? proxyId = Game.Instance.GetManager<AccountManager>()?.GetProxyId(accountId);
+        string? proxyId = Game.Instance?.GetManager<AccountManager>()?.GetProxyId(accountId);
         if (proxyId == null) return;
 
         Game.Instance.CallRpc(proxyId, methodName, GetFullId(), args);
@@ -69,7 +69,7 @@ public class Node : NodeCommon
 
     protected void SyncAll(string methodName, params Node[] args)
     {
-        GateManager? gateManager = Game.Instance.GetManager<GateManager>();
+        GateManager? gateManager = Game.Instance?.GetManager<GateManager>();
         if (gateManager == null) return;
 
         List<string> proxyIds = gateManager.GetProxyIds();
