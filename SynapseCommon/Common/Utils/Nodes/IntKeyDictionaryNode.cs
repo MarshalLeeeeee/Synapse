@@ -26,6 +26,11 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
         return s;
     }
 
+    public override string ToString()
+    {
+        return $"{this.GetType().Name}({{ {ChildrenToString()} }})";
+    }
+
     #region REGION_IDENTIFICATION
 
     public override void SetId(string id_, Node? parent_ = null)
@@ -59,11 +64,6 @@ public class IntKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyValueP
             argsList.Add(new KeyValuePair<int, T>(kvp.Key, (T)kvp.Value.Copy()));
         }
         return argsList.ToArray();
-    }
-
-    public override string ToString()
-    {
-        return $"{this.GetType().Name}({{ {ChildrenToString()} }})";
     }
 
     #endregion

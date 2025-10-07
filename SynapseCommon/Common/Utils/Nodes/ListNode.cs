@@ -24,6 +24,11 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
         return s;
     }
 
+    public override string ToString()
+    {
+        return $"{this.GetType().Name}([{ChildrenToString()}])";
+    }
+
     #region REGION_IDENTIFICATION
 
     public override void SetId(string id_, Node? parent_ = null)
@@ -204,11 +209,6 @@ public class ListNodeCommon : ListTemplateNodeCommon<Node>
     protected ListNodeCommon(
         params Node[] nodes
     ) : base(nodes) { }
-
-    public override string ToString()
-    {
-        return $"{this.GetType().Name}([{ChildrenToString()}])";
-    }
 }
 
 #if DEBUG
