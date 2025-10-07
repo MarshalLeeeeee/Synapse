@@ -5,9 +5,8 @@ public class FloatNode : FloatNodeCommon
     public override int nodeType => NodeTypeConst.TypeFloat;
 
     public FloatNode(
-        string id_ = "",
         float f_ = 0.0f
-    ) : base(id_, f_) { }
+    ) : base(f_) { }
 
     #region REGION_IDENTIFICATION
 

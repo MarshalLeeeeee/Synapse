@@ -15,14 +15,13 @@ public class RegisterComponent : Attribute
 
 public class ComponentCommon : Node
 {
-    protected ComponentCommon(string id_ = "") : base(id_) { }
+    protected ComponentCommon() : base() { }
 
     #region REGION_IDENTIFICATION
 
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
         return argsList.ToArray();
     }
 
@@ -33,7 +32,6 @@ public class ComponentCommon : Node
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
     }
 
     /// <summary>
@@ -43,7 +41,6 @@ public class ComponentCommon : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         return argsList.ToArray();
     }
 
@@ -53,7 +50,6 @@ public class ComponentCommon : Node
 public class ComponentsCommon : StringKeyDictionaryTemplateNodeCommon<Component>
 {
     protected ComponentsCommon(
-        string id_ = "",
         params KeyValuePair<string, Component>[] kvps
-    ) : base(id_, kvps) { }
+    ) : base(kvps) { }
 }

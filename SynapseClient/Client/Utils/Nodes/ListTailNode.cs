@@ -4,7 +4,7 @@ public class ListTailNode : ListTailNodeCommon
 {
     public override int nodeType => NodeTypeConst.TypeListTail;
 
-    public ListTailNode(string id_ = "") : base(id_) { }
+    public ListTailNode() : base() { }
 
     #region REGION_IDENTIFICATION
 

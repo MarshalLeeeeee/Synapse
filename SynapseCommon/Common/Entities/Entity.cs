@@ -21,9 +21,8 @@ public class EntityCommon : Node
     protected Components components = new Components();
 
     protected EntityCommon(
-        string id_ = "",
         Components? components_ = null
-    ) : base(id_)
+    ) : base()
     {
         if (components_ != null)
         {
@@ -36,10 +35,10 @@ public class EntityCommon : Node
 
     #region REGION_IDENTIFICATION
 
-    public override void SetId(string id_)
+    public override void SetId(string id_, Node? parent_ = null)
     {
-        base.SetId(id_);
-        components.SetId(id_ + ".components");
+        base.SetId(id_, parent_);
+        components.SetId("components", this);
     }
 
     public override Node? GetChildWithId(string id_)
@@ -51,8 +50,7 @@ public class EntityCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
-        argsList.Add(components);
+        argsList.Add(components.Copy());
         return argsList.ToArray();
     }
 
@@ -63,7 +61,6 @@ public class EntityCommon : Node
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
         NodeStreamer.Serialize(components, writer, proxyId);
     }
 
@@ -74,7 +71,6 @@ public class EntityCommon : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         argsList.Add(NodeStreamer.Deserialize(reader));
         return argsList.ToArray();
     }

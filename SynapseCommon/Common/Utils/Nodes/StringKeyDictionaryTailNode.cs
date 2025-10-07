@@ -2,7 +2,7 @@
 public class StringKeyDictionaryTailNodeCommon : Node
 {
 
-    protected StringKeyDictionaryTailNodeCommon(string id_ = "") : base(id_) {}
+    protected StringKeyDictionaryTailNodeCommon() : base() {}
 
     public override string ToString()
     {
@@ -14,7 +14,6 @@ public class StringKeyDictionaryTailNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
         return argsList.ToArray();
     }
 
@@ -25,13 +24,11 @@ public class StringKeyDictionaryTailNodeCommon : Node
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
     }
 
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         return argsList.ToArray();
     }
 

@@ -2,9 +2,8 @@
 public class Entity : EntityCommon
 {
     protected Entity(
-        string id_ = "",
         Components? components_ = null
-    ) : base(id_, components_) { }
+    ) : base(components_) { }
 
     #region REGION_IDENTIFICATION
 

@@ -6,14 +6,13 @@ public class PlayerEntity : PlayerEntityCommon
     public override int nodeType => NodeTypeConst.TypePlayerEntity;
 
     public PlayerEntity(
-        string id_ = "",
         Components? components_ = null,
         StringNode? name_ = null, IntNode? money_ = null
-    ) : base(id_, components_, name_, money_)
+    ) : base(components_, name_, money_)
     {
         name.SetNodeSyncType(NodeSyncConst.SyncAll);
-        money.SetNodeSyncType(NodeSyncConst.SyncOwn);
         name.Set("Name");
+        money.SetNodeSyncType(NodeSyncConst.SyncOwn);
         money.Set(999);
     }
 

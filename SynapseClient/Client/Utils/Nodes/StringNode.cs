@@ -5,9 +5,8 @@ public class StringNode : StringNodeCommon
     public override int nodeType => NodeTypeConst.TypeString;
 
     public StringNode(
-        string id_ = "",
         string s_ = ""
-    ) : base(id_, s_) { }
+    ) : base(s_) { }
 
     #region REGION_IDENTIFICATION
 

@@ -7,10 +7,9 @@ public class PlayerEntityCommon : Entity
     protected IntNode money = new IntNode();
 
     protected PlayerEntityCommon(
-        string id_ = "",
         Components? components_ = null,
         StringNode? name_ = null, IntNode? money_ = null
-    ) : base(id_, components_)
+    ) : base(components_)
     {
         if (name_ != null) name = name_;
         if (money_ != null) money = money_;
@@ -23,11 +22,11 @@ public class PlayerEntityCommon : Entity
 
     #region REGION_IDENTIFICATION
 
-    public override void SetId(string id_)
+    public override void SetId(string id_, Node? parent_ = null)
     {
-        base.SetId(id_);
-        name.SetId(id_ + ".name");
-        money.SetId(id_ + ".money");
+        base.SetId(id_, parent_);
+        name.SetId("name", this);
+        money.SetId("money", this);
     }
 
     public override Node? GetChildWithId(string id_)
@@ -40,10 +39,9 @@ public class PlayerEntityCommon : Entity
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
-        argsList.Add(components);
-        argsList.Add(name);
-        argsList.Add(money);
+        argsList.Add(components.Copy());
+        argsList.Add(name.Copy());
+        argsList.Add(money.Copy());
         return argsList.ToArray();
     }
 
@@ -54,7 +52,6 @@ public class PlayerEntityCommon : Entity
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
         NodeStreamer.Serialize(components, writer, proxyId);
         NodeStreamer.Serialize(name, writer, proxyId);
         NodeStreamer.Serialize(money, writer, proxyId);
@@ -67,7 +64,6 @@ public class PlayerEntityCommon : Entity
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         argsList.Add(NodeStreamer.Deserialize(reader));
         argsList.Add(NodeStreamer.Deserialize(reader));
         argsList.Add(NodeStreamer.Deserialize(reader));

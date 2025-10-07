@@ -5,9 +5,8 @@ public class FloatNodeCommon : Node
     float f = 0.0f;
 
     protected FloatNodeCommon(
-        string id_ = "",
         float f_ = 0.0f
-    ) : base(id_) { f = f_; }
+    ) : base() { f = f_; }
 
     public override string ToString()
     {
@@ -19,7 +18,6 @@ public class FloatNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
         argsList.Add(f);
         return argsList.ToArray();
     }
@@ -31,7 +29,6 @@ public class FloatNodeCommon : Node
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
         if (ShouldSerializeContent(proxyId))
         {
             writer.Write(f);
@@ -49,7 +46,6 @@ public class FloatNodeCommon : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         argsList.Add(reader.ReadSingle());
         return argsList.ToArray();
     }
@@ -79,13 +75,13 @@ public static class TestFloatNode
 {
     public static void TestStream()
     {
-        FloatNode node = new FloatNode("", -1.5f);
+        FloatNode node = new FloatNode(-1.5f);
         Assert.EqualTrue(NodeStreamer.TestStream(node), "FloatNode changed after serialization and deserialization");
     }
 
     public static void TestCopy()
     {
-        FloatNode node = new FloatNode("", -1.5f);
+        FloatNode node = new FloatNode(-1.5f);
         FloatNode copy = (FloatNode)node.Copy();
         Assert.EqualTrue($"{node}" == $"{copy}", "FloatNode id not equal after copy");
     }

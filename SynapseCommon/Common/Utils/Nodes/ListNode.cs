@@ -5,9 +5,8 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
     protected List<T> children = new List<T>();
 
     protected ListTemplateNodeCommon(
-        string id_ = "",
         params T[] nodes
-    ) : base(id_)
+    ) : base()
     {
         foreach (T node in nodes)
         {
@@ -27,6 +26,22 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
 
     #region REGION_IDENTIFICATION
 
+    public override void SetId(string id_, Node? parent_ = null)
+    {
+        base.SetId(id_, parent_);
+        UpdateChildrenId();
+    }
+
+    protected void UpdateChildrenId()
+    {
+        int i = 0;
+        foreach (T child in children)
+        {
+            child.SetId($"{i}", this);
+            i += 1;
+        }
+    }
+
     public override Node? GetChildWithId(string id_)
     {
         try
@@ -41,23 +56,12 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
         }
     }
 
-    protected void UpdateChildrenId()
-    {
-        int i = 0;
-        foreach (T child in children)
-        {
-            child.SetId($"{id}.{i}");
-            i += 1;
-        }
-    }
-
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
         foreach (T child in children)
         {
-            argsList.Add(child);
+            argsList.Add(child.Copy());
         }
         return argsList.ToArray();
     }
@@ -69,7 +73,6 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
         foreach (T child in children)
         {
             NodeStreamer.Serialize(child, writer, proxyId);
@@ -84,7 +87,6 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         while (true)
         {
             Node node = NodeStreamer.Deserialize(reader);
@@ -194,9 +196,8 @@ public class ListTemplateNodeCommon<T> : Node, IEnumerable<T> where T : Node
 public class ListNodeCommon : ListTemplateNodeCommon<Node>
 {
     protected ListNodeCommon(
-        string id_ = "",
         params Node[] nodes
-    ) : base(id_, nodes) { }
+    ) : base(nodes) { }
 
     public override string ToString()
     {
@@ -212,17 +213,15 @@ public static class TestListNode
     public static void TestStream()
     {
         ListNode node = new ListNode(
-            "", 
-            new IntNode("", 1),
-            new FloatNode("", 10.0f),
-            new BoolNode("", true),
-            new StringNode("", "lmc"),
+            new IntNode(1),
+            new FloatNode(10.0f),
+            new BoolNode(true),
+            new StringNode("lmc"),
             new ListNode(
-                "", 
-                new IntNode("", 1),
-                new FloatNode("", 10.0f),
-                new BoolNode("", true),
-                new StringNode("", "lmc")
+                new IntNode(1),
+                new FloatNode(10.0f),
+                new BoolNode(true),
+                new StringNode("lmc")
             )
         );
         Assert.EqualTrue(NodeStreamer.TestStream(node), "ListNode changed after serialization and deserialization");
@@ -231,17 +230,15 @@ public static class TestListNode
     public static void TestCopy()
     {
         ListNode node = new ListNode(
-            "", 
-            new IntNode("", 1),
-            new FloatNode("", 10.0f),
-            new BoolNode("", true),
-            new StringNode("", "lmc"),
+            new IntNode(1),
+            new FloatNode(10.0f),
+            new BoolNode(true),
+            new StringNode("lmc"),
             new ListNode(
-                "", 
-                new IntNode("", 1),
-                new FloatNode("", 10.0f),
-                new BoolNode("", true),
-                new StringNode("", "lmc")
+                new IntNode(1),
+                new FloatNode(10.0f),
+                new BoolNode(true),
+                new StringNode("lmc")
             )
         );
         ListNode copy = (ListNode)node.Copy();

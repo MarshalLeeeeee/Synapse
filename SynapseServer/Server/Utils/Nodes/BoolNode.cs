@@ -5,9 +5,8 @@ public class BoolNode : BoolNodeCommon
     public override int nodeType => NodeTypeConst.TypeBool;
 
     public BoolNode(
-        string id_ = "",
         bool v_ = false
-    ) : base(id_, v_) { }
+    ) : base(v_) { }
 
     #region REGION_IDENTIFICATION
 

@@ -1,7 +1,7 @@
 
 public class Node : NodeCommon
 {
-    protected Node(string id_ = "") : base(id_) { }
+    protected Node() : base() { }
 
     #region REGION_IDENTIFICATION
 

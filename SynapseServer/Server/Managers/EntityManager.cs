@@ -55,9 +55,9 @@ public class EntityManager : EntityManagerCommon
     {
         PlayerEntity player = new PlayerEntity();
         string playerId = $"Ett-{Guid.NewGuid().ToString()}";
-        player.SetId(playerId);
-        playerEntities.Add(playerId, player);
         accountWithPlayerId.Add(account, playerId);
+        playerEntities.Add(playerId, player);
+        player.SetId(playerId);
         GateManager? gateManager = Game.Instance.GetManager<GateManager>();
         if (gateManager != null)
         {
@@ -130,7 +130,7 @@ public class EntityManager : EntityManagerCommon
     /// <param name="player"> player entity to be synced </param>
     private static void DoSyncOtherPlayerEntity(string proxyId, PlayerEntity player)
     {
-        Game.Instance.CallRpc(proxyId, "EntityManager.SyncAddPlayerRemote", "Mgr-EntityManager", new StringNode("", player.id), player);
+        Game.Instance.CallRpc(proxyId, "EntityManager.SyncAddPlayerRemote", "Mgr-EntityManager", new StringNode(player.id), player);
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public class EntityManager : EntityManagerCommon
     /// <param name="player"></param>
     private static void DoSyncMainPlayerEntity(string proxyId, PlayerEntity player)
     {
-        Game.Instance.CallRpc(proxyId, "EntityManager.SyncAddPlayerRemote", "Mgr-EntityManager", new StringNode("", player.id), player);
+        Game.Instance.CallRpc(proxyId, "EntityManager.SyncAddPlayerRemote", "Mgr-EntityManager", new StringNode(player.id), player);
     }
 
     /// <summary>

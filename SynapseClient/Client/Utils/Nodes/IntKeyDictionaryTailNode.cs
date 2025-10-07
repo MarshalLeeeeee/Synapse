@@ -4,7 +4,7 @@ public class IntKeyDictionaryTailNode : IntKeyDictionaryTailNodeCommon
 {
     public override int nodeType => NodeTypeConst.TypeIntKeyDictionaryTail;
 
-    public IntKeyDictionaryTailNode(string id_ = "") : base(id_) { }
+    public IntKeyDictionaryTailNode() : base() { }
 
     #region REGION_IDENTIFICATION
 

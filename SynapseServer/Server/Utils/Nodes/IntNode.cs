@@ -5,9 +5,8 @@ public class IntNode : IntNodeCommon
     public override int nodeType => NodeTypeConst.TypeInt;
 
     public IntNode(
-        string id_ = "",
         int v_ = 0
-    ) : base(id_, v_) { }
+    ) : base(v_) { }
 
     #region REGION_IDENTIFICATION
 

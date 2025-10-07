@@ -5,9 +5,8 @@ public class StringKeyDictionaryNode : StringKeyDictionaryNodeCommon
     public override int nodeType => NodeTypeConst.TypeStringKeyDictionary;
 
     public StringKeyDictionaryNode(
-        string id_ = "",
         params KeyValuePair<string, Node>[] kvps
-    ) : base(id_, kvps) { }
+    ) : base(kvps) { }
 
     #region REGION_IDENTIFICATION
 

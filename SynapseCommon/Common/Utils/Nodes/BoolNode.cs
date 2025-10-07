@@ -4,9 +4,8 @@ public class BoolNodeCommon : Node
     bool v = false;
 
     protected BoolNodeCommon(
-        string id_ = "",
         bool v_ = false
-    ) : base(id_) { v = v_; }
+    ) : base() { v = v_; }
 
     public override string ToString()
     {
@@ -18,7 +17,6 @@ public class BoolNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
         argsList.Add(v);
         return argsList.ToArray();
     }
@@ -30,7 +28,6 @@ public class BoolNodeCommon : Node
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
         if (ShouldSerializeContent(proxyId))
         {
             writer.Write(v);
@@ -48,7 +45,6 @@ public class BoolNodeCommon : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         argsList.Add(reader.ReadBoolean());
         return argsList.ToArray();
     }
@@ -78,13 +74,13 @@ public static class TestBoolNode
 {
     public static void TestStream()
     {
-        BoolNode node = new BoolNode("", true);
+        BoolNode node = new BoolNode(true);
         Assert.EqualTrue(NodeStreamer.TestStream(node), "BoolNode changed after serialization and deserialization");
     }
 
     public static void TestCopy()
     {
-        BoolNode node = new BoolNode("", true);
+        BoolNode node = new BoolNode(true);
         BoolNode copy = (BoolNode)node.Copy();
         Assert.EqualTrue($"{node}" == $"{copy}", "BoolNode id not equal after copy");
     }

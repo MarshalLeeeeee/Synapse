@@ -68,14 +68,16 @@ public class NodeCommon
     public string id { get; protected set; } = "";
 
     /// <summary>
+    /// Parent node of the current node, null if the node is root
+    /// </summary>
+    protected Node? parent = null;
+
+    /// <summary>
     /// exclusive value for node
     /// </summary>
     public virtual int nodeType => NodeTypeConst.TypeUndefined;
 
-    protected NodeCommon(string id_ = "")
-    {
-        id = id_;
-    }
+    protected NodeCommon() {}
 
     /// <summary>
     /// Return the string that represents the current node.
@@ -88,12 +90,14 @@ public class NodeCommon
     #region REGION_IDENTIFICATION
 
     /// <summary>
-    /// set id of the node
+    /// set id and parent of the node
     /// </summary>
-    /// <param name="id_"></param>
-    public virtual void SetId(string id_)
+    /// <param name="id_"> id of this node </param>
+    /// <param name="parent_"> parent node, null if no parent node </param>
+    public virtual void SetId(string id_, Node? parent_ = null)
     {
         id = id_;
+        parent = parent_;
     }
 
     /// <summary>
@@ -102,7 +106,18 @@ public class NodeCommon
     /// <returns> id of the root node </returns>
     public string GetRootId()
     {
-        return id.Split('.')[0];
+        if (parent == null) return id;
+        return parent.GetRootId();
+    }
+
+    /// <summary>
+    /// get full id of the node along the path from root to current node
+    /// </summary>
+    /// <returns></returns>
+    public string GetFullId()
+    {
+        if (parent == null) return id;
+        return $"{parent.GetFullId()}.{id}";
     }
 
     /// <summary>

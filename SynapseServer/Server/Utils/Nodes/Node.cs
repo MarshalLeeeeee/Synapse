@@ -6,7 +6,7 @@ public class Node : NodeCommon
     /// </summary>
     public int nodeSyncType { get; protected set; } = NodeSyncConst.SyncAll;
 
-    protected Node(string id_ = "") : base(id_) { }
+    protected Node() : base() { }
 
     public void SetNodeSyncType(int nodeSyncType_)
     {

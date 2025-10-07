@@ -1,7 +1,7 @@
 
 public class Component : ComponentCommon
 {
-    public Component(string id_ = "") : base(id_) { }
+    public Component() : base() { }
 
     #region REGION_IDENTIFICATION
 
@@ -44,9 +44,8 @@ public class Components : ComponentsCommon
     public override int nodeType => NodeTypeConst.TypeComponents;
 
     public Components(
-        string id_ = "",
         params KeyValuePair<string, Component>[] kvps
-    ) : base(id_, kvps) { }
+    ) : base(kvps) { }
 
     #region REGION_IDENTIFICATION
 

@@ -4,9 +4,8 @@ public class StringNodeCommon : Node
     protected string s = "";
 
     protected StringNodeCommon(
-        string id_ = "",
         string s_ = ""
-    ) : base(id_) { s = s_; }
+    ) : base() { s = s_; }
 
     public override string ToString()
     {
@@ -18,7 +17,6 @@ public class StringNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
         argsList.Add(s);
         return argsList.ToArray();
     }
@@ -30,7 +28,6 @@ public class StringNodeCommon : Node
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
         if (ShouldSerializeContent(proxyId))
         {
             writer.Write(s);
@@ -48,7 +45,6 @@ public class StringNodeCommon : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         argsList.Add(reader.ReadString());
         return argsList.ToArray();
     }
@@ -78,13 +74,13 @@ public static class TestStringNode
 {
     public static void TestStream()
     {
-        StringNode node = new StringNode("", "Test");
+        StringNode node = new StringNode("Test");
         Assert.EqualTrue(NodeStreamer.TestStream(node), "StringNode changed after serialization and deserialization");
     }
 
     public static void TestCopy()
     {
-        StringNode node = new StringNode("", "Test");
+        StringNode node = new StringNode("Test");
         StringNode copy = (StringNode)node.Copy();
         Assert.EqualTrue($"{node}" == $"{copy}", "StringNode id not equal after copy");
     }

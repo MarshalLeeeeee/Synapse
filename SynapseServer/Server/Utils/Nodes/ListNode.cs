@@ -5,9 +5,8 @@ public class ListNode : ListNodeCommon
     public override int nodeType => NodeTypeConst.TypeList;
 
     public ListNode(
-        string id_ = "",
         params Node[] nodes
-    ) : base(id_, nodes) { }
+    ) : base(nodes) { }
 
     #region REGION_IDENTIFICATION
 

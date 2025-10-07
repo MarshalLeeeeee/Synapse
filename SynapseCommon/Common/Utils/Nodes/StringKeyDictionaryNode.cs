@@ -7,9 +7,8 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
     protected Dictionary<string, T> children = new Dictionary<string, T>();
 
     protected StringKeyDictionaryTemplateNodeCommon(
-        string id_ = "",
         params KeyValuePair<string, T>[] kvps
-    ) : base(id_)
+    ) : base()
     {
         foreach (KeyValuePair<string, T> kvp in kvps)
         {
@@ -34,6 +33,15 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
 
     #region REGION_IDENTIFICATION
 
+    public override void SetId(string id_, Node? parent_ = null)
+    {
+        base.SetId(id_, parent_);
+        foreach (KeyValuePair<string, T> kvp in children)
+        {
+            kvp.Value.SetId($"{kvp.Key}", this);
+        }
+    }
+
     public override Node? GetChildWithId(string id_)
     {
         try
@@ -50,10 +58,9 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
         foreach (KeyValuePair<string, T> kvp in children)
         {
-            argsList.Add(kvp);
+            argsList.Add(new KeyValuePair<string, T>(kvp.Key, (T)kvp.Value.Copy()));
         }
         return argsList.ToArray();
     }
@@ -65,12 +72,11 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
         foreach (KeyValuePair<string, T> kvp in children)
         {
             if (kvp.Value.ShouldSerializeContent(proxyId))
             {
-                NodeStreamer.Serialize(new StringNode("", kvp.Key), writer, proxyId);
+                NodeStreamer.Serialize(new StringNode(kvp.Key), writer, proxyId);
                 NodeStreamer.Serialize(kvp.Value, writer, proxyId);
             }
         }
@@ -81,7 +87,6 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         while (true)
         {
             Node keyNode = NodeStreamer.Deserialize(reader);
@@ -177,9 +182,8 @@ public class StringKeyDictionaryTemplateNodeCommon<T> : Node, IEnumerable<KeyVal
 public class StringKeyDictionaryNodeCommon : StringKeyDictionaryTemplateNodeCommon<Node>
 {
     protected StringKeyDictionaryNodeCommon(
-        string id_ = "",
         params KeyValuePair<string, Node>[] kvps
-    ) : base(id_, kvps) { }
+    ) : base(kvps) { }
 }
 
 #if DEBUG
@@ -190,24 +194,20 @@ public static class TestStringKeyDictionaryNode
     public static void TestStream()
     {
         StringKeyDictionaryNode node = new StringKeyDictionaryNode(
-            "", 
-            new KeyValuePair<string, Node>("0", new IntNode("", 3)),
-            new KeyValuePair<string, Node>("1", new FloatNode("", 3.3f)),
-            new KeyValuePair<string, Node>("2", new StringNode("", "3")),
+            new KeyValuePair<string, Node>("0", new IntNode(3)),
+            new KeyValuePair<string, Node>("1", new FloatNode(3.3f)),
+            new KeyValuePair<string, Node>("2", new StringNode("3")),
             new KeyValuePair<string, Node>("3", new ListNode(
-                "", 
-                new IntNode("", 4),
-                new FloatNode("", 5.0f)
+                new IntNode(4),
+                new FloatNode(5.0f)
             )),
             new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode(
-                "", 
-                new KeyValuePair<string, Node>("0", new IntNode("", 3)),
-                new KeyValuePair<string, Node>("1", new FloatNode("", 3.3f)),
-                new KeyValuePair<string, Node>("2", new StringNode("", "3")),
+                new KeyValuePair<string, Node>("0", new IntNode(3)),
+                new KeyValuePair<string, Node>("1", new FloatNode(3.3f)),
+                new KeyValuePair<string, Node>("2", new StringNode("3")),
                 new KeyValuePair<string, Node>("3", new ListNode(
-                    "", 
-                    new IntNode("", 4),
-                    new FloatNode("", 5.0f)
+                    new IntNode(4),
+                    new FloatNode(5.0f)
                 )),
                 new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode())
             ))
@@ -218,24 +218,20 @@ public static class TestStringKeyDictionaryNode
     public static void TestCopy()
     {
         StringKeyDictionaryNode node = new StringKeyDictionaryNode(
-            "", 
-            new KeyValuePair<string, Node>("0", new IntNode("", 3)),
-            new KeyValuePair<string, Node>("1", new FloatNode("", 3.3f)),
-            new KeyValuePair<string, Node>("2", new StringNode("", "3")),
+            new KeyValuePair<string, Node>("0", new IntNode(3)),
+            new KeyValuePair<string, Node>("1", new FloatNode(3.3f)),
+            new KeyValuePair<string, Node>("2", new StringNode("3")),
             new KeyValuePair<string, Node>("3", new ListNode(
-                "", 
-                new IntNode("", 4),
-                new FloatNode("", 5.0f)
+                new IntNode(4),
+                new FloatNode(5.0f)
             )),
             new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode(
-                "", 
-                new KeyValuePair<string, Node>("0", new IntNode("", 3)),
-                new KeyValuePair<string, Node>("1", new FloatNode("", 3.3f)),
-                new KeyValuePair<string, Node>("2", new StringNode("", "3")),
+                new KeyValuePair<string, Node>("0", new IntNode(3)),
+                new KeyValuePair<string, Node>("1", new FloatNode(3.3f)),
+                new KeyValuePair<string, Node>("2", new StringNode("3")),
                 new KeyValuePair<string, Node>("3", new ListNode(
-                    "", 
-                    new IntNode("", 4),
-                    new FloatNode("", 5.0f)
+                    new IntNode(4),
+                    new FloatNode(5.0f)
                 )),
                 new KeyValuePair<string, Node>("4", new StringKeyDictionaryNode())
             ))

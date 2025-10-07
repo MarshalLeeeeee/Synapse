@@ -463,12 +463,12 @@ public class GateManager : GateManagerCommon
         //if ((rpcMethodInfo.rpcType & RpcConst.OwnClient) != 0 && owner.id != proxy.proxyId) return;
 
         // check arg len
-        if (!rpcMethodInfo.CheckArgTypes(msg.arg)) return;
+        if (!rpcMethodInfo.CheckArgTypes(msg.args)) return;
 
         // pack and invoke method
         List<object> methodArgs = new List<object>();
         methodArgs.Add(proxy);
-        foreach (Node arg in msg.arg)
+        foreach (Node arg in msg.args)
         {
             methodArgs.Add(arg);
         }

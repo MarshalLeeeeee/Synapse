@@ -242,10 +242,10 @@ public class GateManager : GateManagerCommon
         if (owner == null || instance == null) return;
 
         // check arg len
-        if (!rpcMethodInfo.CheckArgTypes(msg.arg)) return;
+        if (!rpcMethodInfo.CheckArgTypes(msg.args)) return;
 
         // pack and invoke method
-        rpcMethodInfo.Invoke(instance, msg.arg.ToArray());
+        rpcMethodInfo.Invoke(instance, msg.args.ToArray());
     }
 
     #endregion

@@ -2,7 +2,7 @@
 public class ListTailNodeCommon : Node
 {
 
-    protected ListTailNodeCommon(string id_ = "") : base(id_) { }
+    protected ListTailNodeCommon() : base() { }
 
     public override string ToString()
     {
@@ -14,7 +14,6 @@ public class ListTailNodeCommon : Node
     public override object[] GetCopyArgs()
     {
         List<object> argsList = new List<object>();
-        argsList.Add("");
         return argsList.ToArray();
     }
 
@@ -25,7 +24,6 @@ public class ListTailNodeCommon : Node
     public override void Serialize(BinaryWriter writer, string proxyId)
     {
         writer.Write(nodeType);
-        writer.Write(id);
     }
 
     /// <summary>
@@ -35,7 +33,6 @@ public class ListTailNodeCommon : Node
     protected static object[] DeserializeIntoArgs(BinaryReader reader)
     {
         List<object> argsList = new List<object>();
-        argsList.Add(reader.ReadString());
         return argsList.ToArray();
     }
 

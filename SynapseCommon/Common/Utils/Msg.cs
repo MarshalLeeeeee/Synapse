@@ -19,16 +19,16 @@ public class Msg
     /// <summary>
     /// method args
     /// </summary>
-    public List<Node> arg { get; private set; }
+    public List<Node> args { get; private set; }
 
-    public Msg(string methodName_, string instanceId_, params Node[] args)
+    public Msg(string methodName_, string instanceId_, params Node[] args_)
     {
         methodName = methodName_;
         instanceId = instanceId_;
-        arg = new List<Node>();
-        foreach (Node a in args)
+        args = new List<Node>();
+        foreach (Node arg in args_)
         {
-            arg.Add(a.Copy());
+            args.Add(arg);
         }
     }
 
@@ -36,8 +36,8 @@ public class Msg
     {
         writer.Write(methodName);
         writer.Write(instanceId);
-        writer.Write(arg.Count);
-        foreach (Node arg in arg)
+        writer.Write(args.Count);
+        foreach (Node arg in args)
         {
             NodeStreamer.Serialize(arg, writer, proxyId);
         }
