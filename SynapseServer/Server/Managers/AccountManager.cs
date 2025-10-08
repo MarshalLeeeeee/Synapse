@@ -90,6 +90,16 @@ public class AccountManager : AccountManagerCommon
         return null;
     }
 
+    public List<string> GetProxyIds()
+    {
+        return proxyIdWithAccount.GetAllT();
+    }
+
+    public List<string> GetAccounts()
+    {
+        return proxyIdWithAccount.GetAllU();
+    }
+
     #endregion
 
     #region REGION_LOGIN_LOGOUT

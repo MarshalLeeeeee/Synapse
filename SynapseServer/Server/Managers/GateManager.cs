@@ -313,15 +313,6 @@ public class GateManager : GateManagerCommon
         return null;
     }
 
-    /// <summary>
-    /// Get the list of all proxy ids (thread safe)
-    /// </summary>
-    /// <returns> copy of list of proxy id </returns>
-    public List<string> GetProxyIds()
-    {
-        return proxies.Keys.ToList();
-    }
-
     #endregion
 
     #region REGION_MSG

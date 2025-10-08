@@ -85,6 +85,16 @@ public class DoubleRefDictionary<T, U>
         return false;
     }
 
+    public List<T> GetAllT()
+    {
+        return new List<T>(t2u.Keys);
+    }
+
+    public List<U> GetAllU()
+    {
+        return new List<U>(u2t.Keys);
+    }
+
     public override string ToString()
     {
         string s = $"{this.GetType().Name}:\n";

@@ -69,10 +69,10 @@ public class Node : NodeCommon
 
     protected void SyncAll(string methodName, params Node[] args)
     {
-        GateManager? gateManager = Game.Instance?.GetManager<GateManager>();
-        if (gateManager == null) return;
+       AccountManager? accountManager = Game.Instance.GetManager<AccountManager>();
+        if (accountManager == null) return;
 
-        List<string> proxyIds = gateManager.GetProxyIds();
+        List<string> proxyIds = accountManager.GetProxyIds();
         foreach (string proxyId in proxyIds)
         {
             Game.Instance.CallRpc(proxyId, methodName, GetFullId(), args);

@@ -58,10 +58,10 @@ public class EntityManager : EntityManagerCommon
         accountWithPlayerId.Add(account, playerId);
         playerEntities.Add(playerId, player);
         player.SetId(playerId);
-        GateManager? gateManager = Game.Instance.GetManager<GateManager>();
-        if (gateManager != null)
+        AccountManager? accountManager = Game.Instance.GetManager<AccountManager>();
+        if (accountManager != null)
         {
-            List<string> proxyIds = gateManager.GetProxyIds();
+            List<string> proxyIds = accountManager.GetProxyIds();
             foreach (string pid in proxyIds)
             {
                 if (pid == proxyId)
