@@ -95,6 +95,12 @@ public class DoubleRefDictionary<T, U>
         return new List<U>(u2t.Keys);
     }
 
+    public void Clear()
+    {
+        t2u.Clear();
+        u2t.Clear();
+    }
+
     public override string ToString()
     {
         string s = $"{this.GetType().Name}:\n";
