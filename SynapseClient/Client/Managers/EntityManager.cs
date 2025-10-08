@@ -9,6 +9,16 @@ public class EntityManager : EntityManagerCommon
     /// </summary>
     string mainPlayerId = "";
 
+    protected override void OnStart()
+    {
+        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent("OnLogout", "EntityManager.DestroyAllEntities", DestroyAllEntities);
+    }
+
+    protected override void OnDestroy()
+    {
+        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("OnLogout", "EntityManager.DestroyAllEntities");
+    }
+
     #region REGION_SYNC_REMOTE
 
     /// <summary>

@@ -31,6 +31,15 @@ public class EntityManagerCommon : Manager
         }
         return null;
     }
+
+    /// <summary>
+    /// destroy all managed entities
+    /// </summary>
+    public void DestroyAllEntities()
+    {
+        // destroy all player entities
+        playerEntities.Clear();
+    }
 }
 
 #if DEBUG

@@ -151,6 +151,7 @@ public class AccountManager : AccountManagerCommon
         if (account == loginAccount)
         {
             loginAccount = "";
+            Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnLogout");
             Log.Info("[LoginSucc] Reset local login account");
         }
         else
@@ -178,6 +179,7 @@ public class AccountManager : AccountManagerCommon
         loginAccount = "";
         waitLoginRes = false;
         waitLogoutRes = false;
+        Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnLogout");
         Log.Info("[AccountManager][Reset] reset over...");
     }
 
