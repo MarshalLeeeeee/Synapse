@@ -110,30 +110,22 @@ public class GateManager : GateManagerCommon
         try
         {
             await client.ConnectAsync("localhost", Const.Port);
-            OnConnectionSuccess(client);
+            proxy = new Proxy(client);
+            proxy.Start(
+                OnReceiveMsg,
+                ResetConnection
+            );
+            Log.Info("[GateManager][OnConnectionSuccess] Connected to gate server");
         }
         catch (Exception ex)
         {
             client.Close();
-            OnConnectionFailure();
             Log.Error($"[GateManager][StartConnection] Failed to connect to gate server: {ex}");
         }
-    }
-
-    private void OnConnectionSuccess(TcpClient client)
-    {
-        isConnecting = false;
-        proxy = new Proxy(client);
-        proxy.Start(
-            OnReceiveMsg,
-            ResetConnection
-        );
-        Log.Info("[GateManager][OnConnectionSuccess] Connected to gate server");
-    }
-
-    private void OnConnectionFailure()
-    {
-        isConnecting = false;
+        finally
+        {
+            isConnecting = false;
+        }
     }
 
     #endregion
