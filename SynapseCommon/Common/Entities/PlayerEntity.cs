@@ -3,21 +3,24 @@ using System.Xml.Linq;
 
 public class PlayerEntityCommon : Entity
 {
+    protected string account = "";
     protected StringNode name = new StringNode();
     protected IntNode money = new IntNode();
 
     protected PlayerEntityCommon(
         Components? components_ = null,
+        string account_ = "",
         StringNode? name_ = null, IntNode? money_ = null
     ) : base(components_)
     {
+        account = account_;
         if (name_ != null) name = name_;
         if (money_ != null) money = money_;
     }
 
     public override string ToString()
     {
-        return $"{this.GetType().Name}(name: {name}, money: {money}, )";
+        return $"{this.GetType().Name}(account: {account}, name: {name}, money: {money}, )";
     }
 
     #region REGION_IDENTIFICATION
@@ -40,6 +43,7 @@ public class PlayerEntityCommon : Entity
     {
         List<object> argsList = new List<object>();
         argsList.Add(components.Copy());
+        argsList.Add(account);
         argsList.Add(name.Copy());
         argsList.Add(money.Copy());
         return argsList.ToArray();
@@ -53,6 +57,7 @@ public class PlayerEntityCommon : Entity
     {
         writer.Write(nodeType);
         NodeStreamer.Serialize(components, writer, proxyId);
+        writer.Write(account);
         NodeStreamer.Serialize(name, writer, proxyId);
         NodeStreamer.Serialize(money, writer, proxyId);
     }
@@ -65,6 +70,7 @@ public class PlayerEntityCommon : Entity
     {
         List<object> argsList = new List<object>();
         argsList.Add(NodeStreamer.Deserialize(reader));
+        argsList.Add(reader.ReadString());
         argsList.Add(NodeStreamer.Deserialize(reader));
         argsList.Add(NodeStreamer.Deserialize(reader));
         return argsList.ToArray();
@@ -74,19 +80,14 @@ public class PlayerEntityCommon : Entity
 
     #region REGION_API
 
-    public void SetName(string name_)
+    public string GetAccount()
     {
-        name.Set(name_);
+        return account;
     }
 
     public string GetName()
     {
         return name.Get();
-    }
-
-    public void SetMoney(int money_)
-    {
-        money.Set(money_);
     }
 
     public int GetMoney()
@@ -108,40 +109,6 @@ public static class GmShowPlayer
         if (player != null)
         {
             Log.Debug($"{player}");
-        }
-    }
-}
-
-#endif
-
-#if DEBUG
-
-[RegisterGm]
-public static class GmSetPlayerName
-{
-    public static void Execute(string playerId, string name)
-    {
-        PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(playerId);
-        if (player != null)
-        {
-            player.SetName(name);
-        }
-    }
-}
-
-#endif
-
-#if DEBUG
-
-[RegisterGm]
-public static class GmSetPlayerMoney
-{
-    public static void Execute(string playerId, int money)
-    {
-        PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(playerId);
-        if (player != null)
-        {
-            player.SetMoney(money);
         }
     }
 }

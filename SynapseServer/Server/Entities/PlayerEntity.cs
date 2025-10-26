@@ -7,8 +7,9 @@ public class PlayerEntity : PlayerEntityCommon
 
     public PlayerEntity(
         Components? components_ = null,
+        string account_ = "",
         StringNode? name_ = null, IntNode? money_ = null
-    ) : base(components_, name_, money_)
+    ) : base(components_, account_, name_, money_)
     {
         name.SetNodeSyncType(NodeSyncConst.SyncAll);
         name.Set("Name");
@@ -49,4 +50,57 @@ public class PlayerEntity : PlayerEntityCommon
     }
 
     #endregion
+
+    #region REGION_API
+
+    public void SetAccount(string account_)
+    {
+        account = account_;
+    }
+
+    public void SetName(string name_)
+    {
+        name.Set(name_);
+    }
+
+    public void SetMoney(int money_)
+    {
+        money.Set(money_);
+    }
+
+    #endregion
 }
+
+#if DEBUG
+
+[RegisterGm]
+public static class GmSetPlayerName
+{
+    public static void Execute(string playerId, string name)
+    {
+        PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(playerId);
+        if (player != null)
+        {
+            player.SetName(name);
+        }
+    }
+}
+
+#endif
+
+#if DEBUG
+
+[RegisterGm]
+public static class GmSetPlayerMoney
+{
+    public static void Execute(string playerId, int money)
+    {
+        PlayerEntity? player = Game.Instance.GetManager<EntityManager>()?.GetPlayerEntity(playerId);
+        if (player != null)
+        {
+            player.SetMoney(money);
+        }
+    }
+}
+
+#endif

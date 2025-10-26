@@ -7,8 +7,9 @@ public class PlayerEntity : PlayerEntityCommon
 
     public PlayerEntity(
         Components? components_ = null,
+        string account_ = "",
         StringNode? name_ = null, IntNode? money_ = null
-    ) : base(components_, name_, money_) { }
+    ) : base(components_, account_, name_, money_) { }
 
     #region REGION_IDENTIFICATION
 

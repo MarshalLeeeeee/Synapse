@@ -58,6 +58,7 @@ public class EntityManager : EntityManagerCommon
         accountWithPlayerId.Add(account, playerId);
         playerEntities.Add(playerId, player);
         player.SetId(playerId);
+        player.SetAccount(account);
         AccountManager? accountManager = Game.Instance.GetManager<AccountManager>();
         if (accountManager != null)
         {
