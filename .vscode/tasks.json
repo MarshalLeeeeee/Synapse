@@ -1,0 +1,130 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Server",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/C",
+        "start",
+        "Server Build",
+        "cmd.exe",
+        "/K",
+        "dotnet restore SynapseServer/SynapseServer.sln && dotnet build SynapseServer/SynapseServer.sln --configuration Debug --no-restore"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Run Server Tests",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/C",
+        "start",
+        "Server Tests",
+        "cmd.exe",
+        "/K",
+        "dotnet SynapseServer/bin/Debug/net8.0/SynapseServer.dll --launch-mode test"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Run Server Game",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/C",
+        "start",
+        "Server Game",
+        "cmd.exe",
+        "/K",
+        "dotnet SynapseServer/bin/Debug/net8.0/SynapseServer.dll --launch-mode game"
+      ],
+      "group": "none",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Build Client",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/C",
+        "start",
+        "Client Build",
+        "cmd.exe",
+        "/K",
+        "dotnet restore SynapseClient/SynapseClient.sln && dotnet build SynapseClient/SynapseClient.sln --configuration Debug --no-restore"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Run Client Tests",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/C",
+        "start",
+        "Client Tests",
+        "cmd.exe",
+        "/K",
+        "dotnet SynapseClient/bin/Debug/net8.0/SynapseClient.dll --launch-mode test"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Run Client Game",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/C",
+        "start",
+        "Client Game",
+        "cmd.exe",
+        "/K",
+        "dotnet SynapseClient/bin/Debug/net8.0/SynapseClient.dll --launch-mode game"
+      ],
+      "group": "none",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Run All",
+      "type": "shell",
+      "command": "echo",
+      "args": [
+        "Run both server and client"
+      ],
+      "group": "none",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent"
+      },
+      "dependsOn": [
+        "Run Server Game",
+        "Run Client Game"
+      ]
+    }
+  ]
+}
