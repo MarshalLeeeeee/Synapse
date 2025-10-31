@@ -37,6 +37,30 @@ public class AccountManager : AccountManagerCommon
         return !String.IsNullOrEmpty(loginAccount);
     }
 
+    /// <summary>
+    /// Get current login account
+    /// </summary>
+    public string GetLoginAccount()
+    {
+        return loginAccount;
+    }
+
+    /// <summary>
+    /// Get waitLoginRes
+    /// </summary>
+    public bool GetWaitLoginRes()
+    {
+        return waitLoginRes;
+    }
+
+    /// <summary>
+    /// Get waitLogoutRes
+    /// </summary>
+    public bool GetWaitLogoutRes()
+    {
+        return waitLogoutRes;
+    }
+
     public bool Login(string account, string password)
     {
         if (CheckLogin())
@@ -199,8 +223,6 @@ public class AccountManager : AccountManagerCommon
 
 #if DEBUG
 
-#region REGION_GM
-
 [RegisterGm]
 public static class GmLogin
 {
@@ -219,6 +241,24 @@ public static class GmLogout
     }
 }
 
-#endregion
+[RegisterGm]
+public static class GmShowAccount
+{
+    public static void Execute()
+    {
+        Log.Debug("ShowAccount");
+        AccountManager? am = Game.Instance.GetManager<AccountManager>();
+        if (am == null)
+        {
+            Log.Debug("Account manager not found");
+        }
+        else
+        {
+            Log.Debug($"Current account: {am.GetLoginAccount()}");
+            Log.Debug($"Current waitLoginRes: {am.GetWaitLoginRes()}");
+            Log.Debug($"Current waitLogoutRes: {am.GetWaitLogoutRes()}");
+        }
+    }
+}
 
 #endif

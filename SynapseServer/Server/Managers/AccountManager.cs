@@ -212,8 +212,6 @@ public class AccountManager : AccountManagerCommon
 
 #if DEBUG
 
-#region REGION_GM
-
 [RegisterGm]
 public static class GmShowAccounts
 {
@@ -222,7 +220,5 @@ public static class GmShowAccounts
         Log.Debug($"Account info: \n {Game.Instance.GetManager<AccountManager>()}");
     }
 }
-
-#endregion
 
 #endif

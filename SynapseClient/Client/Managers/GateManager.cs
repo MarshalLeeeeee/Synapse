@@ -249,7 +249,6 @@ public class GateManager : GateManagerCommon
 }
 
 #if DEBUG
-#region REGION_GM
 
 [RegisterGm]
 public static class GmStartConnection
@@ -269,5 +268,4 @@ public static class GmResetConnection
     }
 }
 
-#endregion
 #endif
