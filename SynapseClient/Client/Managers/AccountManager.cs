@@ -20,14 +20,14 @@ public class AccountManager : AccountManagerCommon
 
     protected override void OnStart()
     {
-        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent("OnResetConnection", "AccountManager.Reset", Reset);
+        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent("Disconnected", "AccountManager.Reset", Reset);
     }
 
     protected override void DoUpdate(float dt) { }
 
     protected override void OnDestroy()
     {
-        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("OnResetConnection", "AccountManager.Reset");
+        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("Disconnected", "AccountManager.Reset");
     }
 
     #region REGION_LOGIN_LOGOUT
@@ -51,16 +51,21 @@ public class AccountManager : AccountManagerCommon
         }
         if (waitLogoutRes)
         {
-            Log.Info("A logout remote invoke is in process");
+            Log.Info("A login remote invoke is in process");
             return false;
         }
 
         if (Game.Instance.CallRpc("AccountManager.LoginRemote", "Mgr-AccountManager", new StringNode(account), new StringNode(password)))
         {
             waitLoginRes = true;
+            Log.Info("Login remote invoke starts");
             return true;
         }
-        else return false;
+        else
+        {
+            Log.Info("Login remote invoke fails due to abnormal connection");
+            return false;
+        }
     }
 
     [Rpc(RpcConst.Server)]
@@ -86,6 +91,7 @@ public class AccountManager : AccountManagerCommon
         }
         waitLoginRes = false;
         loginAccount = s;
+        Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnLogin");
         Log.Info($"[LoginSucc] Login as account({s})");
     }
 
@@ -121,9 +127,14 @@ public class AccountManager : AccountManagerCommon
         if (Game.Instance.CallRpc("AccountManager.LogoutRemote", "Mgr-AccountManager"))
         {
             waitLogoutRes = true;
+            Log.Info("Logout remote invoke starts");
             return true;
         }
-        else return false;
+        else
+        {
+            Log.Info("Logout remote invoke fails due to abnormal connection");
+            return false;
+        }
     }
 
     [Rpc(RpcConst.Server)]

@@ -266,6 +266,7 @@ public class GateManager : GateManagerCommon
                 RemoveProxy
             );
             checkProxyQueue.Enqueue(proxyId);
+            Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnAddProxy", proxyId);
             Log.Info($"[GateManager][AddProxy] Proxy [{proxyId}] is added with connection state [{proxy.IsConnected()}]");
         }
         else
@@ -282,9 +283,9 @@ public class GateManager : GateManagerCommon
     {
         if (proxies.TryRemove(proxyId, out Proxy? proxy))
         {
-            Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnRemoveProxy", proxyId);
             proxy?.Destroy();
-            Log.Info($"[GateManager][RemoveProxy] Proxy [{proxyId}] is removed with connection state [{proxy.IsConnected()}]");
+            Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnRemoveProxy", proxyId);
+            Log.Info($"[GateManager][RemoveProxy] Proxy [{proxyId}] is removed");
         }
         else
         {

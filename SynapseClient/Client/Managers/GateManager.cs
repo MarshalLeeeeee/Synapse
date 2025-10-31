@@ -89,7 +89,7 @@ public class GateManager : GateManagerCommon
     {
         proxy?.Destroy();
         proxy = null;
-        Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnResetConnection");
+        Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("Disconnected");
     }
 
     public void StartConnection()
@@ -115,6 +115,7 @@ public class GateManager : GateManagerCommon
                 OnReceiveMsg,
                 ResetConnection
             );
+            Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("Connected");
             Log.Info("[GateManager][OnConnectionSuccess] Connected to gate server");
         }
         catch (Exception ex)

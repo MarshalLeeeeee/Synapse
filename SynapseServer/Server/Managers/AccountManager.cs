@@ -14,14 +14,14 @@ public class AccountManager : AccountManagerCommon
 
     protected override void OnStart()
     {
-        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent<string>("OnRemoveProxy", "OnRemoveProxy", OnRemoveProxy);
+        Game.Instance.GetManager<EventManager>()?.RegisterGlobalEvent<string>("OnRemoveProxy", "AccountManager.LogoutProxy", LogoutProxy);
     }
 
     protected override void DoUpdate(float dt) { }
 
     protected override void OnDestroy()
     {
-        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("OnRemoveProxy", "OnRemoveProxy");
+        Game.Instance.GetManager<EventManager>()?.UnregisterGlobalEvent("OnRemoveProxy", "AccountManager.LogoutProxy");
     }
 
     public override string ToString()
@@ -160,6 +160,7 @@ public class AccountManager : AccountManagerCommon
         {
             if (RemoveAccount(account))
             {
+                Game.Instance.GetManager<EventManager>()?.TriggerGlobalEvent("OnLogout", proxyId, account);
                 NotifyLogoutSucc(proxyId, account);
                 Log.Info($"Proxy ({proxyId}) successfully logout...");
             }
@@ -195,7 +196,10 @@ public class AccountManager : AccountManagerCommon
         Game.Instance.CallRpc(proxyId, "AccountManager.LogoutResRemote", "Mgr-AccountManager", new StringNode(""));
     }
 
-    private void OnRemoveProxy(string proxyId)
+    /// <summary>
+    /// logout account by proxy id
+    /// </summary>
+    private void LogoutProxy(string proxyId)
     {
         if (RemoveProxyId(proxyId))
         {
