@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Config Editor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        header p {
+            opacity: 0.9;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background-color: #f1f5f9;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .toolbar-left, .toolbar-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4f46e5;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover {
+            background-color: #4338ca;
+        }
+
+        button.secondary {
+            background-color: #64748b;
+        }
+
+        button.secondary:hover {
+            background-color: #475569;
+        }
+
+        .version-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        select {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid #cbd5e1;
+            background-color: white;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            position: relative;
+        }
+
+        th.header-cell {
+            background-color: #e0f2fe;
+        }
+
+        th.data-type {
+            background-color: #f0f9ff;
+            font-size: 12px;
+            font-weight: normal;
+            color: #64748b;
+        }
+
+        td {
+            background-color: white;
+        }
+
+        td input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+        }
+
+        td.active {
+            background-color: #f0f9ff;
+            box-shadow: inset 0 0 0 2px #3b82f6;
+        }
+
+        .row-header {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 5px 0;
+            z-index: 1000;
+            display: none;
+        }
+
+        .context-menu-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .context-menu-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            color: #1e293b;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8fafc;
+            color: #64748b;
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .data-type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .type-int {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .type-float {
+            background-color: #f3e8ff;
+            color: #7e22ce;
+        }
+
+        .type-bool {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .type-list-int {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .type-string {
+            background-color: #fce7f3;
+            color: #9d174d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Config Editor</h1>
+            <p>Edit config data with version control</p>
+        </header>
+
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <button id="addAttributeBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Add Attribute
+                </button>
+                <button id="addRowBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Add row
+                </button>
+                <button id="insertRowBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Insert row
+                </button>
+            </div>
+            <div class="toolbar-right">
+                <div class="version-selector">
+                    <label for="versionSelect">Version:</label>
+                    <select id="versionSelect">
+                        <option value="default">Default</option>
+                        <option value="beta">Beta</option>
+                    </select>
+                </div>
+                <button id="addVersionBtn" class="secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Add version
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr id="attributeRow">
+                        <!-- dynamic show by js -->
+                    </tr>
+                    <tr id="dataTypeRow">
+                        <!-- dynamic show by js -->
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- dynamic show by js -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Config Editor &copy; 2025 - Edit config data with version control</p>
+        </div>
+    </div>
+
+    <!-- right click context menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" id="copyCell">Copy Cell</div>
+        <div class="context-menu-item" id="pasteCell">Paste Cell</div>
+        <div class="context-menu-item" id="copyRow">Copy Row</div>
+        <div class="context-menu-item" id="pasteRow">Paste Row</div>
+        <div class="context-menu-item" id="editAttribute">Edit Attribute</div>
+    </div>
+
+    <!-- modal for adding attribute -->
+    <div class="modal" id="addAttributeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add attribute</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="attributeName">Attribute name</label>
+                <input type="text" id="attributeName" placeholder="Attribute name">
+            </div>
+            <div class="form-group">
+                <label for="dataType">data type</label>
+                <select id="dataType">
+                    <option value="string">string text</option>
+                    <option value="int">int number</option>
+                    <option value="float">float number</option>
+                    <option value="bool">true or false</option>
+                    <option value="list-int">list of int number</option>
+                </select>
+            </div>
+            <button id="createAttributeBtn" style="width: 100%;">Create Attribute</button>
+        </div>
+    </div>
+
+    <!-- modal for adding version -->
+    <div class="modal" id="addVersionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add version</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="versionName">Version name</label>
+                <input type="text" id="versionName" placeholder="Version name">
+            </div>
+            <div class="form-group">
+                <label for="copyFrom">Reference</label>
+                <select id="copyFrom">
+                    <option value="none">Create new version</option>
+                    <option value="default">Copy from default</option>
+                    <option value="beta">Copy from beta</option>
+                </select>
+            </div>
+            <button id="createVersionBtn" style="width: 100%;">Create version</button>
+        </div>
+    </div>
+
+    <script>
+        // table data
+        const state = {
+            attributes: [
+                { name: 'Name', type: 'string' },
+                { name: 'Age', type: 'int' },
+                { name: 'Single', type: 'bool' },
+                { name: 'Skill_ids', type: 'list-int' }
+            ],
+            rows: [
+                { 
+                    'Name': 'Tom', 
+                    'Age': '10', 
+                    'Single': 'true', 
+                    'Skill_ids': '[1,2,3]'
+                },
+                { 
+                    'Name': 'Bob', 
+                    'Age': '20', 
+                    'Single': 'true', 
+                    'Skill_ids': '[2,4,6]'
+                },
+                { 
+                    'Name': 'Alice', 
+                    'Age': '30', 
+                    'Single': 'false', 
+                    'Skill_ids': '[3,6,9]'
+                }
+            ],
+            versions: ['default', 'beta'],
+            currentVersion: 'default',
+            selectedCell: null,
+            copiedRowData: null,
+            copiedData: null
+        };
+
+        // DOM elements
+        const dataTable = document.getElementById('dataTable');
+        const attributeRow = document.getElementById('attributeRow');
+        const dataTypeRow = document.getElementById('dataTypeRow');
+        const tableBody = document.getElementById('tableBody');
+        const contextMenu = document.getElementById('contextMenu');
+        const addAttributeModal = document.getElementById('addAttributeModal');
+        const addVersionModal = document.getElementById('addVersionModal');
+        const versionSelect = document.getElementById('versionSelect');
+
+        // init app
+        function initApp() {
+            renderTable();
+            setupEventListeners();
+        }
+
+        // render table
+        function renderTable() {
+            renderHeader();
+            renderBody();
+        }
+
+        // render header
+        function renderHeader() {
+            // reset attribute and data type
+            attributeRow.innerHTML = '<th class="row-header">Attributes</th>';
+            dataTypeRow.innerHTML = '<th class="row-header">Data type</th>';
+            
+            // Add attribute and data type as new column
+            state.attributes.forEach((column, columnIndex) => {
+                // attribute name
+                const headerCell = document.createElement('th');
+                headerCell.className = 'attribute-cell';
+                headerCell.textContent = column.name;
+                headerCell.dataset.columnId = columnIndex;
+                attributeRow.appendChild(headerCell);
+                
+                // data type
+                const dataTypeCell = document.createElement('th');
+                dataTypeCell.className = 'data-type';
+                const typeTag = document.createElement('span');
+                typeTag.className = `data-type-tag type-${column.type}`;
+                typeTag.textContent = getTypeDisplayName(column.type);
+                dataTypeCell.appendChild(typeTag);
+                dataTypeRow.appendChild(dataTypeCell);
+            });
+        }
+
+        // render table
+        function renderBody() {
+            // reset table
+            tableBody.innerHTML = '';
+
+            // Add new row
+            state.rows.forEach((row, rowIndex) => {
+                const tableRow = document.createElement('tr');
+                
+                // Add row id cell
+                const rowHeaderCell = document.createElement('td');
+                rowHeaderCell.className = 'row-header';
+                rowHeaderCell.textContent = rowIndex + 1;
+                rowHeaderCell.dataset.rowIndex = rowIndex;
+                rowHeaderCell.dataset.isRowHeader = true;
+                tableRow.appendChild(rowHeaderCell);
+                
+                // Add data cell
+                state.attributes.forEach((column, columnIndex) => {
+                    const dataCell = document.createElement('td');
+                    dataCell.dataset.attributeName = column.name;
+                    dataCell.dataset.rowIndex = rowIndex;
+                    dataCell.dataset.columnIndex = columnIndex;
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = row[column.name] || '';
+                    
+                    dataCell.appendChild(input);
+                    tableRow.appendChild(dataCell);
+                });
+                
+                tableBody.appendChild(tableRow);
+            });
+            state.selectedCell = null;
+        }
+
+        // get shown text for given type
+        function getTypeDisplayName(type) {
+            const typeMap = {
+                'string': 'string text',
+                'int': 'int number',
+                'float': 'float number',
+                'bool': 'true or false',
+                'list-int': 'list of int number'
+            };
+            return typeMap[type] || type;
+        }
+
+        // setup event listeners
+        function setupEventListeners() {
+            // show add attribute popup
+            document.getElementById('addAttributeBtn').addEventListener('click', () => {
+                addAttributeModal.style.display = 'flex';
+            });
+
+            // add new row
+            document.getElementById('addRowBtn').addEventListener('click', addNewRow);
+
+            // insert new row
+            document.getElementById('insertRowBtn').addEventListener('click', insertNewRow);
+
+            // show add version popup
+            document.getElementById('addVersionBtn').addEventListener('click', () => {
+                addVersionModal.style.display = 'flex';
+            });
+
+            // version select
+            versionSelect.addEventListener('change', (e) => {
+                state.currentVersion = e.target.value;
+                renderTable();
+            });
+            
+            // close modal
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', () => {
+                    addAttributeModal.style.display = 'none';
+                    addVersionModal.style.display = 'none';
+                });
+            });
+            
+            // create attribute btn
+            document.getElementById('createAttributeBtn').addEventListener('click', createAttribute);
+            
+            // create version btn
+            document.getElementById('createVersionBtn').addEventListener('click', createVersion);
+            
+            // select cell
+            tableBody.addEventListener('click', (e) => {
+                if (e.target.tagName === 'TD' || e.target.tagName === 'INPUT') {
+                    const cell = e.target.tagName === 'TD' ? e.target : e.target.parentElement;
+                    selectCell(cell);
+                }
+            });
+            
+            // show right click context
+            document.addEventListener('contextmenu', (e) => {
+                if (e.target.tagName === 'TD' || e.target.tagName === 'TH') {
+                    e.preventDefault();
+                    showContextMenu(e);
+                }
+            });
+            
+            // hide right click context
+            document.addEventListener('click', () => {
+                contextMenu.style.display = 'none';
+            });
+            
+            // right click context
+            document.getElementById('copyCell').addEventListener('click', copyCell);
+            document.getElementById('pasteCell').addEventListener('click', pasteCell);
+            document.getElementById('copyRow').addEventListener('click', copyRow);
+            document.getElementById('pasteRow').addEventListener('click', pasteRow);
+            document.getElementById('editAttribute').addEventListener('click', editAttribute);
+        }
+
+        // select cell
+        function selectCell(cell) {
+            // inactive the previous selected
+            document.querySelectorAll('td.active').forEach(c => {
+                c.classList.remove('active');
+            });
+            
+            // active selected cell
+            cell.classList.add('active');
+            state.selectedCell = cell;
+        }
+
+        // show right click context
+        function showContextMenu(e) {
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${e.pageX}px`;
+            contextMenu.style.top = `${e.pageY}px`;
+
+            if (e.target.tagName === 'TH') { // attribute cell
+                document.getElementById('copyCell').style.display = 'none';
+                document.getElementById('pasteCell').style.display = 'none';
+                document.getElementById('copyRow').style.display = 'none';
+                document.getElementById('pasteRow').style.display = 'none';
+                document.getElementById('editAttribute').style.display = 'block';
+            } else {
+                if (e.target.dataset.isRowHeader) { // row header cell
+                    document.getElementById('copyCell').style.display = 'none';
+                    document.getElementById('pasteCell').style.display = 'none';
+                    document.getElementById('copyRow').style.display = 'block';
+                    document.getElementById('pasteRow').style.display = 'block';
+                    document.getElementById('editAttribute').style.display = 'none';
+                }
+                else { // common data cell
+                    document.getElementById('copyCell').style.display = 'block';
+                    document.getElementById('pasteCell').style.display = 'block';
+                    document.getElementById('copyRow').style.display = 'none';
+                    document.getElementById('pasteRow').style.display = 'none';
+                    document.getElementById('editAttribute').style.display = 'none';
+                }
+            }
+        }
+
+        // copy cell
+        function copyCell() {
+            if (state.selectedCell) {
+                const input = state.selectedCell.querySelector('input');
+                state.copiedData = input.value;
+            }
+            else {
+                alert('no selected cell');
+            }
+            contextMenu.style.display = 'none';
+        }
+
+        // paste cell
+        function pasteCell() {
+            if (state.selectedCell && state.copiedData !== null) {
+                const input = state.selectedCell.querySelector('input');
+                input.value = state.copiedData;
+            }
+            else if (state.copiedData == null) {
+                alert('no copied data');
+            }
+            else {
+                alert('no selected cell')
+            }
+            contextMenu.style.display = 'none';
+        }
+
+        // copy row
+        function copyRow() {
+            if (state.selectedCell && state.selectedCell.dataset.isRowHeader) {
+                const rowIndex = state.selectedCell.dataset.rowIndex;
+                const rowData = state.rows[rowIndex];
+                state.copiedRowData = rowData;
+            }
+            else {
+                alert('no selected row cell');
+            }
+            contextMenu.style.display = 'none';
+        }
+
+        // paste row
+        function pasteRow() {
+            if (state.selectedCell && state.selectedCell.dataset.isRowHeader) {
+                const rowIndex = state.selectedCell.dataset.rowIndex;
+                state.rows[rowIndex] = state.copiedRowData;
+                renderTable();
+            }
+            else {
+                alert('no selected row cell');
+            }
+            contextMenu.style.display = 'none';
+        }
+
+        // edit attribute
+        function editAttribute() {
+            alert('TODO');
+            contextMenu.style.display = 'none';
+        }
+
+        // add new row at the end
+        function addNewRow() {
+            const newRow = { };
+            state.attributes.forEach(column => {
+                newRow[column.name] = '';
+            });
+            state.rows.push(newRow);
+            renderTable();
+        }
+        
+        // insert new row below the selected row
+        function insertNewRow() {
+            if (state.selectedCell) {
+                const rowIndex = state.selectedCell.dataset.rowIndex;
+                const newRow = { };
+                state.attributes.forEach(column => {
+                    newRow[column.name] = '';
+                });
+                state.rows.splice(rowIndex, 0, newRow);
+                renderTable();
+            }
+            else {
+                alert('no selected cell');
+            }
+        }
+
+        // create attribute
+        // - check empty
+        // - check duplication
+        function createAttribute() {
+            const attributeNmae = document.getElementById('attributeName').value;
+            const dataType = document.getElementById('dataType').value;
+            
+            if (!attributeNmae) {
+                alert('Error: please input column name');
+                return;
+            }
+
+            const hasDuplicate = false;
+            state.attributes.forEach(attribute => {
+                if (attributeNmae === attribute.name) {
+                    hasDuplicate = true;
+                }
+            });
+            if (hasDuplicate) {
+                alert('Error: has duplicate attribute');
+                return;
+            }
+            
+            const newColumnId = 'col' + (state.attributes.length + 1);
+            state.attributes.push({
+                name: attributeNmae,
+                type: dataType
+            });
+            state.rows.forEach(row => {
+                row[attributeNmae] = '';
+            });
+            addAttributeModal.style.display = 'none';
+            renderTable();
+
+            document.getElementById('attributeName').value = '';
+            document.getElementById('dataType').value = 'string';
+        }
+
+        // create version
+        // TODO
+        function createVersion() {
+            const versionName = document.getElementById('versionName').value;
+            const copyFrom = document.getElementById('copyFrom').value;
+            
+            if (!versionName) {
+                alert('Error: please input version name');
+                return;
+            }
+            
+            if (state.versions.includes(versionName)) {
+                alert('Error: version name duplicates');
+                return;
+            }
+            
+            state.versions.push(versionName);
+            
+            // 更新版本选择下拉框
+            const option = document.createElement('option');
+            option.value = versionName;
+            option.textContent = versionName;
+            versionSelect.appendChild(option);
+            
+            // 如果选择了从现有版本复制数据
+            if (copyFrom !== 'none') {
+                state.rows.forEach(row => {
+                    state.attributes.forEach(column => {
+                        row.data[column.id][versionName] = row.data[column.id][copyFrom] || '';
+                    });
+                });
+            } else {
+                // 否则初始化空数据
+                state.rows.forEach(row => {
+                    state.attributes.forEach(column => {
+                        row.data[column.id][versionName] = '';
+                    });
+                });
+            }
+            
+            addVersionModal.style.display = 'none';
+            
+            // 重置表单
+            document.getElementById('versionName').value = '';
+            document.getElementById('copyFrom').value = 'none';
+            
+            alert(`版本 "${versionName}" 已创建`);
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
