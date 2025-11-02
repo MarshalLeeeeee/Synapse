@@ -1,5 +1,7 @@
 # Config
-Game config data is necessary for game designer. Here provides tools for editing game config data and export them for runtime use.
+Game config data is necessary for game designer. With config, designers do not require to know or modify game code. What's more, we can change the behavior or data of the game by changing the config without recompiling the project.
+
+Here, we provide tools for editing game config data and export them for game runtime use.
 
 ## Editor
 We provide a web-based local editor for game designer to generate game config data.
