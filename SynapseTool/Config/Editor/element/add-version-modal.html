@@ -1,0 +1,19 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>Add version</h2>
+        <button class="close-modal">&times;</button>
+    </div>
+    <div class="form-group">
+        <label for="versionName">Version name</label>
+        <input type="text" id="versionName" placeholder="Version name">
+    </div>
+    <div class="form-group">
+        <label for="copyFrom">Reference</label>
+        <select id="copyFrom">
+            <option value="none">Create new version</option>
+            <option value="regular">Copy from version[Regular]</option>
+            <option value="beta">Copy from version[Beta]</option>
+        </select>
+    </div>
+    <button id="createVersionBtn" style="width: 100%;">Create version</button>
+</div>
