@@ -1,0 +1,20 @@
+td.style2 {
+    border: 1px solid #e2e8f0;
+    padding: 12px 15px;
+    text-align: center;
+    background-color: white;
+}
+
+td.style2 input {
+    width: 100%;
+    border: none;
+    outline: none;
+    text-align: center;
+    background: transparent;
+    font-size: 14px;
+}
+
+td.style2.active {
+    background-color: #f0f9ff;
+    box-shadow: inset 0 0 0 2px #3b82f6;
+}

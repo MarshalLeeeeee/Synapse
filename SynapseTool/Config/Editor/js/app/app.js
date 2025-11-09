@@ -65,21 +65,21 @@ class App {
     // render header
     renderHeader() {
         // reset attribute and data type
-        this.attributeRow.innerHTML = '<th class="row-header">Attributes</th>';
-        this.dataTypeRow.innerHTML = '<th class="row-header">Data type</th>';
+        this.attributeRow.innerHTML = '<th class="style1">Attributes</th>';
+        this.dataTypeRow.innerHTML = '<th class="style1">Data type</th>';
         
         // Add attribute and data type as new column
         this.state.attributes.forEach((column, columnIndex) => {
             // attribute name
             const headerCell = document.createElement('th');
-            headerCell.className = 'attribute-cell';
+            headerCell.className = 'style2';
             headerCell.textContent = column.name;
             headerCell.dataset.columnId = columnIndex;
             this.attributeRow.appendChild(headerCell);
             
             // data type
             const dataTypeCell = document.createElement('th');
-            dataTypeCell.className = 'data-type';
+            dataTypeCell.className = 'style3';
             const typeTag = document.createElement('span');
             typeTag.className = `data-type-tag type-${column.type}`;
             typeTag.textContent = this.getTypeDisplayName(column.type);
@@ -99,7 +99,7 @@ class App {
             
             // Add row id cell
             const rowHeaderCell = document.createElement('td');
-            rowHeaderCell.className = 'row-header';
+            rowHeaderCell.className = 'style1';
             rowHeaderCell.textContent = rowIndex + 1;
             rowHeaderCell.dataset.rowIndex = rowIndex;
             rowHeaderCell.dataset.isRowHeader = true;
@@ -108,6 +108,7 @@ class App {
             // Add data cell
             this.state.attributes.forEach((column, columnIndex) => {
                 const dataCell = document.createElement('td');
+                dataCell.classList.add('style2')
                 dataCell.dataset.attributeName = column.name;
                 dataCell.dataset.rowIndex = rowIndex;
                 dataCell.dataset.columnIndex = columnIndex;

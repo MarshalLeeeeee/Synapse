@@ -35,15 +35,17 @@ class ElementLoader {
     async _loadElement(element) {
         const loadElements = element.querySelectorAll('load-element');
         for (const loadElement of loadElements) {
-            const elementLoader = loadElement.getAttribute('data-loader');
-            const cssPathesAttr = loadElement.getAttribute('data-css-pathes');
-            const elementCssPathes = cssPathesAttr ? cssPathesAttr.split(',') : [];
+            const elementLoaderElement = loadElement.querySelector('data-loader');
+            if (!elementLoaderElement) {
+                continue;
+            }
             loadElement.replaceWith(await this._callMethod(
-                elementLoader,
+                elementLoaderElement.textContent,
                 loadElement
             ));
-            for (const cssPath of elementCssPathes) {
-                await cssLoader.loadCssFile(cssPath);
+            const cssPathElements = loadElement.querySelectorAll('data-css-path');
+            for (const cssPathElement of cssPathElements) {
+                await cssLoader.loadCssFile(cssPathElement.textContent);
             }
         }
     }
@@ -61,13 +63,13 @@ class ElementLoader {
     async addDiv(loadElement) {
         const div = document.createElement('div');
         div.id = loadElement.id;
-        const className = loadElement.getAttribute('data-class');
-        if (className) {
-            div.classList.add(className);
+        const elementClassElement = loadElement.querySelector('data-class');
+        if (elementClassElement) {
+            div.classList.add(elementClassElement.textContent);
         }
-        const elementPath = loadElement.getAttribute('data-element-path');
-        if (elementPath) {
-            const html = await this._loadElementContent(elementPath);
+        const elementPathElement = loadElement.querySelector('data-element-path');
+        if (elementPathElement) {
+            const html = await this._loadElementContent(elementPathElement.textContent);
             div.innerHTML = html;
         }
         await this._loadElement(div);
@@ -77,18 +79,18 @@ class ElementLoader {
     async addButton(loadElement) {
         const button = document.createElement('button');
         button.id = loadElement.id;
-        const className = loadElement.getAttribute('data-class');
-        if (className) {
-            button.classList.add(className);
+        const elementClassElement = loadElement.querySelector('data-class');
+        if (elementClassElement) {
+            button.classList.add(elementClassElement.textContent);
         }
-        const elementPath = loadElement.getAttribute('data-element-path');
-        if (elementPath) {
-            const html = await this._loadElementContent(elementPath);
+        const elementPathElement = loadElement.querySelector('data-element-path');
+        if (elementPathElement) {
+            const html = await this._loadElementContent(elementPathElement.textContent);
             button.innerHTML = html;
         }
-        const text = loadElement.getAttribute('data-text');
-        if (text) {
-            const textNode = document.createTextNode(text);
+        const elementTextElement = loadElement.querySelector('data-text');
+        if (elementTextElement) {
+            const textNode = document.createTextNode(elementTextElement.textContent);
             button.appendChild(textNode);
         }
         await this._loadElement(button);
