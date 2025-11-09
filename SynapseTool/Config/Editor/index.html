@@ -19,31 +19,6 @@
             padding: 20px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        header {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        header h1 {
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        header p {
-            opacity: 0.9;
-        }
-
         .toolbar {
             display: flex;
             justify-content: space-between;
@@ -55,31 +30,6 @@
         .toolbar-left, .toolbar-right {
             display: flex;
             gap: 10px;
-        }
-
-        button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4f46e5;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        button:hover {
-            background-color: #4338ca;
-        }
-
-        button.secondary {
-            background-color: #64748b;
-        }
-
-        button.secondary:hover {
-            background-color: #475569;
         }
 
         .version-selector {
@@ -278,6 +228,7 @@
 </head>
 <body>
     <script src="js/config/element-config.js"></script>
+    <script src="js/utils/css-loader.js"></script>
     <script src="js/utils/element-loader.js"></script>
     <script src="js/app/app.js"></script>
 </body>

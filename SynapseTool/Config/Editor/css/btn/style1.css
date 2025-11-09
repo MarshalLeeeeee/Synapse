@@ -1,0 +1,16 @@
+button.style1 {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4f46e5;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+button.style1:hover {
+    background-color: #4338ca;
+}

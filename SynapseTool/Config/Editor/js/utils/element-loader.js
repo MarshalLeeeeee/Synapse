@@ -1,4 +1,5 @@
 /* element loader
+ * build element tree externally
  */
 class ElementLoader {
     constructor() {
@@ -83,6 +84,11 @@ class ElementLoader {
                 const html = await this._loadElementContent(elementConfig.elementPath);
                 div.innerHTML = html;
             }
+            if (elementConfig.cssPathes) {
+                for (const cssPath of elementConfig.cssPathes) {
+                    await cssLoader.loadCssFile(cssPath);
+                }
+            }
             if (elementConfig.children) {
                 for (const childId in elementConfig.children) {
                     const parentId = elementConfig.children[childId];
@@ -113,6 +119,11 @@ class ElementLoader {
             if (elementConfig.text) {
                 const textNode = document.createTextNode(elementConfig.text);
                 button.appendChild(textNode);
+            }
+            if (elementConfig.cssPathes) {
+                for (const cssPath of elementConfig.cssPathes) {
+                    await cssLoader.loadCssFile(cssPath);
+                }
             }
             if (elementConfig.children) {
                 for (const childId in elementConfig.children) {
