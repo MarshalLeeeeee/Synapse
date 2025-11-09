@@ -28,36 +28,22 @@ class ElementLoader {
         throw new Error(`Method ${methodName} not found`);
     }
 
-    async loadElementTree(elementConfigMap) {
-        if ('_' in elementConfigMap && 'chilrent' in elementConfigMap['_']) {
-            const children = elementConfigMap['_']['chilrent'];
-            for (const childId in children) {
-                const parentId = children[childId];
-                await this._loadElement(
-                    document.body,
-                    parentId,
-                    childId,
-                    elementConfigMap
-                );
-            }
-        }
+    async loadElementTree() {
+        await this._loadElement(document.body);
     }
 
-    async _loadElement(parentElement, parentId, elementId, elementConfigMap) {
-        if (elementId in elementConfigMap) {
-            const elementConfig = elementConfigMap[elementId];
-            const loaderMethod = elementConfig.loader;
-            if (loaderMethod) {
-                const parent = parentId ? parentElement.querySelector(parentId) : parentElement;
-                await this._callMethod(
-                    loaderMethod,
-                    parent,
-                    elementId,
-                    elementConfigMap
-                );
-            }
-            else {
-                throw new Error(`Loader method not specified for element "${elementId}".`);
+    async _loadElement(element) {
+        const loadElements = element.querySelectorAll('load-element');
+        for (const loadElement of loadElements) {
+            const elementLoader = loadElement.getAttribute('data-loader');
+            const cssPathesAttr = loadElement.getAttribute('data-css-pathes');
+            const elementCssPathes = cssPathesAttr ? cssPathesAttr.split(',') : [];
+            loadElement.replaceWith(await this._callMethod(
+                elementLoader,
+                loadElement
+            ));
+            for (const cssPath of elementCssPathes) {
+                await cssLoader.loadCssFile(cssPath);
             }
         }
     }
@@ -72,72 +58,41 @@ class ElementLoader {
         return html;
     }
 
-    async loadDiv(parentElement, elementId, elementConfigMap) {
-        if (elementId in elementConfigMap) {
-            const elementConfig = elementConfigMap[elementId];
-            const div = document.createElement('div');
-            div.id = elementId;
-            if (elementConfig.class) {
-                div.classList.add(elementConfig.class);
-            }
-            if (elementConfig.elementPath) {
-                const html = await this._loadElementContent(elementConfig.elementPath);
-                div.innerHTML = html;
-            }
-            if (elementConfig.cssPathes) {
-                for (const cssPath of elementConfig.cssPathes) {
-                    await cssLoader.loadCssFile(cssPath);
-                }
-            }
-            if (elementConfig.children) {
-                for (const childId in elementConfig.children) {
-                    const parentId = elementConfig.children[childId];
-                    await this._loadElement(
-                        div,
-                        parentId,
-                        childId,
-                        elementConfigMap
-                    );
-                }
-            }
-            parentElement.appendChild(div);
+    async addDiv(loadElement) {
+        const div = document.createElement('div');
+        div.id = loadElement.id;
+        const className = loadElement.getAttribute('data-class');
+        if (className) {
+            div.classList.add(className);
         }
+        const elementPath = loadElement.getAttribute('data-element-path');
+        if (elementPath) {
+            const html = await this._loadElementContent(elementPath);
+            div.innerHTML = html;
+        }
+        await this._loadElement(div);
+        return div;
     }
 
-    async loadButton(parentElement, elementId, elementConfigMap) {
-        if (elementId in elementConfigMap) {
-            const elementConfig = elementConfigMap[elementId];
-            const button = document.createElement('button');
-            button.id = elementId;
-            if (elementConfig.class) {
-                button.classList.add(elementConfig.class);
-            }
-            if (elementConfig.elementPath) {
-                const html = await this._loadElementContent(elementConfig.elementPath);
-                button.innerHTML = html;
-            }
-            if (elementConfig.text) {
-                const textNode = document.createTextNode(elementConfig.text);
-                button.appendChild(textNode);
-            }
-            if (elementConfig.cssPathes) {
-                for (const cssPath of elementConfig.cssPathes) {
-                    await cssLoader.loadCssFile(cssPath);
-                }
-            }
-            if (elementConfig.children) {
-                for (const childId in elementConfig.children) {
-                    const parentId = elementConfig.children[childId];
-                    await this._loadElement(
-                        button,
-                        parentId,
-                        childId,
-                        elementConfigMap
-                    );
-                }
-            }
-            parentElement.appendChild(button);
+    async addButton(loadElement) {
+        const button = document.createElement('button');
+        button.id = loadElement.id;
+        const className = loadElement.getAttribute('data-class');
+        if (className) {
+            button.classList.add(className);
         }
+        const elementPath = loadElement.getAttribute('data-element-path');
+        if (elementPath) {
+            const html = await this._loadElementContent(elementPath);
+            button.innerHTML = html;
+        }
+        const text = loadElement.getAttribute('data-text');
+        if (text) {
+            const textNode = document.createTextNode(text);
+            button.appendChild(textNode);
+        }
+        await this._loadElement(button);
+        return button;
     }
 }
 

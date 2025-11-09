@@ -48,7 +48,7 @@ class App {
 
     async init() {
         try {
-            await elementLoader.loadElementTree(ElementConfig);
+            await elementLoader.loadElementTree();
             this.initOnElementLoaded();
             console.log('App initialized successfully.');
         } catch (error) {
