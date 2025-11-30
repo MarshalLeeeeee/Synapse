@@ -1,0 +1,28 @@
+.drag-file {
+    border: 2px dashed #4b6cb7;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    background-color: rgba(75, 108, 183, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.drag-file.active {
+    background-color: rgba(75, 108, 183, 0.15);
+    border-color: #3a5795;
+}
+
+.drag-file i {
+    font-size: 48px;
+    color: #4b6cb7;
+}
+
+.drag-file p {
+    font-size: 1.1rem;
+    color: #555;
+}

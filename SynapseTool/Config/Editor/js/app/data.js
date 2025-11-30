@@ -1,9 +1,9 @@
 
 class AttributeData {
-    constructor(name, dataType, isKey=false) {
+    constructor(name, rawData) {
         this.name = name; // attribute name
-        this.dataType = dataType; // data type name
-        this.isKey = isKey; // is key attribute (for data exporter)
+        this.dataType = rawData['dataType']; // data type name
+        this.isKey = rawData['isKey'] ?? false;; // is key attribute (for data exporter)
     }
 }
 
@@ -11,13 +11,22 @@ class CellData {
     /*
     Initialize groups and values with a default group
     Parameters:
-    - value: any, raw value, not CellValue
+    - dataType: str, dataType
+    - rawData: dict, 
+    Example {
+        "groups": {
+            "default": ["base", "test"]
+        },
+        "values": {
+            "default": "Tom"
+        }
+    },
     */
-    constructor(dataType, value=null) {
-        this.dataType = dataType;
+    constructor(dataType, rawData) {
         this.version2group = {};
-        this.groups = { 'default': config.versions };
-        this.values = { 'default': this._getCellValue(value) };
+        this.dataType = dataType;
+        this.groups = rawData['groups'];
+        this.values = this._getCellValues(rawData['values']);
         this._updateVersion2Group();
     }
 
@@ -146,20 +155,45 @@ class CellData {
 }
 
 class RowData {
-    constructor(attributes) {
-        this.cellValues = {}; // attribute name -> CellData
-        for (const attributeData of attributes) {
-            this.updateAttributeValue(attributeData);
-        }
+    constructor(attributes, rawData) {
+        this.updateData(attributes, rawData);
+    }
+    
+    updateData(attributes, rawData) {
+        this.versions = rawData['Versions'];
+        const cells = rawData['Cells'];
+        this.cells = {};
+        Object.entries(attributes).forEach(([key, value]) => {
+            const dataType = value.dataType;
+            const cellData = cells[key] ?? {
+                'groups': {'default': rawData['Versions']},
+                'values': {'default': null}
+            };
+            this.cells[key] = new CellData(dataType, cellData);
+        });
     }
 
-    updateAttributeValue(attributeData, value=null) {
+    addAttribute(attributeData, value=null) {
         const attributeName = attributeData.name;
         const attributeDataType = attributeData.dataType;
-        this.cellValues[attributeName] = new CellData(attributeDataType, value);
+        this.cells[attributeName] = new CellData(attributeDataType, value);
     }
 
-    copyFromCellValues(other) {
-        this.cellValues = other.cellValues;
+    getCellData(attributeName) {
+        return this.cells[attributeName];
+    }
+
+    getRawData() {
+        const cells = {};
+        Object.entries(this.cells).forEach(([key, cell]) => {
+            cells[key] = {
+                'groups': {...cell.groups},
+                'values': {...cell.values},
+            };
+        });
+        return {
+            'Versions': {...this.versions},
+            'Cells': cells,
+        }
     }
 }

@@ -1,0 +1,140 @@
+{
+    "Attributes": {
+        "Name": {
+            "dataType": "type-string",
+            "isKey": true
+        },
+        "Age": {
+            "dataType": "type-int"
+        },
+        "Single": {
+            "dataType": "type-boolean"
+        },
+        "SkillIds": {
+            "dataType": "type-list-int"
+        }
+    },
+    "AttributeOrder": [
+        "Name",
+        "Age",
+        "SkillIds",
+        "Single"
+    ],
+    "Rows": [
+        {
+            "Versions": ["base", "test"],
+            "Cells": {
+                "Name": {
+                    "groups": {
+                        "default": ["base", "test"]
+                    },
+                    "values": {
+                        "default": "Tom"
+                    }
+                },
+                "Age": {
+                    "groups": {
+                        "default": ["base", "test"]
+                    },
+                    "values": {
+                        "default": 10
+                    }
+                },
+                "Single": {
+                    "groups": {
+                        "default": ["base", "test"]
+                    },
+                    "values": {
+                        "default": true
+                    }
+                },
+                "SkillIds": {
+                    "groups": {
+                        "default": ["base", "test"]
+                    },
+                    "values": {
+                        "default": [1,2,3]
+                    }
+                }
+            }
+        },
+        {
+            "Versions": ["base", "test"],
+            "Cells": {
+                "Name": {
+                    "groups": {
+                        "default": ["base", "test"]
+                    },
+                    "values": {
+                        "default": "Bob"
+                    }
+                },
+                "Age": {
+                    "groups": {
+                        "default": ["base"],
+                        "test": ["test"]
+                    },
+                    "values": {
+                        "default": 20,
+                        "test": 25
+                    }
+                },
+                "Single": {
+                    "groups": {
+                        "default": ["base"],
+                        "test": ["test"]
+                    },
+                    "values": {
+                        "default": true,
+                        "test": false
+                    }
+                },
+                "SkillIds": {
+                    "groups": {
+                        "default": ["base", "test"]
+                    },
+                    "values": {
+                        "default": [2,4,6]
+                    }
+                }
+            }
+        },
+        {
+            "Versions": ["test"],
+            "Cells": {
+                "Name": {
+                    "groups": {
+                        "default": ["test"]
+                    },
+                    "values": {
+                        "default": "Alice"
+                    }
+                },
+                "Age": {
+                    "groups": {
+                        "default": ["test"]
+                    },
+                    "values": {
+                        "default": 30
+                    }
+                },
+                "Single": {
+                    "groups": {
+                        "default": ["test"]
+                    },
+                    "values": {
+                        "default": false
+                    }
+                },
+                "SkillIds": {
+                    "groups": {
+                        "default": ["test"]
+                    },
+                    "values": {
+                        "default": [3,6,9]
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -1,26 +1,15 @@
 
 class App {
     constructor() {
-        this.attributes = []; // list of AttributeData
-        this.rows = []; // list of RowData
+        this.hasData = false; // bool: has data loaded
+        this.attributes = []; // dict: attribute name -> AttributeData
+        this.attributeOrder = []; // list: attribute name
+        this.rows = []; // list: RowData
 
         this.currentVersion = ''; // string, current selected version
         this.selectedCell = null; // css cell, current selected cell
         this.copiedRowData = null; // copied row data
         this.copiedCellValue = null; // copied cell data
-
-        // DOM elements
-        this.attributeRow = null;
-        this.dataTypeRow = null;
-        this.tableBody = null;
-        this.contextMenu = null;
-        this.addAttributeModal = null;
-        this.versionSelect = null;
-        this.copyCell = null;
-        this.pasteCell = null;
-        this.copyRow = null;
-        this.pasteRow = null;
-        this.editAttribute = null;
     }
 
     async init() {
@@ -38,6 +27,8 @@ class App {
         // DOM elements
         this.attributeRow = document.getElementById('attributeRow');
         this.dataTypeRow = document.getElementById('dataTypeRow');
+        this.toolbar = document.getElementById('toolbar');
+        this.tableContainer = document.getElementById('tableContainer');
         this.tableBody = document.getElementById('tableBody');
         this.contextMenu = document.getElementById('contextMenu');
         this.addAttributeModal = document.getElementById('addAttributeModal');
@@ -47,33 +38,12 @@ class App {
         this.copyRow = document.getElementById('copyRow');
         this.pasteRow = document.getElementById('pasteRow');
         this.editAttribute = document.getElementById('editAttribute');
-
-        this.attributes.push(new AttributeData('Name', 'type-string'));
-        this.attributes.push(new AttributeData('Age', 'type-int'));
-        this.attributes.push(new AttributeData('Single', 'type-boolean'));
-        this.attributes.push(new AttributeData('Skill_ids', 'type-list-int'));
-        
-        this.rows.push(new RowData(this.attributes));
-        this.rows[0].updateAttributeValue(this.attributes[0], 'Tom');
-        this.rows[0].updateAttributeValue(this.attributes[1], 10);
-        this.rows[0].updateAttributeValue(this.attributes[2], true);
-        this.rows[0].updateAttributeValue(this.attributes[3], [1,2,3]);
-        this.rows.push(new RowData(this.attributes));
-        this.rows[1].updateAttributeValue(this.attributes[0], 'Bob');
-        this.rows[1].updateAttributeValue(this.attributes[1], 20);
-        this.rows[1].updateAttributeValue(this.attributes[2], true);
-        this.rows[1].updateAttributeValue(this.attributes[3], [2,4,6]);
-        this.rows.push(new RowData(this.attributes));
-        this.rows[2].updateAttributeValue(this.attributes[0], 'Alice');
-        this.rows[2].updateAttributeValue(this.attributes[1], 30);
-        this.rows[2].updateAttributeValue(this.attributes[2], false);
-        this.rows[2].updateAttributeValue(this.attributes[3], [3,6,9]);
-        console.log('rows on loaded', this.rows);
+        this.dragFile = document.getElementById('dragFile');
         
         this._initVersions();
         this._renderTable();
         this._setupEventListeners();
-        console.log('rows on loaded over', this.rows);
+        this._updateHasDataView();
     }
 
     // init version selector choices
@@ -102,7 +72,9 @@ class App {
         this.dataTypeRow.innerHTML = '<th class="style1">Data type</th>';
         
         // Add attribute and data type as new column
-        this.attributes.forEach(attributeData => {
+        this.attributeOrder.forEach(attributeName => {
+            const attributeData = this.attributes[attributeName];
+
             // attribute name
             const headerCell = document.createElement('th');
             headerCell.className = 'style2';
@@ -127,9 +99,11 @@ class App {
 
         // Add new row
         this.rows.forEach((rowData, rowIdx) => {
-            const tableRow = document.createElement('tr');
-            
+            // check row versions
+            if (rowData.versions.indexOf(this.currentVersion) == -1) return;
+
             // Add row id cell
+            const tableRow = document.createElement('tr');
             const rowHeaderCell = document.createElement('td');
             rowHeaderCell.className = 'style1';
             rowHeaderCell.textContent = rowIdx + 1;
@@ -138,13 +112,15 @@ class App {
             tableRow.appendChild(rowHeaderCell);
             
             // Add data cell
-            this.attributes.forEach(attributeData => {
+            this.attributeOrder.forEach(attributeName => {
+                const attributeData = this.attributes[attributeName];
+
                 const dataCell = document.createElement('td');
-                dataCell.classList.add('style2')
+                dataCell.classList.add('style2');
                 dataCell.dataset.attributeName = attributeData.name;
                 dataCell.dataset.rowIdx = rowIdx;
                 
-                const cellData = rowData.cellValues[attributeData.name];
+                const cellData = rowData.getCellData(attributeData.name);
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.value = cellData.getCellValueByVersion(this.currentVersion).parse();
@@ -166,6 +142,19 @@ class App {
     _handleCellInputChange(cellData, newValue) {
         cellData.updateVersionValueByText(this.currentVersion, newValue);
         this._renderTable();
+    }
+
+    _updateHasDataView() {
+        if (this.hasData) {
+            this.toolbar.style.display = 'flex';
+            this.tableContainer.style.display = 'flex';
+            this.dragFile.style.display = 'none';
+        }
+        else {
+            this.toolbar.style.display = 'none';
+            this.tableContainer.style.display = 'none';
+            this.dragFile.style.display = 'flex';
+        }
     }
 
     // setup event listeners
@@ -224,6 +213,18 @@ class App {
         this.copyRow.addEventListener('click', () => this._doCopyRow());
         this.pasteRow.addEventListener('click', () => this._doPasteRow());
         this.editAttribute.addEventListener('click', () => this._doEditAttribute());
+
+        // drag file
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            this.dragFile.addEventListener(eventName, (e) => this._doDragPreventDefaults(e), false);
+        });
+        ['dragenter', 'dragover'].forEach(eventName => {
+            this.dragFile.addEventListener(eventName, () => this._activeDragFile(), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            this.dragFile.addEventListener(eventName, () => this._inactiveDragFile(), false);
+        });
+        this.dragFile.addEventListener('drop', (e) => this._onFileDragger(e), false);
     }
 
     // select cell
@@ -273,7 +274,9 @@ class App {
         if (this.selectedCell) {
             const rowIdx = this.selectedCell.dataset.rowIdx;
             const attributeName = this.selectedCell.dataset.attributeName;
-            this.copiedCellValue = this.rows[rowIdx].cellValues[attributeName].getCellValueByVersion(this.currentVersion);
+            const rowData = this.rows[rowIdx];
+            const cellData = rowData.getCellData(attributeName)
+            this.copiedCellValue = cellData.getCellValueByVersion(this.currentVersion);
         }
         else {
             alert('no selected cell');
@@ -286,7 +289,9 @@ class App {
         if (this.selectedCell && this.copiedCellValue !== null) {
             const rowIdx = this.selectedCell.dataset.rowIdx;
             const attributeName = this.selectedCell.dataset.attributeName;
-            this.rows[rowIdx].cellValues[attributeName].updateVersionValueByText(this.currentVersion, this.copiedCellValue);
+            const rowData = this.rows[rowIdx];
+            const cellData = rowData.getCellData(attributeName)
+            cellData.updateVersionValueByText(this.currentVersion, this.copiedCellValue);
             this._renderTable();
         }
         else if (this.copiedCellValue == null) {
@@ -302,9 +307,7 @@ class App {
     _doCopyRow() {
         if (this.selectedCell && this.selectedCell.dataset.isRowHeader) {
             const rowIdx = this.selectedCell.dataset.rowIdx;
-            const copiedRowData = new RowData(this.attributes);
-            copiedRowData.copyFromCellValues(this.rows[rowIdx])
-            this.copiedRowData = copiedRowData;
+            this.copiedRowData = this.rows[rowIdx].getRawData();
         }
         else {
             alert('no selected row header cell');
@@ -319,7 +322,7 @@ class App {
         }
         else if (this.selectedCell && this.selectedCell.dataset.isRowHeader) {
             const rowIdx = this.selectedCell.dataset.rowIdx;
-            this.rows[rowIdx].copyFromCellValues(this.copiedRowData);
+            this.rows[rowIdx].updateData(this.attributes, this.copiedRowData);
             this._renderTable();
         }
         else {
@@ -336,8 +339,11 @@ class App {
 
     // add new row at the end
     _doAddNewRow() {
-        console.log('rows', this.rows);
-        this.rows.push(new RowData(this.attributes));
+        const rowData = {
+            'Versions': [this.currentVersion],
+            'Cells': []
+        };
+        this.rows.push(new RowData(this.attributes, rowData));
         this._renderTable();
     }
     
@@ -345,7 +351,11 @@ class App {
     _doInsertNewRow() {
         if (this.selectedCell) {
             const rowIdx = this.selectedCell.dataset.rowIdx;
-            this.rows.splice(rowIdx, 0, new RowData(this.attributes));
+            const rowData = {
+                'Versions': [this.currentVersion],
+                'Cells': []
+            };
+            this.rows.splice(rowIdx, 0, new RowData(this.attributes, rowData));
             this._renderTable();
         }
         else {
@@ -379,13 +389,56 @@ class App {
         const attributeData = new AttributeData(attributeName, attributeDataType);
         this.attributes.push(attributeData);
         this.rows.forEach(rowData => {
-            rowData.updateAttributeValue(attributeData);
+            rowData.addAttribute(attributeData);
         });
         this.addAttributeModal.style.display = 'none';
         document.getElementById('attributeName').value = '';
         document.getElementById('attributeDataType').value = 'type-string';
         this.copiedRowData = null;
         this._renderTable();
+    }
+
+    _doDragPreventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    _activeDragFile() {
+        this.dragFile.classList.add('active');
+    }
+    
+    _inactiveDragFile() {
+        this.dragFile.classList.remove('active');
+    }
+
+    _onFileDragger(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length) {
+            const file = files[0];
+            if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+                alert('please select json file');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (ee) => {
+                const jsond = JSON.parse(ee.target.result);
+                this.attributes = {};
+                Object.entries(jsond['Attributes']).forEach(([key, value]) => {
+                    this.attributes[key] = new AttributeData(key, value);
+                });
+                this.attributeOrder = jsond['AttributeOrder'];
+                (jsond['Rows']).forEach(rowData => {
+                    this.rows.push(new RowData(this.attributes, rowData));
+                });
+                this.hasData = true;
+                this._updateHasDataView();
+                this._renderTable();
+            };
+            reader.readAsText(file);
+        }
     }
 }
 
