@@ -39,7 +39,7 @@ class ListIntCellValue {
             if (isNaN(item)) {
                 return null;
             }
-            res.append(item);
+            res.push(item);
         }
         return res;
     }

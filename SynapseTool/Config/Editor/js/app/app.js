@@ -61,6 +61,10 @@ class App {
 
     // render table
     _renderTable() {
+        console.log('Debug: data');
+        console.log(this.attributes);
+        console.log(this.attributeOrder);
+        console.log(this.rows);
         this._renderHeader();
         this._renderBody();
     }
@@ -367,6 +371,7 @@ class App {
     // - check empty
     // - check duplication
     _doCreateAttribute() {
+        // TODO
         const attributeName = document.getElementById('attributeName').value;
         const attributeDataType = document.getElementById('attributeDataType').value;
         
@@ -376,8 +381,8 @@ class App {
         }
 
         const hasDuplicate = false;
-        this.attributes.forEach(attributeData => {
-            if (attributeName === attributeData.name) {
+        Object.keys(this.attributes).forEach(key => {
+            if (attributeName === key) {
                 hasDuplicate = true;
             }
         });
@@ -386,8 +391,9 @@ class App {
             return;
         }
         
-        const attributeData = new AttributeData(attributeName, attributeDataType);
-        this.attributes.push(attributeData);
+        const attributeData = new AttributeData(attributeName, {'dataType': attributeDataType});
+        this.attributes[attributeName] = attributeData;
+        this.attributeOrder.push(attributeName);
         this.rows.forEach(rowData => {
             rowData.addAttribute(attributeData);
         });

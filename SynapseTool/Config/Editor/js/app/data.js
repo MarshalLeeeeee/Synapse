@@ -176,7 +176,11 @@ class RowData {
     addAttribute(attributeData, value=null) {
         const attributeName = attributeData.name;
         const attributeDataType = attributeData.dataType;
-        this.cells[attributeName] = new CellData(attributeDataType, value);
+        const cellData = {
+            'groups': {'default': this.versions},
+            'values': {'default': value}
+        };
+        this.cells[attributeName] = new CellData(attributeDataType, cellData);
     }
 
     getCellData(attributeName) {
