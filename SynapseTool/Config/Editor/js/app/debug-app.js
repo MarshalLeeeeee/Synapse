@@ -87,12 +87,28 @@ class DebugApp {
         this.functionModal.setVisible(true);
     }
 
+    _onFunctionModalTextChanged(target) {
+        if (target.value === 'LMC') {
+            console.log('Function Modal Text Input Changed:', target.value);
+        }
+        else {
+            target.value = '';
+            console.log('Function Modal Text Input must be "LMC".');
+        }
+    }
+
     async _showFullFunctionModal() {
         const elementConfigs = [];
         const elementTextInputConfig = {
             'data-loader': 'addDiv',
             'data-class': 'modal-element',
-            'data-element-path': 'element/modal_element/modal-element-text-input.html'
+            'data-element-path': 'element/modal_element/modal-element-text-input.html',
+            'id': 'functionModalTextInput',
+            'type': 'text-input',
+            'title': 'Enter Text:',
+            'placeholder': 'Type something...',
+            'description': 'This is a breif description.',
+            'onChange': (target) => this._onFunctionModalTextChanged(target)
         }
         elementConfigs.push(elementTextInputConfig);
         await this.functionModal.setData(

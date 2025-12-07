@@ -41,5 +41,15 @@ class ModalElementContainer extends Element {
             this.domElement.appendChild(loadElement);
         });
         await elementLoader.loadElement(this.domElement);
+        element_configs.forEach(config => {
+            const elementId = config['id'];
+            const domElement = document.getElementById(elementId);
+            if (domElement) {
+                const element = ModalElementFactory.createElement(domElement, config);
+                if (element) {
+                    this.elements[elementId] = element;
+                }
+            }
+        });
     }
 }

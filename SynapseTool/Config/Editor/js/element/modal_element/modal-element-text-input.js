@@ -1,12 +1,14 @@
 
 class TextInputModalElement extends Element {
-    constructor(domElement, title='', placeholder='', description='') {
+    constructor(domElement, title='', placeholder='', description='', onChange=null) {
         super(domElement);
-        // TODO input listener
+        this.onChange = onChange;
+        this._initialize();
         this._render(title, placeholder, description);
     }
 
-    setData(title, placeholder, description) {
+    setData(title, placeholder, description, onChange) {
+        this.onChange = onChange;
         this._render(title, placeholder, description);
     }
 
@@ -15,9 +17,19 @@ class TextInputModalElement extends Element {
         return inputElement.value;
     }
 
+    _initialize() {
+        this.domElement.querySelector('input').addEventListener('change', (event) => this._onChangeEvent(event));
+    }
+
     _render(title, placeholder, description) {
         this.domElement.querySelector('label').innerText = title;
         this.domElement.querySelector('input').setAttribute('placeholder', placeholder);
         this.domElement.querySelector('small').innerText = description;
+    }
+
+    _onChangeEvent(event) {
+        if (this.onChange) {
+            this.onChange(event.target);
+        }
     }
 }
