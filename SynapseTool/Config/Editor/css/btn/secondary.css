@@ -1,0 +1,17 @@
+button.secondary {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    background-color: #2ecc71;
+    color: white;     
+}
+
+button.secondary:hover {
+    background-color: #27ae60;
+}

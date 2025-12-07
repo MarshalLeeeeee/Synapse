@@ -1,0 +1,17 @@
+.modal-element {
+    margin-bottom: 20px;
+}
+
+.modal-element-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.modal-element-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 16px;
+}

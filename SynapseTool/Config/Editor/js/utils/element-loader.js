@@ -29,10 +29,10 @@ class ElementLoader {
     }
 
     async loadElementTree() {
-        await this._loadElement(document.body);
+        await this.loadElement(document.body);
     }
 
-    async _loadElement(element) {
+    async loadElement(element) {
         const loadElements = element.querySelectorAll('load-element');
         for (const loadElement of loadElements) {
             const elementLoaderElement = loadElement.querySelector('data-loader');
@@ -72,7 +72,7 @@ class ElementLoader {
             const html = await this._loadElementContent(elementPathElement.textContent);
             div.innerHTML = html;
         }
-        await this._loadElement(div);
+        await this.loadElement(div);
         return div;
     }
 
@@ -93,7 +93,7 @@ class ElementLoader {
             const textNode = document.createTextNode(elementTextElement.textContent);
             button.appendChild(textNode);
         }
-        await this._loadElement(button);
+        await this.loadElement(button);
         return button;
     }
 }
