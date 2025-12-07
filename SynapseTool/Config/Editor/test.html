@@ -857,15 +857,12 @@
             
             // Get current version
             const currentVersion = versionSelector.value;
-            
-            // Create header row
-            const headerRow = document.createElement('tr');
-            
+
             // Add Attribute header
             const attributeHeader = document.createElement('th');
             attributeHeader.className = 'attribute-header';
             attributeHeader.textContent = 'Attribute';
-            headerRow.appendChild(attributeHeader);
+            tableHeader.appendChild(attributeHeader);
             
             // Add attribute columns
             configData.AttributeOrder.forEach(attrName => {
@@ -875,10 +872,8 @@
                 th.dataset.attribute = attrName;
                 th.innerHTML = `${attrName}<span class="data-type">${attr.dataType}</span>`;
                 th.addEventListener('click', () => selectAttribute(attrName));
-                headerRow.appendChild(th);
+                tableHeader.appendChild(th);
             });
-            
-            tableHeader.appendChild(headerRow);
             
             // Create data rows
             configData.Rows.forEach((row, rowIndex) => {
