@@ -1,5 +1,5 @@
 
-class MessageModal extends Element {
+class MessageModal extends Modal {
     constructor(domElement, title='', message='', onConfirm=null) {
         super(domElement);
         this.onConfirm = onConfirm;
@@ -14,8 +14,16 @@ class MessageModal extends Element {
     }
 
     _initialize() {
-        this.btnClose = new Btn(document.getElementById('messageModalBtnClose'), () => this.setVisible(false));
-        this.btnConfirm = new Btn(document.getElementById('messageModalBtnConfirm'), () => this._onConfirm());
+        this.btnClose = new Btn(
+            document.getElementById('messageModalBtnClose'),
+            '×',
+            () => this.setVisible(false)
+        );
+        this.btnConfirm = new Btn(
+            document.getElementById('messageModalBtnConfirm'),
+            'OK',
+            () => this._onConfirm()
+        );
     }
     
     _render(title, message) {

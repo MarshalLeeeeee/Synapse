@@ -1,5 +1,5 @@
 
-class FunctionModal extends Element {
+class FunctionModal extends Modal {
     constructor(domElement) {
         super(domElement);
         this.onConfirm = null;
@@ -15,9 +15,21 @@ class FunctionModal extends Element {
     }
     
     _initialize() {
-        this.btnClose = new Btn(document.getElementById('functionModalBtnClose'), () => this.setVisible(false));
-        this.btnConfirm = new Btn(document.getElementById('functionModalBtnConfirm'), () => this._onConfirm());
-        this.btnCancel = new Btn(document.getElementById('functionModalBtnCancel'), () => this._onCancel());
+        this.btnClose = new Btn(
+            document.getElementById('functionModalBtnClose'),
+            '×',
+            () => this.setVisible(false)
+        );
+        this.btnConfirm = new Btn(
+            document.getElementById('functionModalBtnConfirm'),
+            'Confirm',
+            () => this._onConfirm()
+        );
+        this.btnCancel = new Btn(
+            document.getElementById('functionModalBtnCancel'),
+            'Cancel',
+            () => this._onCancel()
+        );
         this.modalElements = new ModalElementContainer(document.getElementById('functionModalBody'));
     }
     

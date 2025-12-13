@@ -9,8 +9,18 @@ class FileDropArea extends Element {
     }
 
     _initialize() {
-        this.btnNew = new Btn(document.getElementById('fileDropAreaBtnNew'), () => this._onBtnNewClick());
-        this.btnLoad = new Btn(document.getElementById('fileDropAreaBtnLoad'), () => this._onBtnLoadClick());
+        this.btnNew = new BtnFas(
+            document.getElementById('fileDropAreaBtnNew'),
+            'New Config',
+            () => this._onBtnNewClick(),
+            'fa-plus'
+        );
+        this.btnLoad = new BtnFas(
+            document.getElementById('fileDropAreaBtnLoad'),
+            'Load Config',
+            () => this._onBtnLoadClick(),
+            'fa-folder-open'
+        );
         this.fileInput = document.getElementById('fileInput');
         this.fileInput.addEventListener('change', (e) => this._handleFileSelect(e));
         this.fileDropArea = document.getElementById('fileDropArea');

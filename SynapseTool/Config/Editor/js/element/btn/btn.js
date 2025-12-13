@@ -1,18 +1,24 @@
 
 class Btn extends Element {
-    constructor(domElement, callback=null) {
+    constructor(domElement, text, callback=null) {
         super(domElement);
-        this._initialize(callback);
+        this._initialize(text, callback);
+    }
+
+    setText(text) {
+        this.textNode.nodeValue = text;
     }
 
     setCallback(callback) {
         this.callback = callback;
     }
 
-    _initialize(callback) {
+    _initialize(text, callback) {
         this.callback = callback;
-        console.log('Dom element: ', this.domElement);
         this.domElement.addEventListener('click', () => this._onClick());
+        const textNode = document.createTextNode(text);
+        this.domElement.appendChild(textNode);
+        this.textNode = textNode;
     }
 
     _onClick() {

@@ -88,11 +88,6 @@ class ElementLoader {
             const html = await this._loadElementContent(elementPathElement.textContent);
             button.innerHTML = html;
         }
-        const elementTextElement = loadElement.querySelector('data-text');
-        if (elementTextElement) {
-            const textNode = document.createTextNode(elementTextElement.textContent);
-            button.appendChild(textNode);
-        }
         await this.loadElement(button);
         return button;
     }

@@ -12,7 +12,12 @@ class ConfigTable extends Element {
     }
 
     _initialize() {
-        this.btnSave = new Btn(document.getElementById('configSaveBtn'), () => this._onBtnSaveClick());
+        this.btnSave = new BtnFas(
+            document.getElementById('configSaveBtn'),
+            'Save Config',
+            () => this._onBtnSaveClick(),
+            'fa-save'
+        );
     }
 
     _render(title) {

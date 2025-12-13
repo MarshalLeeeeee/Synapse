@@ -60,18 +60,22 @@ class DebugApp {
         );
         this.showMessageBtn = new Btn(
             document.getElementById('btnShowMessageModal'),
-            () => this.messageModal.setVisible(true)
+            'Show Message Modal',
+            () => this._onShowMessageBtnClick()
         );
         this.showConfirmationBtn = new Btn(
             document.getElementById('btnShowConfirmationModal'),
+            'Show Confirmation Modal',
             () => this.confirmationModal.setVisible(true)
         );
         this.showVoidFunctionBtn = new Btn(
             document.getElementById('btnShowVoidFunctionModal'),
+            'Show Void Function Modal',
             () => this._showVoidFunctionModal()
         );
         this.showFullFunctionBtn = new Btn(
             document.getElementById('btnShowFullFunctionModal'),
+            'Show Full Function Modal',
             () => this._showFullFunctionModal()
         );
         this._refreshView();
@@ -97,6 +101,11 @@ class DebugApp {
 
     _onFunctionCancel() {
         console.log('Function modal canceled.');
+    }
+
+    _onShowMessageBtnClick() {
+        console.log('Show Message Modal button clicked.');
+        this.messageModal.setVisible(true);
     }
 
     _onNewConfig() {

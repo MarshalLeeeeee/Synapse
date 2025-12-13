@@ -5,9 +5,14 @@ class Element {
         this.rawStyleDisplay = this.domElement.style.display;
     }
 
+    _getStyleDisplay() {
+        return this.rawStyleDisplay;
+    }
+
     setVisible(visible) {
         if (visible) {
-            this.domElement.style.display = this.rawStyleDisplay;
+            console.log('Setting element visible.', this.rawStyleDisplay);
+            this.domElement.style.display = this._getStyleDisplay();
         }
         else {
             this.domElement.style.display = 'none';
