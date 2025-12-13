@@ -25,21 +25,13 @@
     align-items: center;
 }
 
-.config-version-selector {
-    padding: 8px 12px;
-    border-radius: 4px;
-    border: 1px solid #bdc3c7;
-    background-color: white;
-    font-weight: 500;
-}
-
 .config-dynamic-toolbar {
     background-color: white;
     padding: 12px 20px;
     border-radius: 8px;
     margin-bottom: 15px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: none;
+    display: flex;
     align-items: center;
     gap: 10px;
 }

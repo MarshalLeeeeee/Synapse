@@ -1,10 +1,11 @@
 <div class="config-file-header">
     <div class="config-file-name" id="configFileName"></div>
     <div class="config-file-header-controls">
-        <select class="config-version-selector" id="versionSelector">
-            <!-- <option value="base">base</option>
-            <option value="test">test</option> -->
-        </select>
+        <load-element id="versionSelector">
+            <data-loader>addSelect</data-loader>
+            <data-class>plain</data-class>
+            <data-css-path>css/selector/plain.css</data-css-path>
+        </load-element>
         <load-element id="configSaveBtn">
             <data-loader>addButton</data-loader>
             <data-class>primary</data-class>

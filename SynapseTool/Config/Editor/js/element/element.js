@@ -11,7 +11,6 @@ class Element {
 
     setVisible(visible) {
         if (visible) {
-            console.log('Setting element visible.', this.rawStyleDisplay);
             this.domElement.style.display = this._getStyleDisplay();
         }
         else {

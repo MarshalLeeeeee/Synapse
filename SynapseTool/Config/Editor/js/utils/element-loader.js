@@ -91,6 +91,22 @@ class ElementLoader {
         await this.loadElement(button);
         return button;
     }
+
+    async addSelect(loadElement) {
+        const button = document.createElement('select');
+        button.id = loadElement.id;
+        const elementClassElement = loadElement.querySelector('data-class');
+        if (elementClassElement) {
+            button.classList.add(elementClassElement.textContent);
+        }
+        const elementPathElement = loadElement.querySelector('data-element-path');
+        if (elementPathElement) {
+            const html = await this._loadElementContent(elementPathElement.textContent);
+            button.innerHTML = html;
+        }
+        await this.loadElement(button);
+        return button;
+    }
 }
 
 const elementLoader = new ElementLoader();

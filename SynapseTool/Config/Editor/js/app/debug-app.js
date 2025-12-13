@@ -53,10 +53,15 @@ class DebugApp {
             (file, content) => this._onLoadConfigSucc(file, content),
             (file, errorMsg) => this._onLoadConfigFail(file, errorMsg)
         );
+        const options = [];
+        options.push({'value': 'base', 'text': 'base'});
+        options.push({'value': 'test', 'text': 'test'});
         this.configTable = new ConfigTable(
             document.getElementById('configTableView'),
             '',
-            () => this._onSaveConfig()
+            options,
+            () => this._onSaveConfig(),
+            (versoin) => this._onSelectVersion(versoin)
         );
         this.showMessageBtn = new Btn(
             document.getElementById('btnShowMessageModal'),
@@ -137,6 +142,10 @@ class DebugApp {
             target.value = '';
             console.log('Function Modal Text Input must be "LMC".');
         }
+    }
+
+    _onSelectVersion(version) {
+        console.log('Selected version:', version);
     }
 
     //#endregion
