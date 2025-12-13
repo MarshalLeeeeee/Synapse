@@ -1,0 +1,81 @@
+.config-table-view {
+    display: block;
+}
+
+.config-file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.config-file-name {
+    font-weight: bold;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.config-file-header-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.config-version-selector {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #bdc3c7;
+    background-color: white;
+    font-weight: 500;
+}
+
+.config-dynamic-toolbar {
+    background-color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.config-toolbar-title {
+    font-weight: 600;
+    margin-right: 15px;
+    color: #2c3e50;
+}
+
+.config-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.config-table th {
+    background-color: #3498db;
+    color: white;
+    padding: 15px 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.config-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.config-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.config-table tr:last-child td {
+    border-bottom: none;
+}

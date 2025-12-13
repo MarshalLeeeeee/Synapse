@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Config Editor</title>
+    <title>Synapse Config Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -22,9 +23,57 @@
             line-height: 1.6;
             padding: 20px;
         }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e1e5eb;
+        }
+
+        h1 {
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1 i {
+            color: #3498db;
+        }
     </style>
 </head>
 <body>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-cogs"></i> Synapse Config Editor</h1>
+        </header>
+
+        <!-- view for loading or creating config -->
+        <load-element id="fileDropAreaView">
+            <data-loader>addDiv</data-loader>
+            <data-class>file-drop-area-view</data-class>
+            <data-element-path>element/exclusive/file-drop-area.html</data-element-path>
+            <data-css-path>css/exclusive/file-drop-area.css</data-css-path>
+        </load-element>
+
+        <!-- view for config table -->
+        <load-element id="configTableView">
+            <data-loader>addDiv</data-loader>
+            <data-class>config-table-view</data-class>
+            <data-element-path>element/exclusive/config-table.html</data-element-path>
+            <data-css-path>css/exclusive/config-table.css</data-css-path>
+        </load-element>
+    </div>
 
     <load-element id="btnShowMessageModal">
         <data-loader>addButton</data-loader>
@@ -83,16 +132,6 @@
     <script src="js/utils/element-loader.js"></script>
     <script src="js/utils/json-loader.js"></script>
 
-    <!-- <script src="js/app/cellvalues/cell-value-factory.js"></script>
-    <script src="js/app/cellvalues/boolean-cell-value.js"></script>
-    <script src="js/app/cellvalues/float-cell-value.js"></script>
-    <script src="js/app/cellvalues/int-cell-value.js"></script>
-    <script src="js/app/cellvalues/list-int-cell-value.js"></script>
-    <script src="js/app/cellvalues/string-cell-value.js"></script> -->
-    <!-- <script src="js/app/config.js"></script>
-    <script src="js/app/data.js"></script>
-    <script src="js/app/app.js"></script> -->
-
     <script src="js/element/element.js"></script>
     <script src="js/element/btn/btn.js"></script>
 
@@ -102,6 +141,8 @@
     <script src="js/element/modal/modal-message.js"></script>
     <script src="js/element/modal/modal-confirmation.js"></script>
     <script src="js/element/modal/modal-function.js"></script>
+    <script src="js/element/exclusive/file-drop-area.js"></script>
+    <script src="js/element/exclusive/config-table.js"></script>
 
     <script src="js/app/config.js"></script>
     <script src="js/app/debug-app.js"></script>

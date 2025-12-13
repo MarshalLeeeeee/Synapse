@@ -1,0 +1,33 @@
+<div class="config-file-header">
+    <div class="config-file-name" id="configFileName"></div>
+    <div class="config-file-header-controls">
+        <select class="config-version-selector" id="versionSelector">
+            <!-- <option value="base">base</option>
+            <option value="test">test</option> -->
+        </select>
+        <load-element id="configSaveBtn">
+            <data-loader>addButton</data-loader>
+            <data-class>primary</data-class>
+            <data-text>Save Config</data-text> <!-- <i class="fas fa-save"></i> -->
+            <data-css-path>css/btn/primary.css</data-css-path>
+        </load-element>
+    </div>
+</div>
+
+<div id="configDynamicToolbar" class="config-dynamic-toolbar">
+    <span id="configToolbarTitle" class="config-toolbar-title">Selected: Attribute</span>
+    <div id="toolbarButtons">
+        <!-- Dynamic buttons will be inserted here -->
+    </div>
+</div>
+
+<table class="config-table" id="configTable">
+    <thead>
+        <tr id="tableHeader">
+            <!-- Header will be populated dynamically -->
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        <!-- Rows will be populated dynamically -->
+    </tbody>
+</table>

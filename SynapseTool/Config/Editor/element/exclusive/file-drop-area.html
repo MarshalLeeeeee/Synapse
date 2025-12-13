@@ -1,0 +1,20 @@
+<div class="file-drop-area" id="fileDropArea">
+    <i class="fas fa-file-import"></i>
+    <h2>Drag & Drop JSON Config File Here</h2>
+    <p class="drag-hint">or use the buttons below</p>
+</div>
+<div class="new-config-button-view">
+    <load-element id="fileDropAreaBtnNew">
+        <data-loader>addButton</data-loader>
+        <data-class>primary</data-class>
+        <data-text>New Config</data-text> <!-- <i class="fas fa-plus"></i> -->
+        <data-css-path>css/btn/primary.css</data-css-path>
+    </load-element>
+    <load-element id="fileDropAreaBtnLoad">
+        <data-loader>addButton</data-loader>
+        <data-class>secondary</data-class>
+        <data-text>Load Config</data-text> <!-- <i class="fas fa-folder-open"></i> -->
+        <data-css-path>css/btn/secondary.css</data-css-path>
+    </load-element>
+</div>
+<input type="file" id="fileInput" class="file-input" accept=".json">

@@ -1,14 +1,22 @@
 
 class DebugApp {
     constructor() {
+        // UI elements
         this.messageModal = null;
         this.confirmationModal = null;
         this.functionModal = null;
-
+        this.fileDropArea = null;
+        this.configTable = null;
         this.showMessageBtn = null;
         this.showConfirmationBtn = null;
         this.showVoidFunctionBtn = null;
         this.showFullFunctionBtn = null;
+
+        // data and logic
+        this.configLoaded = false;
+        this.configAttributes = []; // dict: attribute name -> AttributeData
+        this.configAttributeOrder = []; // list: attribute name
+        this.configRows = []; // list: RowData
     }
 
     async init() {
@@ -39,6 +47,17 @@ class DebugApp {
         this.functionModal = new FunctionModal(
             document.getElementById('functionModal'),
         );
+        this.fileDropArea = new FileDropArea(
+            document.getElementById('fileDropAreaView'),
+            () => this._onNewConfig(),
+            (file, content) => this._onLoadConfigSucc(file, content),
+            (file, errorMsg) => this._onLoadConfigFail(file, errorMsg)
+        );
+        this.configTable = new ConfigTable(
+            document.getElementById('configTableView'),
+            '',
+            () => this._onSaveConfig()
+        );
         this.showMessageBtn = new Btn(
             document.getElementById('btnShowMessageModal'),
             () => this.messageModal.setVisible(true)
@@ -55,7 +74,10 @@ class DebugApp {
             document.getElementById('btnShowFullFunctionModal'),
             () => this._showFullFunctionModal()
         );
+        this._refreshView();
     }
+
+    //#region element interact interfaces
 
     _onMsgConfirm() {
         console.log('Debug message confirmed.');
@@ -77,14 +99,25 @@ class DebugApp {
         console.log('Function modal canceled.');
     }
 
-    _showVoidFunctionModal() {
-        this.functionModal.setData(
-            'Void Function Modal',
-            () => this._onFunctionConfirm(),
-            () => this._onFunctionCancel(),
-            []
+    _onNewConfig() {
+        console.log('New Config.');
+    }
+
+    _onLoadConfigSucc(file, content) {
+        console.log('Load Config Success:', file, content);
+        this._applyJson(file, content);
+    }
+
+    _onLoadConfigFail(file, errorMsg) {
+        this._showMessageModal(
+            'Load Error',
+            `Failed to load config file "${file.name}": ${errorMsg}`,
+            null
         );
-        this.functionModal.setVisible(true);
+    }
+
+    _onSaveConfig() {
+        this._saveConfig();
     }
 
     _onFunctionModalTextChanged(target) {
@@ -95,6 +128,31 @@ class DebugApp {
             target.value = '';
             console.log('Function Modal Text Input must be "LMC".');
         }
+    }
+
+    //#endregion
+
+    //#region element display functions
+
+    /* show message modal
+    Param:
+        title: str, modal title
+        message: str, modal message
+        onConfirm: function() | null, callback when confirm button is clicked
+     */
+    _showMessageModal(title, message, onConfirm) {
+        this.messageModal.setData(title, message, onConfirm);
+        this.messageModal.setVisible(true);
+    }
+
+    _showVoidFunctionModal() {
+        this.functionModal.setData(
+            'Void Function Modal',
+            () => this._onFunctionConfirm(),
+            () => this._onFunctionCancel(),
+            []
+        );
+        this.functionModal.setVisible(true);
     }
 
     async _showFullFunctionModal() {
@@ -119,6 +177,38 @@ class DebugApp {
         );
         this.functionModal.setVisible(true);
     }
+
+    _refreshView() {
+        this.fileDropArea.setVisible(!this.configLoaded);
+        this.configTable.setVisible(this.configLoaded);
+    }
+
+    _refreshConfigFileNameDisplay(title) {
+        this.configTable.setTitle(title);
+    }
+
+    //#endregion
+
+    //#region data management
+
+    /* implement the json content to the current data */
+    _applyJson(file, content) {
+        try {
+            this.configLoaded = true;
+            this._refreshConfigFileNameDisplay(file.name);
+            this._refreshView();
+        }
+        catch (error) {
+
+        }
+    }
+
+    _saveConfig() {
+        if (!this.configLoaded) return;
+        console.log('Config saved.');
+    }
+
+    //#endregion
 }
 
 
