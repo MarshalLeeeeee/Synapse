@@ -30,12 +30,12 @@ class FunctionModal extends Modal {
             'Cancel',
             () => this._onCancel()
         );
-        this.modalElements = new ModalElementContainer(document.getElementById('functionModalBody'));
+        this.modalElements = new Container(document.getElementById('functionModalBody'));
     }
     
     async _render(title, element_configs) {
         document.getElementById('functionModalTxtTitle').innerText = title;
-        await this.modalElements.setElements(element_configs);
+        await this.modalElements.setChildren(element_configs);
     }
 
     _onConfirm() {

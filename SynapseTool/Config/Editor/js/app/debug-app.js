@@ -12,25 +12,22 @@ class DebugApp {
         this.showVoidFunctionBtn = null;
         this.showFullFunctionBtn = null;
 
-        // data and logic
-        this.configLoaded = false;
-        this.configAttributes = []; // dict: attribute name -> AttributeData
-        this.configAttributeOrder = []; // list: attribute name
-        this.configRows = []; // list: RowData
+        // config
+        this.config = new Config();
     }
 
     async init() {
         try {
-            await config.load();
+            await consts.load();
             await elementLoader.loadElementTree();
-            this._initOnLoaded();
+            await this._initOnLoaded();
             console.log('Debug app initialized successfully.');
         } catch (error) {
             console.error('Error during debug app initialization:', error);
         }
     }
 
-    _initOnLoaded() {
+    async _initOnLoaded() {
         this.messageModal = new MessageModal(
             document.getElementById('messageModal'),
             'Debug Message',
@@ -54,8 +51,9 @@ class DebugApp {
             (file, errorMsg) => this._onLoadConfigFail(file, errorMsg)
         );
         const options = [];
-        options.push({'value': 'base', 'text': 'base'});
-        options.push({'value': 'test', 'text': 'test'});
+        consts.versions.forEach(version => {
+            options.push({'value': version, 'text': version});
+        });
         this.configTable = new ConfigTable(
             document.getElementById('configTableView'),
             '',
@@ -84,6 +82,7 @@ class DebugApp {
             () => this._showFullFunctionModal()
         );
         this._refreshView();
+        await this._setToolButtons();
     }
 
     //#region element interact interfaces
@@ -148,6 +147,14 @@ class DebugApp {
         console.log('Selected version:', version);
     }
 
+    _onAddAttribute() {
+        console.log('on add attribute');
+    }
+
+    _onEditAttribute() {
+        console.log('on edit attribute');
+    }
+
     //#endregion
 
     //#region element display functions
@@ -197,12 +204,43 @@ class DebugApp {
     }
 
     _refreshView() {
-        this.fileDropArea.setVisible(!this.configLoaded);
-        this.configTable.setVisible(this.configLoaded);
+        const loaded = this.config.isLoaded();
+        this.fileDropArea.setVisible(!loaded);
+        this.configTable.setVisible(loaded);
     }
 
     _refreshConfigFileNameDisplay(title) {
         this.configTable.setTitle(title);
+    }
+
+    _refreshConfigTable() {
+        this.configTable.renderTable(this.config)
+    }
+
+    _getToolButtonConfigs() {
+        const configs = [];
+        configs.push({
+            'id': 'addAttributeBtn',
+            'text': 'Add Attribute',
+            'callback': () => this._onAddAttribute(),
+            'data-loader': 'addButton',
+            'data-class': 'primary',
+            'data-css-path': ['css/btn/primary.css'],
+        });
+        configs.push({
+            'id': 'editAttributeBtn',
+            'text': 'Edit Attribute',
+            'callback': () => this._onEditAttribute(),
+            'data-loader': 'addButton',
+            'data-class': 'primary',
+            'data-css-path': ['css/btn/primary.css'],
+        });
+        return configs;
+    }
+
+    async _setToolButtons() {
+        const configs = this._getToolButtonConfigs();
+        await this.configTable.setButtons(configs);
     }
 
     //#endregion
@@ -212,17 +250,29 @@ class DebugApp {
     /* implement the json content to the current data */
     _applyJson(file, content) {
         try {
-            this.configLoaded = true;
-            this._refreshConfigFileNameDisplay(file.name);
-            this._refreshView();
+            if (this.config.setContent(content)) {
+                this._refreshView();
+                this._refreshConfigFileNameDisplay(file.name);
+                this._refreshConfigTable();
+            }
+            else {
+                this._showMessageModal(
+                    'Load Error',
+                    `Failed to load config file "${file.name}": unable to parse to config`,
+                    null
+                );
+            }
         }
         catch (error) {
-
+            this._showMessageModal(
+                'Load Error',
+                `Failed to load config file "${file.name}": ${error.message}`,
+                null
+            );
         }
     }
 
     _saveConfig() {
-        if (!this.configLoaded) return;
         console.log('Config saved.');
     }
 

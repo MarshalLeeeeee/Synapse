@@ -1,18 +1,18 @@
 
-class ModalElementContainer extends Element {
+class Container extends Element {
     constructor(domElement) {
         super(domElement);
     }
 
-    async setElements(element_configs, onSetElements=null) {
+    async setChildren(configs, onSetChildren=null) {
         this.domElement.innerHTML = '';
-        element_configs.forEach(config => {
+        configs.forEach(config => {
             const loadElement = elementLoader.createLoadElement(config);
             this.domElement.appendChild(loadElement);
         });
         await elementLoader.loadElement(this.domElement);
-        if (onSetElements) {
-            onSetElements();
+        if (onSetChildren) {
+            onSetChildren();
         }
     }
 }

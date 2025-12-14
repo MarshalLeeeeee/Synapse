@@ -1,14 +1,55 @@
 
-const VERSION_CONFIG = 'const/versions.json';
-
 class Config {
-    constructor() {
-        this.versions = []; // list of all version names
+    constructor(content=null) {
+        this.configContent = null;
+        this.setContent(content);
     }
 
-    async load() {
-        this.versions = await jsonLoader.loadJsonFile(VERSION_CONFIG);
+    validateContent(content) {
+        if (content == null) {
+            return false;
+        }
+        return true;
+    }
+
+    setContent(content) {
+        if (!this.validateContent(content)) {
+            return false;
+        }
+        this.configContent = content;
+        return true;
+    }
+
+    getAttributes() {
+        if (!this.isLoaded()) {
+            return null;
+        }
+        return this.configContent['Attributes'];
+    }
+
+    getAttributeOrder() {
+        if (!this.isLoaded()) {
+            return null;
+        }
+        return this.configContent['AttributeOrder'];
+    }
+    
+    getRows() {
+        if (!this.isLoaded()) {
+            return null;
+        }
+        return this.configContent['Rows'];
+    }
+
+    getCell(row, attributeName) {
+        return row.Cells[attributeName];
+    }
+
+    isLoaded() {
+        return this.configContent != null;
+    }
+
+    save() {
+
     }
 }
-
-config = new Config();
