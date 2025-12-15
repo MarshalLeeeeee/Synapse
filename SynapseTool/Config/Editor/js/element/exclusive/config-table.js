@@ -94,7 +94,7 @@ class ConfigTable extends Element {
             const th = document.createElement('th');
             th.className = 'config-cell-selectable';
             th.dataset.attribute = attrName;
-            th.innerHTML = `${attrName}<span class="data-type">${attr.dataType}</span>`;
+            th.innerHTML = ` ${attrName} <span class="data-type-tag ${attr.dataType}"> ${attr.dataType} </span>`;
             th.addEventListener('click', () => this._onSelectTh(th));
             this.configTableHeader.appendChild(th);
         });

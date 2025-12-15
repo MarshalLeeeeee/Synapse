@@ -1,5 +1,5 @@
 .data-type-tag {
-    display: inline-block;
+    display: block;
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 12px;

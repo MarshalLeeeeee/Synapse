@@ -59,6 +59,10 @@
     font-weight: 600;
 }
 
+.config-table th:hover {
+    background-color: #1d6595;
+}
+
 .config-table td {
     padding: 12px 10px;
     border-bottom: 1px solid #ecf0f1;
@@ -92,12 +96,4 @@
 
 .config-cell-selectable:hover {
     background-color: #e8f4fc;
-}
-
-.data-type {
-    font-size: 12px;
-    color: #7f8c8d;
-    font-style: italic;
-    display: block;
-    margin-top: 3px;
 }
