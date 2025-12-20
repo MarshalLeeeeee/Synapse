@@ -49,7 +49,7 @@ class ListIntCellValue {
     Parameters:
         text - string to parse
     */
-    update(text) {
+    updateFromText(text) {
         const res = this.unparse(text);
         if (res != null) {
             this.value = res;

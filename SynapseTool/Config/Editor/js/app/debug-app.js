@@ -19,9 +19,10 @@ class DebugApp {
     async init() {
         try {
             await consts.load();
-            await elementLoader.loadElementTree();
+            await elementLoader.loadElement(document.body);
             await this._initOnLoaded();
             console.log('Debug app initialized successfully.');
+            console.log(crypto.randomUUID());
         } catch (error) {
             console.error('Error during debug app initialization:', error);
         }
@@ -144,7 +145,7 @@ class DebugApp {
     }
 
     _onSelectVersion(version) {
-        console.log('Selected version:', version);
+        this._refreshConfigTable();
     }
 
     _onAddAttribute() {
@@ -183,7 +184,7 @@ class DebugApp {
     async _showFullFunctionModal() {
         const elementConfigs = [];
         const elementTextInputConfig = {
-            'data-loader': 'addDiv',
+            'data-tag': 'addDiv',
             'data-class': 'modal-element',
             'data-element-path': 'element/modal_element/modal-element-text-input.html',
             'id': 'functionModalTextInput',
@@ -223,7 +224,7 @@ class DebugApp {
             'id': 'addAttributeBtn',
             'text': 'Add Attribute',
             'callback': () => this._onAddAttribute(),
-            'data-loader': 'addButton',
+            'data-tag': 'addButton',
             'data-class': 'primary',
             'data-css-path': ['css/btn/primary.css'],
         });
@@ -231,7 +232,7 @@ class DebugApp {
             'id': 'editAttributeBtn',
             'text': 'Edit Attribute',
             'callback': () => this._onEditAttribute(),
-            'data-loader': 'addButton',
+            'data-tag': 'addButton',
             'data-class': 'primary',
             'data-css-path': ['css/btn/primary.css'],
         });
@@ -250,7 +251,7 @@ class DebugApp {
     /* implement the json content to the current data */
     _applyJson(file, content) {
         try {
-            if (this.config.setContent(content)) {
+            if (this.config.load(content)) {
                 this._refreshView();
                 this._refreshConfigFileNameDisplay(file.name);
                 this._refreshConfigTable();

@@ -15,7 +15,7 @@ class App {
     async init() {
         try {
             await config.load();
-            await elementLoader.loadElementTree();
+            await elementLoader.loadElement(document.body);
             this._initOnLoaded();
             console.log('App initialized successfully.');
         } catch (error) {

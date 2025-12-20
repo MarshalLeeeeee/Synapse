@@ -16,7 +16,6 @@ class Selector extends Element {
             option.textContent = optionData['text'];
             this.domElement.appendChild(option);
         });
-        this._onSelect();
     }
 
     getOption() {

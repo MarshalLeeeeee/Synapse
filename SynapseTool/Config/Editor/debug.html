@@ -60,7 +60,7 @@
 
         <!-- view for loading or creating config -->
         <load-element id="fileDropAreaView">
-            <data-loader>addDiv</data-loader>
+            <data-tag>div</data-tag>
             <data-class>file-drop-area-view</data-class>
             <data-element-path>element/exclusive/file-drop-area.html</data-element-path>
             <data-css-path>css/exclusive/file-drop-area.css</data-css-path>
@@ -68,7 +68,7 @@
 
         <!-- view for config table -->
         <load-element id="configTableView">
-            <data-loader>addDiv</data-loader>
+            <data-tag>div</data-tag>
             <data-class>config-table-view</data-class>
             <data-element-path>element/exclusive/config-table.html</data-element-path>
             <data-css-path>css/exclusive/config-table.css</data-css-path>
@@ -82,31 +82,31 @@
     </div>
 
     <load-element id="btnShowMessageModal">
-        <data-loader>addButton</data-loader>
+        <data-tag>button</data-tag>
         <data-class>primary</data-class>
         <data-css-path>css/btn/primary.css</data-css-path>
     </load-element>
 
     <load-element id="btnShowConfirmationModal">
-        <data-loader>addButton</data-loader>
+        <data-tag>button</data-tag>
         <data-class>primary</data-class>
         <data-css-path>css/btn/primary.css</data-css-path>
     </load-element>
 
     <load-element id="btnShowVoidFunctionModal">
-        <data-loader>addButton</data-loader>
+        <data-tag>button</data-tag>
         <data-class>primary</data-class>
         <data-css-path>css/btn/primary.css</data-css-path>
     </load-element>
 
     <load-element id="btnShowFullFunctionModal">
-        <data-loader>addButton</data-loader>
+        <data-tag>button</data-tag>
         <data-class>primary</data-class>
         <data-css-path>css/btn/primary.css</data-css-path>
     </load-element>
     
     <load-element id="messageModal">
-        <data-loader>addDiv</data-loader>
+        <data-tag>div</data-tag>
         <data-class>modal-overlay</data-class>
         <data-element-path>element/modal/modal-message.html</data-element-path>
         <data-css-path>css/modal/modal.css</data-css-path>
@@ -114,7 +114,7 @@
     </load-element>
     
     <load-element id="confirmationModal">
-        <data-loader>addDiv</data-loader>
+        <data-tag>div</data-tag>
         <data-class>modal-overlay</data-class>
         <data-element-path>element/modal/modal-confirmation.html</data-element-path>
         <data-css-path>css/modal/modal.css</data-css-path>
@@ -122,7 +122,7 @@
     </load-element>
 
     <load-element id="functionModal">
-        <data-loader>addDiv</data-loader>
+        <data-tag>div</data-tag>
         <data-class>modal-overlay</data-class>
         <data-element-path>element/modal/modal-function.html</data-element-path>
         <data-css-path>css/modal/modal.css</data-css-path>
@@ -139,6 +139,13 @@
     <script src="js/element/btn/btn-fas.js"></script>
 
     <script src="js/element/container/container.js"></script>
+    
+    <script src="js/app/cellvalues/boolean-cell-value.js"></script>
+    <script src="js/app/cellvalues/float-cell-value.js"></script>
+    <script src="js/app/cellvalues/int-cell-value.js"></script>
+    <script src="js/app/cellvalues/list-int-cell-value.js"></script>
+    <script src="js/app/cellvalues/string-cell-value.js"></script>
+    <script src="js/app/cellvalues/cell-value-factory.js"></script>
 
     <!-- <script src="js/element/modal_element/modal-element-container.js"></script> -->
     <script src="js/element/modal_element/modal-element-text-input.js"></script>

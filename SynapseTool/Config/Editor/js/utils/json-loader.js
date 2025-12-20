@@ -2,6 +2,7 @@
  * load json from filesystem
  */
 class JsonLoader {
+    /* fetch json data locally */
     async loadJsonFile(jsonPath) {
         const response = await fetch(jsonPath);
         if (!response.ok) {

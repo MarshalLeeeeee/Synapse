@@ -76,31 +76,41 @@ class ConfigTable extends Element {
             return;
         }
         const version = this.versionSelector.getOption();
-        const attributes = config.getAttributes();
         const attributeOrder = config.getAttributeOrder();
-        const rows = config.getRows();
+        const rowOrder = config.getRowOrder();
 
         // Add Attribute header
         const attributeHeader = document.createElement('th');
         attributeHeader.className = 'config-attribute-header config-cell-selectable';
         attributeHeader.textContent = 'Attribute';
-        attributeHeader.dataset.attribute = '';
+        attributeHeader.dataset.attributeName = '';
         attributeHeader.addEventListener('click', () => this._onSelectTh(attributeHeader));
         this.configTableHeader.appendChild(attributeHeader);
         
         // Add attribute columns
-        attributeOrder.forEach(attrName => {
-            const attr = attributes[attrName];
+        attributeOrder.forEach(attributeName => {
+            const attribute = config.getAttribute(attributeName);
             const th = document.createElement('th');
-            th.className = 'config-cell-selectable';
-            th.dataset.attribute = attrName;
-            th.innerHTML = ` ${attrName} <span class="data-type-tag ${attr.dataType}"> ${attr.dataType} </span>`;
-            th.addEventListener('click', () => this._onSelectTh(th));
+            if (attribute != null) {
+                th.className = 'config-cell-selectable';
+                const attributeDataType = attribute.dataType;
+                th.dataset.attributeName = attributeName;
+                th.innerHTML = ` ${attributeName} <span class="data-type-tag ${attributeDataType}"> ${attributeDataType} </span>`;
+                th.addEventListener('click', () => this._onSelectTh(th));
+            }
+            else {
+                th.className = 'config-cell-selectable';
+                th.dataset.attributeName = '';
+                th.innerHTML = 'NAN';
+            }
             this.configTableHeader.appendChild(th);
         });
         
         // Create data rows
-        rows.forEach((row, rowIndex) => {
+        (rowOrder[version] ?? []).forEach((rowUUid, rowIndex) => {
+            const row = config.getRow(rowUUid);
+            if (row == null) return;
+
             const tr = document.createElement('tr');
             tr.dataset.rowIndex = rowIndex;
             
@@ -109,55 +119,29 @@ class ConfigTable extends Element {
             rowHeader.className = 'config-attribute-cell config-cell-selectable';
             rowHeader.textContent = `Row ${rowIndex + 1}`;
             rowHeader.dataset.rowIndex = rowIndex;
-            rowHeader.dataset.attribute = '';
+            rowHeader.dataset.attributeName = '';
             rowHeader.addEventListener('click', () => this._onSelectTd(rowHeader));
             tr.appendChild(rowHeader);
             
             // Add cell values for each attribute
-            attributeOrder.forEach(attrName => {
-                const cell = config.getCell(row, attrName);
+            attributeOrder.forEach(attributeName => {
+                const cell = row.getCell(attributeName);
                 const td = document.createElement('td');
                 td.className = 'config-cell-selectable';
                 td.dataset.rowIndex = rowIndex;
-                td.dataset.attribute = attrName;
-                
-                // Determine which value to show based on current version
-                let displayValue = '';
-                let groupForVersion = null;
-                
-                // Find which group contains the current version
-                for (const [group, versions] of Object.entries(cell.groups)) {
-                    if (versions.includes(version)) {
-                        groupForVersion = group;
-                        break;
-                    }
+                td.dataset.attributeName = attributeName;
+                if (cell != null) {
+                    td.textContent = cell.parse(version);
+                    td.addEventListener('click', () => this._onSelectTd(td));
                 }
-                
-                // Get the value for that group
-                if (groupForVersion && cell.values[groupForVersion] !== undefined) {
-                    displayValue = this._formatValue(cell.values[groupForVersion]);
-                } else if (cell.values.default !== undefined) {
-                    // Fallback to default if version not found
-                    displayValue = this._formatValue(cell.values.default);
+                else {
+                    td.textContent = 'NAN';
                 }
-                
-                td.textContent = displayValue;
-                td.addEventListener('click', () => this._onSelectTd(td));
                 tr.appendChild(td);
             });
             
             this.configTableBody.appendChild(tr);
         });
-    }
-
-    _formatValue(value) {
-        if (Array.isArray(value)) {
-            return `[${value.join(', ')}]`;
-        }
-        if (typeof value === 'boolean') {
-            return value ? 'true' : 'false';
-        }
-        return String(value);
     }
 
     _onSelectTh(th) {
