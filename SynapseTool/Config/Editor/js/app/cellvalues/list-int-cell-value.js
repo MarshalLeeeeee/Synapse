@@ -1,6 +1,7 @@
 
-class ListIntCellValue {
+class ListIntCellValue extends CellValue {
     constructor(value=null) {
+        super(value);
         if (value != null) {
             this.value = value;
         }
@@ -30,7 +31,7 @@ class ListIntCellValue {
     Returns:
         List[int] | null
     */
-    unparse(text) {
+    _unparse(text) {
         if (!text.trim()) return [];
         const res = []
         const textSplit = text.split(',');
@@ -42,17 +43,5 @@ class ListIntCellValue {
             res.push(item);
         }
         return res;
-    }
-
-    /*
-    update value from text
-    Parameters:
-        text - string to parse
-    */
-    updateFromText(text) {
-        const res = this.unparse(text);
-        if (res != null) {
-            this.value = res;
-        }
     }
 }

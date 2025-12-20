@@ -1,6 +1,7 @@
 
-class StringCellValue {
+class StringCellValue extends CellValue {
     constructor(value=null) {
+        super(value);
         if (value != null) {
             this.value = value;
         }
@@ -25,19 +26,7 @@ class StringCellValue {
     Returns:
         string | null
     */
-    unparse(text) {
+    _unparse(text) {
         return text;
-    }
-
-    /*
-    update value from text
-    Parameters:
-        text - string to parse
-    */
-    updateFromText(text) {
-        const res = this.unparse(text);
-        if (res != null) {
-            this.value = res;
-        }
     }
 }

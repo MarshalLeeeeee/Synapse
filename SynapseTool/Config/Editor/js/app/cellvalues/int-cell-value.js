@@ -1,6 +1,7 @@
 
-class IntCellValue {
+class IntCellValue extends CellValue {
     constructor(value=null) {
+        super(value);
         if (value != null) {
             this.value = value;
         }
@@ -25,23 +26,11 @@ class IntCellValue {
     Returns:
         int | null
     */
-    unparse(text) {
+    _unparse(text) {
         const res = parseInt(text);
         if (isNaN(res)) {
             return null;
         }
         return res;
-    }
-
-    /*
-    update value from text
-    Parameters:
-        text - string to parse
-    */
-    updateFromText(text) {
-        const res = this.unparse(text);
-        if (res != null) {
-            this.value = res;
-        }
     }
 }
