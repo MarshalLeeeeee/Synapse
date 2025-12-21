@@ -31,8 +31,8 @@ class ListIntCellValue extends CellValue {
     Returns:
         List[int] | null
     */
-    _unparse(text) {
-        if (!text.trim()) return [];
+    static unparse(text) {
+        if (!text.trim()) return null;
         const res = []
         const textSplit = text.split(',');
         for (const textSeg of textSplit) {
@@ -43,5 +43,9 @@ class ListIntCellValue extends CellValue {
             res.push(item);
         }
         return res;
+    }
+
+    _unparse(text) {
+        return ListIntCellValue.unparse(text);
     }
 }

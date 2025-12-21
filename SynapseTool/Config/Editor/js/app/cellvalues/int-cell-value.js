@@ -26,11 +26,15 @@ class IntCellValue extends CellValue {
     Returns:
         int | null
     */
-    _unparse(text) {
+    static unparse(text) {
         const res = parseInt(text);
         if (isNaN(res)) {
             return null;
         }
         return res;
+    }
+
+    _unparse(text) {
+        return IntCellValue.unparse(text);
     }
 }

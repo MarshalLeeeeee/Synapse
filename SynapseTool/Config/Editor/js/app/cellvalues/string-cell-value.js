@@ -26,7 +26,11 @@ class StringCellValue extends CellValue {
     Returns:
         string | null
     */
-    _unparse(text) {
+    static unparse(text) {
         return text;
+    }
+
+    _unparse(text) {
+        return StringCellValue.unparse(text);
     }
 }

@@ -95,17 +95,15 @@ class ConfigTable extends Element {
         attributeOrder.forEach(attributeUUid => {
             const attribute = config.getAttribute(attributeUUid);
             const th = document.createElement('th');
+            th.className = 'config-cell-selectable';
+            th.dataset.attributeUUid = attributeUUid;
             if (attribute != null) {
-                th.className = 'config-cell-selectable';
                 const attributeName = attribute.name;
                 const attributeDataType = attribute.dataType;
-                th.dataset.attributeUUid = attributeUUid;
                 th.innerHTML = ` ${attributeName} <span class="data-type-tag ${attributeDataType}"> ${attributeDataType} </span>`;
                 th.addEventListener('click', () => this._onSelectTh(th));
             }
             else {
-                th.className = 'config-cell-selectable';
-                th.dataset.attributeUUid = '';
                 th.innerHTML = 'NAN';
             }
             this.configTableHeader.appendChild(th);
@@ -138,7 +136,13 @@ class ConfigTable extends Element {
                 td.dataset.rowUUid = rowUUid;
                 td.dataset.attributeUUid = attributeUUid;
                 if (cell != null) {
-                    td.textContent = cell.parse(version);
+                    const parsedValue = cell.parse(version);
+                    if (parsedValue == null) {
+                        td.textContent = 'NAN';
+                    }
+                    else {
+                        td.textContent = parsedValue;
+                    }
                     td.addEventListener('click', () => this._onSelectTd(td));
                 }
                 else {

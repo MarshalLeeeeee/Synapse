@@ -2,9 +2,8 @@
 class TextInputModalElement extends Element {
     constructor(domElement, title='', placeholder='', description='', onChange=null) {
         super(domElement);
-        this.onChange = onChange;
         this._initialize();
-        this._render(title, placeholder, description);
+        this.setData(title, placeholder, description, onChange);
     }
 
     setData(title, placeholder, description, onChange) {

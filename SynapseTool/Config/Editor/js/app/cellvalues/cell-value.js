@@ -10,7 +10,7 @@ class CellValue {
         string representation of the value
     */ 
     parse() {
-        return '';
+        return null;
     }
 
     /*
@@ -20,8 +20,12 @@ class CellValue {
     Returns:
         string | null
     */
-    _unparse(text) {
+    static unparse(text) {
         return null;
+    }
+
+    _unparse(text) {
+        return CellValue.unparse(text);
     }
 
     /*

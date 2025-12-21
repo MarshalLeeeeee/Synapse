@@ -26,11 +26,15 @@ class FloatCellValue extends CellValue {
     Returns:
         float | null
     */
-    _unparse(text) {
+    static unparse(text) {
         const res = parseFloat(text);
         if (isNaN(res)) {
             return null;
         }
         return res;
+    }
+
+    _unparse(text) {
+        return FloatCellValue.unparse(text);
     }
 }

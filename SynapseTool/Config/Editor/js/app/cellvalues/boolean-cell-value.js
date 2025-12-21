@@ -26,12 +26,12 @@ class BooleanCellValue extends CellValue {
     Returns:
         boolean | null
     */
-    _unparse(text) {
+    static unparse(text) {
         switch (text) {
             case 'true':
                 return true;
             case 'false':
-                return false;
+                return false;   
             default:
                 return null;
         }

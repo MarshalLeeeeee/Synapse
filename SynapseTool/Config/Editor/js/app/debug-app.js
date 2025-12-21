@@ -7,14 +7,14 @@ class DebugApp {
         this.functionModal = null;
         this.fileDropArea = null;
         this.configTable = null;
-        this.showMessageBtn = null;
-        this.showConfirmationBtn = null;
-        this.showVoidFunctionBtn = null;
-        this.showFullFunctionBtn = null;
 
         // config
         this.config = new Config();
         this.configFileName = '';
+
+        // ui varialbles
+        this.selectedAttributeUUid = '';
+        this.selectedRowUUid = '';
     }
 
     async init() {
@@ -34,14 +34,11 @@ class DebugApp {
             document.getElementById('messageModal'),
             'Debug Message',
             'This is a debug message modal.',
-            () => this._onMsgConfirm()
         );
         this.confirmationModal = new ConfirmationModal(
             document.getElementById('confirmationModal'),
             'Debug Confirmation',
             'Are you sure you want to proceed?',
-            () => this._onConfirmConfirm(),
-            () => this._onConfirmCancel()
         );
         this.functionModal = new FunctionModal(
             document.getElementById('functionModal'),
@@ -61,103 +58,13 @@ class DebugApp {
             '',
             options,
             () => this._onSaveConfig(),
-            (versoin) => this._onSelectVersion(versoin)
-        );
-        this.showMessageBtn = new Btn(
-            document.getElementById('btnShowMessageModal'),
-            'Show Message Modal',
-            () => this._onShowMessageBtnClick()
-        );
-        this.showConfirmationBtn = new Btn(
-            document.getElementById('btnShowConfirmationModal'),
-            'Show Confirmation Modal',
-            () => this.confirmationModal.setVisible(true)
-        );
-        this.showVoidFunctionBtn = new Btn(
-            document.getElementById('btnShowVoidFunctionModal'),
-            'Show Void Function Modal',
-            () => this._showVoidFunctionModal()
-        );
-        this.showFullFunctionBtn = new Btn(
-            document.getElementById('btnShowFullFunctionModal'),
-            'Show Full Function Modal',
-            () => this._showFullFunctionModal()
+            (versoin) => this._onSelectVersion(versoin),
+            (th) => this._onSelectTh(th),
+            (td) => this._onSelectTd(td)
         );
         this._refreshView();
         await this._setToolButtons();
     }
-
-    //#region element interact interfaces
-
-    _onMsgConfirm() {
-        console.log('Debug message confirmed.');
-    }
-
-    _onConfirmConfirm() {
-        console.log('Debug confirmation accepted.');
-    }
-
-    _onConfirmCancel() {
-        console.log('Debug confirmation canceled.');
-    }
-
-    _onFunctionConfirm() {
-        console.log('Function modal confirmed.');
-    }
-
-    _onFunctionCancel() {
-        console.log('Function modal canceled.');
-    }
-
-    _onShowMessageBtnClick() {
-        console.log('Show Message Modal button clicked.');
-        this.messageModal.setVisible(true);
-    }
-
-    _onNewConfig() {
-        console.log('New Config.');
-    }
-
-    _onLoadConfigSucc(file, content) {
-        console.log('Load Config Success:', file, content);
-        this._applyJson(file, content);
-    }
-
-    _onLoadConfigFail(file, errorMsg) {
-        this._showMessageModal(
-            'Load Error',
-            `Failed to load config file "${file.name}": ${errorMsg}`,
-            null
-        );
-    }
-
-    _onSaveConfig() {
-        this._saveConfig();
-    }
-
-    _onFunctionModalTextChanged(target) {
-        if (target.value === 'LMC') {
-            console.log('Function Modal Text Input Changed:', target.value);
-        }
-        else {
-            target.value = '';
-            console.log('Function Modal Text Input must be "LMC".');
-        }
-    }
-
-    _onSelectVersion(version) {
-        this._refreshConfigTable();
-    }
-
-    _onAddAttribute() {
-        console.log('on add attribute');
-    }
-
-    _onEditAttribute() {
-        console.log('on edit attribute');
-    }
-
-    //#endregion
 
     //#region element display functions
 
@@ -170,39 +77,6 @@ class DebugApp {
     _showMessageModal(title, message, onConfirm) {
         this.messageModal.setData(title, message, onConfirm);
         this.messageModal.setVisible(true);
-    }
-
-    _showVoidFunctionModal() {
-        this.functionModal.setData(
-            'Void Function Modal',
-            () => this._onFunctionConfirm(),
-            () => this._onFunctionCancel(),
-            []
-        );
-        this.functionModal.setVisible(true);
-    }
-
-    async _showFullFunctionModal() {
-        const elementConfigs = [];
-        const elementTextInputConfig = {
-            'data-tag': 'addDiv',
-            'data-class': 'modal-element',
-            'data-element-path': 'element/modal_element/modal-element-text-input.html',
-            'id': 'functionModalTextInput',
-            'type': 'text-input',
-            'title': 'Enter Text:',
-            'placeholder': 'Type something...',
-            'description': 'This is a breif description.',
-            'onChange': (target) => this._onFunctionModalTextChanged(target)
-        }
-        elementConfigs.push(elementTextInputConfig);
-        await this.functionModal.setData(
-            'Full Function Modal',
-            () => this._onFunctionConfirm(),
-            () => this._onFunctionCancel(),
-            elementConfigs
-        );
-        this.functionModal.setVisible(true);
     }
 
     _refreshView() {
@@ -247,7 +121,58 @@ class DebugApp {
 
     //#endregion
 
-    //#region data management
+    //#region ui state logic
+
+    /* callback function: a th cell is selected */
+    _onSelectTh(th) {
+        console.log('select th', th);
+        this._updateCellSelect(th.dataset.attributeUUid, '');
+    }
+    
+    /* callback function: a td cell is selected */
+    _onSelectTd(td) {
+        console.log('select td', td);
+        this._updateCellSelect(td.dataset.attributeUUid, td.dataset.rowUUid);
+    }
+    
+    /* update the state of selected cell */
+    _updateCellSelect(attributeUUid, rowUUid) {
+        this.selectedAttributeUUid = attributeUUid;
+        this.selectedRowUUid = rowUUid;
+    }
+
+    /* callback function: version is selected */
+    _onSelectVersion(version) {
+        this._refreshConfigTable();
+    }
+    
+    //#endregion ui state logic
+
+    //#region config management
+
+    /* callback function: if json config is successfully loaded */
+    _onLoadConfigSucc(file, content) {
+        this._applyJson(file, content);
+    }
+    
+    /* callback function: if json config fails to be loaded */
+    _onLoadConfigFail(file, errorMsg) {
+        this._showMessageModal(
+            'Load Error',
+            `Failed to load config file "${file.name}": ${errorMsg}`,
+            null
+        );
+    }
+
+    /* callback function: to create a new config */
+    _onNewConfig() {
+        console.log('New Config.');
+    }
+
+    /* callback function: to save config */
+    _onSaveConfig() {
+        this._saveConfig();
+    }
 
     /* implement the json content to the current data */
     _applyJson(file, content) {
@@ -261,7 +186,7 @@ class DebugApp {
             else {
                 this._showMessageModal(
                     'Load Error',
-                    `Failed to load config file "${file.name}": unable to parse to config`,
+                    `Failed to load config file "${file.name}": unable to parse the config`,
                     null
                 );
             }
@@ -275,8 +200,8 @@ class DebugApp {
         }
     }
 
+    /* dump config and download to local file system */
     _saveConfig() {
-        console.log('Config saved.');
         const configDump = this.config.dump();
 
         // Create a blob with the config data
@@ -292,8 +217,45 @@ class DebugApp {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
 
-        console.log(this.config.dump());
+    //#endregion
+
+    //#region attribute management
+
+    /* callback function: to add a new attribute */
+    _onAddAttribute() {
+        this._showAddAttributeModal();
+    }
+    
+    /* callback function: to edit a current attribute */
+    _onEditAttribute() {
+        console.log('on edit attribute');
+    }
+
+    /* show function modal for adding attribute */
+    async _showAddAttributeModal() {
+        const elementConfigs = [];
+        elementConfigs.push({
+            'id': 'functionModalAttributeNameInput',
+            'data-tag': 'div',
+            'data-class': 'modal-element',
+            'data-element-path': 'element/modal_element/modal-element-text-input.html',
+            'type': 'text-input',
+            'title': 'Attribute name:',
+            'placeholder': 'Input name of the attribute...'
+        });
+        await this.functionModal.setData(
+            'Add new attribute',
+            (values) => this._onAddAttributeConfirm(values),
+            null,
+            elementConfigs
+        );
+        this.functionModal.setVisible(true);
+    }
+
+    _onAddAttributeConfirm(values) {
+        console.log('Function modal confirmed.', values);
     }
 
     //#endregion

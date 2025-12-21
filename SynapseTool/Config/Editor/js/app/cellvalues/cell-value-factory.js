@@ -17,18 +17,18 @@ class CellValueFactory {
         }
     }
 
-    static getDisplayName(dataType) {
+    static unparse(dataType, text) {
         switch (dataType) {
             case 'type-int':
-                return "int number";
+                return IntCellValue.unparse(text);
             case 'type-float':
-                return "float number";
+                return FloatCellValue.unparse(text);
             case 'type-string':
-                return "string text";
+                return StringCellValue.unparse(text);
             case 'type-boolean':
-                return "true or false";
+                return BooleanCellValue.unparse(text);
             case 'type-list-int':
-                return "list of int number";
+                return ListIntCellValue.unparse(text);
             default:
                 throw new Error(`Unsupported data type: ${dataType}`);
         }

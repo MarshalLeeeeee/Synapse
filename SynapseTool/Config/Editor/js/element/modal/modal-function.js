@@ -11,7 +11,7 @@ class FunctionModal extends Modal {
     async setData(title, onConfirm, onCancel, element_configs) {
         this.onConfirm = onConfirm;
         this.onCancel = onCancel;
-        await this._render(title, element_configs);
+        await this._renderElements(title, element_configs);
     }
     
     _initialize() {
@@ -33,22 +33,36 @@ class FunctionModal extends Modal {
         this.modalElements = new Container(document.getElementById('functionModalBody'));
     }
     
-    async _render(title, element_configs) {
+    async _renderElements(title, element_configs) {
         document.getElementById('functionModalTxtTitle').innerText = title;
-        await this.modalElements.setChildren(element_configs);
+        await this.modalElements.setChildren(
+            element_configs,
+            () => this._childrenGenerator(element_configs)
+        );
     }
 
     _onConfirm() {
         if (this.onConfirm) {
-            this.onConfirm();
+            this.onConfirm(this.modalElements.getElementValues());
         }
         this.setVisible(false);
     }
 
     _onCancel() {
         if (this.onCancel) {
-            this.onCancel();
+            this.onCancel(this.modalElements.getElementValues());
         }
         this.setVisible(false);
+    }
+
+    _childrenGenerator(element_configs) {
+        const res = {};
+        element_configs.forEach(config => {
+            const elementId = config['id'];
+            const element = document.getElementById(elementId);
+            if (element == null) return;
+            res[config['id']] = ModalElementFactory.createElement(element, config);
+        });
+        return res;
     }
 }
