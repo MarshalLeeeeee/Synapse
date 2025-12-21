@@ -12,14 +12,14 @@ class FileDropArea extends Element {
         this.btnNew = new BtnFas(
             document.getElementById('fileDropAreaBtnNew'),
             'New Config',
-            () => this._onBtnNewClick(),
-            'fa-plus'
+            'fa-plus',
+            () => this._onBtnNewClick()
         );
         this.btnLoad = new BtnFas(
             document.getElementById('fileDropAreaBtnLoad'),
             'Load Config',
-            () => this._onBtnLoadClick(),
-            'fa-folder-open'
+            'fa-folder-open',
+            () => this._onBtnLoadClick()
         );
         this.fileInput = document.getElementById('fileInput');
         this.fileInput.addEventListener('change', (e) => this._handleFileSelect(e));

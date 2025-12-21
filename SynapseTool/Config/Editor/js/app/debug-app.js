@@ -224,7 +224,7 @@ class DebugApp {
             'id': 'addAttributeBtn',
             'text': 'Add Attribute',
             'callback': () => this._onAddAttribute(),
-            'data-tag': 'addButton',
+            'data-tag': 'button',
             'data-class': 'primary',
             'data-css-path': ['css/btn/primary.css'],
         });
@@ -232,7 +232,7 @@ class DebugApp {
             'id': 'editAttributeBtn',
             'text': 'Edit Attribute',
             'callback': () => this._onEditAttribute(),
-            'data-tag': 'addButton',
+            'data-tag': 'button',
             'data-class': 'primary',
             'data-css-path': ['css/btn/primary.css'],
         });
