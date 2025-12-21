@@ -83,24 +83,25 @@ class ConfigTable extends Element {
         const attributeHeader = document.createElement('th');
         attributeHeader.className = 'config-attribute-header config-cell-selectable';
         attributeHeader.textContent = 'Attribute';
-        attributeHeader.dataset.attributeName = '';
+        attributeHeader.dataset.attributeUUid = '';
         attributeHeader.addEventListener('click', () => this._onSelectTh(attributeHeader));
         this.configTableHeader.appendChild(attributeHeader);
         
         // Add attribute columns
-        attributeOrder.forEach(attributeName => {
-            const attribute = config.getAttribute(attributeName);
+        attributeOrder.forEach(attributeUUid => {
+            const attribute = config.getAttribute(attributeUUid);
             const th = document.createElement('th');
             if (attribute != null) {
                 th.className = 'config-cell-selectable';
+                const attributeName = attribute.name;
                 const attributeDataType = attribute.dataType;
-                th.dataset.attributeName = attributeName;
+                th.dataset.attributeUUid = attributeUUid;
                 th.innerHTML = ` ${attributeName} <span class="data-type-tag ${attributeDataType}"> ${attributeDataType} </span>`;
                 th.addEventListener('click', () => this._onSelectTh(th));
             }
             else {
                 th.className = 'config-cell-selectable';
-                th.dataset.attributeName = '';
+                th.dataset.attributeUUid = '';
                 th.innerHTML = 'NAN';
             }
             this.configTableHeader.appendChild(th);
@@ -119,17 +120,17 @@ class ConfigTable extends Element {
             rowHeader.className = 'config-attribute-cell config-cell-selectable';
             rowHeader.textContent = `Row ${rowIndex + 1}`;
             rowHeader.dataset.rowIndex = rowIndex;
-            rowHeader.dataset.attributeName = '';
+            rowHeader.dataset.attributeUUid = '';
             rowHeader.addEventListener('click', () => this._onSelectTd(rowHeader));
             tr.appendChild(rowHeader);
             
             // Add cell values for each attribute
-            attributeOrder.forEach(attributeName => {
-                const cell = row.getCell(attributeName);
+            attributeOrder.forEach(attributeUUid => {
+                const cell = row.getCell(attributeUUid);
                 const td = document.createElement('td');
                 td.className = 'config-cell-selectable';
                 td.dataset.rowIndex = rowIndex;
-                td.dataset.attributeName = attributeName;
+                td.dataset.attributeUUid = attributeUUid;
                 if (cell != null) {
                     td.textContent = cell.parse(version);
                     td.addEventListener('click', () => this._onSelectTd(td));

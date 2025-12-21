@@ -1,7 +1,8 @@
 
 class Attribute {
-    constructor(name, content) {
-        this.name = name; // str: attribute name
+    constructor(uuid, content) {
+        this.uuid = uuid;
+        this.name = ''; // str: attribute name
         this.dataType = null; // str: data type of the attribute
         this.load(content);
     }
@@ -10,6 +11,7 @@ class Attribute {
     load(content) {
         if (!content) return false;
 
+        this.name = content['name'] ?? '';
         this.dataType = content['dataType'] ?? null;
         return true;
     }
@@ -17,6 +19,7 @@ class Attribute {
     /* dump into dict */
     dump() {
         const res = {};
+        res['name'] = this.name;
         if (this.dataType) {
             res['dataType'] = this.dataType;
         }
@@ -122,12 +125,12 @@ class Row {
 
         const rowRawData = content['rowRawData'];
         const cells = rowRawData['cells'] ?? {};
-        for (const [attributeName, cellRawData] of Object.entries(cells)) {
+        for (const [attributeUUid, cellRawData] of Object.entries(cells)) {
             const cellD = {
                 'cellRawData': cellRawData,
-                'attribute': content['attributes'][attributeName]
+                'attribute': content['attributes'][attributeUUid]
             }
-            this.cells[attributeName] = new Cell(cellD);    
+            this.cells[attributeUUid] = new Cell(cellD);    
         }
         return true;
     }
@@ -136,16 +139,16 @@ class Row {
     dump() {
         const res = {};
         res['cells'] = {};
-        Object.entries(this.cells).forEach(([attributeName, cell]) => {
-            res['cells'][attributeName] = cell.dump();
+        Object.entries(this.cells).forEach(([attributeUUid, cell]) => {
+            res['cells'][attributeUUid] = cell.dump();
         });
         return res;
     }
 
     //#region cell
 
-    getCell(attributeName) {
-        return this.cells[attributeName] ?? null;
+    getCell(attributeUUid) {
+        return this.cells[attributeUUid] ?? null;
     }
 
     //#endregion cell
@@ -178,12 +181,12 @@ class Config {
         if (Object.keys(attributes).length != Object.keys(attributeOrder).length) {
             return false;
         }
-        const attributeNameSet = new Set();
-        for (const attributeName of attributeOrder) {
-            if (attributeName in attributeNameSet) {
+        const attributeUUidSet = new Set();
+        for (const attributeUUid of attributeOrder) {
+            if (attributeUUid in attributeUUidSet) {
                 return false
             }
-            if (!(attributeName in attributes)) {
+            if (!(attributeUUid in attributes)) {
                 return false
             }
         }
@@ -213,8 +216,8 @@ class Config {
             // check cell raw data
             const rowVersions = row2versions[rowUUid];
             const cells = rowRawData['cells'] ?? {};
-            for (const [attributeName, cellRawData] of Object.entries(cells)) {
-                if (!(attributeName in attributes)) {
+            for (const [attributeUUid, cellRawData] of Object.entries(cells)) {
+                if (!(attributeUUid in attributes)) {
                     return false;
                 }
                 const groups = cellRawData['groups'] ?? {};
@@ -248,8 +251,8 @@ class Config {
 
         this.attributes = {};
         this.attributeOrder = attributeOrder;
-        Object.entries(attributes).forEach(([attributeName, attributeRawData]) => {
-            this.attributes[attributeName] = new Attribute(attributeName, attributeRawData);
+        Object.entries(attributes).forEach(([attributeUUid, attributeRawData]) => {
+            this.attributes[attributeUUid] = new Attribute(attributeUUid, attributeRawData);
         });
 
         this.rows = {};
@@ -269,8 +272,8 @@ class Config {
     dump() {
         const res = {};
         res['attributes'] = {};
-        Object.entries(this.attributes).forEach(([attributeName, attribute]) => {
-            res['attributes'][attributeName] = attribute.dump();
+        Object.entries(this.attributes).forEach(([attributeUUid, attribute]) => {
+            res['attributes'][attributeUUid] = attribute.dump();
         });
         res['attributeOrder'] = structuredClone(this.attributeOrder);
         res['rows'] = {};
@@ -287,8 +290,8 @@ class Config {
 
     //#region attribute
 
-    getAttribute(attributeName) {
-        return this.attributes[attributeName] ?? null;
+    getAttribute(attributeUUid) {
+        return this.attributes[attributeUUid] ?? null;
     }
 
     getAttributeOrder() {
@@ -307,16 +310,5 @@ class Config {
         return this.rowOrder;
     }
 
-    //#endregion row
-
-    //#region cell
-
-    getCell(rowUUid, attributeName) {
-        if (!(rowUUid in this.rows)) return null;
-        const row = this.rows[rowUUid];
-        return row.GetCell(attributeName);
-    }
-
-    //#endregion cell
-    
+    //#endregion row    
 }
