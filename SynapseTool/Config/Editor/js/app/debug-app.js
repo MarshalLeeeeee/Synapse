@@ -14,6 +14,7 @@ class DebugApp {
 
         // config
         this.config = new Config();
+        this.configFileName = '';
     }
 
     async init() {
@@ -210,8 +211,8 @@ class DebugApp {
         this.configTable.setVisible(loaded);
     }
 
-    _refreshConfigFileNameDisplay(title) {
-        this.configTable.setTitle(title);
+    _refreshConfigFileNameDisplay() {
+        this.configTable.setTitle(this.configFileName);
     }
 
     _refreshConfigTable() {
@@ -252,8 +253,9 @@ class DebugApp {
     _applyJson(file, content) {
         try {
             if (this.config.load(content)) {
+                this.configFileName = file.name;
                 this._refreshView();
-                this._refreshConfigFileNameDisplay(file.name);
+                this._refreshConfigFileNameDisplay();
                 this._refreshConfigTable();
             }
             else {
@@ -275,6 +277,23 @@ class DebugApp {
 
     _saveConfig() {
         console.log('Config saved.');
+        const configDump = this.config.dump();
+
+        // Create a blob with the config data
+        const configJson = JSON.stringify(configDump, null, 2);
+        const blob = new Blob([configJson], { type: 'application/json' });
+        
+        // Create a download link
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = this.configFileName || 'config.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        console.log(this.config.dump());
     }
 
     //#endregion

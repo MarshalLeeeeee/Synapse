@@ -59,7 +59,10 @@ class Cell {
     dump() {
         const res = {};
         res['groups'] = structuredClone(this.groups);
-        res['values'] = structuredClone(this.values);
+        res['values'] = {};
+        Object.entries(this.values).forEach(([groupName, valueInstance]) => {
+            res['values'][groupName] = valueInstance.value;
+        });
         return res;
     }
 

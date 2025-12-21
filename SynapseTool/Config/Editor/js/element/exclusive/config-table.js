@@ -2,6 +2,8 @@
 class ConfigTable extends Element {
     constructor(domElement, title='', options=null, onSave=null, onSelectVersion=null, onSelectTh=null, onSelectTd=null) {
         super(domElement);
+        this._th_elements = {}; // dict: attribute uuid -> th
+        this._td_elements = {}; // dict: row uuid -> {attribute uuid -> td}
         this.onSave = onSave;
         this.onSelectVersion = onSelectVersion;
         this.onSelectTh = onSelectTh;
@@ -70,6 +72,8 @@ class ConfigTable extends Element {
         // Clear table
         this.configTableHeader.innerHTML = '';
         this.configTableBody.innerHTML = '';
+        this._th_elements = {};
+        this._td_elements = {};
 
         // Load from config datas
         if (!config.isLoaded()) {
@@ -105,6 +109,7 @@ class ConfigTable extends Element {
                 th.innerHTML = 'NAN';
             }
             this.configTableHeader.appendChild(th);
+            this._th_elements[attributeUUid] = th;
         });
         
         // Create data rows
@@ -113,13 +118,14 @@ class ConfigTable extends Element {
             if (row == null) return;
 
             const tr = document.createElement('tr');
-            tr.dataset.rowIndex = rowIndex;
+            tr.dataset.rowUUid = rowUUid;
+            this._td_elements[rowUUid] = {};
             
             // Add row header (Row X)
             const rowHeader = document.createElement('td');
             rowHeader.className = 'config-attribute-cell config-cell-selectable';
             rowHeader.textContent = `Row ${rowIndex + 1}`;
-            rowHeader.dataset.rowIndex = rowIndex;
+            rowHeader.dataset.rowUUid = rowUUid;
             rowHeader.dataset.attributeUUid = '';
             rowHeader.addEventListener('click', () => this._onSelectTd(rowHeader));
             tr.appendChild(rowHeader);
@@ -129,7 +135,7 @@ class ConfigTable extends Element {
                 const cell = row.getCell(attributeUUid);
                 const td = document.createElement('td');
                 td.className = 'config-cell-selectable';
-                td.dataset.rowIndex = rowIndex;
+                td.dataset.rowUUid = rowUUid;
                 td.dataset.attributeUUid = attributeUUid;
                 if (cell != null) {
                     td.textContent = cell.parse(version);
@@ -139,6 +145,7 @@ class ConfigTable extends Element {
                     td.textContent = 'NAN';
                 }
                 tr.appendChild(td);
+                this._td_elements[rowUUid][attributeUUid] = td;
             });
             
             this.configTableBody.appendChild(tr);
